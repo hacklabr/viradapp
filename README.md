@@ -3,11 +3,11 @@
 
 Se você já tem o npm instalado, basta fazer:
 
-* Instalar o ionic
-    `$ npm install ionic`
+* Instalar o ionic globalmente
+    `$ sudo npm -g install ionic`
 
 * Clonar o repositório
-`$ git clone <>`
+`$ git clone https://github.com/hacklabr/viradapp.git`
 
 * Fazer o build padrão
 `$ cp viradapp`
