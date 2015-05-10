@@ -1,0 +1,23 @@
+{
+  "name": "lazy.js",
+  "version": "0.4.0",
+  "main": "lazy.js",
+  "ignore": [
+    "**/.*",
+    "docs",
+    "lib",
+    "site",
+    "spec"
+  ],
+  "homepage": "https://github.com/dtao/lazy.js",
+  "_release": "0.4.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.4.0",
+    "commit": "a06eec09ed86e6ae6c6c237dde9b05c72c4b672f"
+  },
+  "_source": "git://github.com/dtao/lazy.js.git",
+  "_target": "~0.4.0",
+  "_originalSource": "lazy.js",
+  "_direct": true
+}

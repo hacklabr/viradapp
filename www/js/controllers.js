@@ -1,6 +1,6 @@
 angular.module('viradapp.controllers', [])
 
-.controller('ProgramacaoCtrl', function($scope, $stateParams, Virada, _) {
+.controller('ProgramacaoCtrl', function($scope, $stateParams, Virada, Lazy) {
    if($stateParams.atracao){
        $scope.atracao = Virada.get($stateParams.atracao);
    } else {
@@ -9,9 +9,10 @@ angular.module('viradapp.controllers', [])
            Virada.events().then(function(events){
                 $scope.events = events;
                 $scope.spaces.forEach(function(space){
-                    space.events = _.where(events, {
+                    space.events = Lazy(events).where({
                         spaceId: parseInt(space.id)
-                    });
+                    }).toArray();
+                    console.log(space.events);
                 });
            })
        });

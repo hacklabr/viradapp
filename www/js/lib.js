@@ -1,4 +1,4 @@
-var underscore = angular.module("underscore", [])
-.factory('_', ['$window', function ($window){
-    return $window._;
+var lazy = angular.module("lazy", [])
+.factory('Lazy', ['$window', function ($window){
+    return $window.Lazy;
 }]);

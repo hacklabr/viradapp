@@ -1,4 +1,4 @@
-var viradapp = angular.module("viradapp", ['underscore', 'ionic', 'viradapp.controllers', 'viradapp.services']);
+var viradapp = angular.module("viradapp", ['lazy', 'ionic', 'viradapp.controllers', 'viradapp.services']);
 viradapp.run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
