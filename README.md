@@ -12,6 +12,7 @@ Se você já tem o npm instalado, basta fazer:
 * Fazer o build padrão
 `$ cp viradapp`
 `$ npm install`
+`$ gulp install # runs bower install` 
 
 * Fazer o setup SASS
 `$ ionic setup sass`
