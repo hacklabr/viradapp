@@ -2,7 +2,7 @@
   <ion-content>
     <ion-list>
       <ion-item class="item-remove-animate item-avatar item-icon-right" 
-        ng-repeat="event in events" type="item-text-wrap" 
+        collection-repeat="event in events" type="item-text-wrap" 
         href="#/tab/programacao/{{event.id}}">
         <img ng-src="{{ event.defaultImageThumb }}">
         <h2>{{ event.name }}</h2>

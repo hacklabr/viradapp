@@ -1,21 +1,17 @@
 <ion-view view-title="Programação">
 <ion-content class="padding">
-<div ng-repeat="space in spaces" class="list card">
-    <div class="item item-divider item-assertive">{{ space.name }}</div>
-    <div class="item">
-        <div class="row" ng-repeat="event in space.events"  ng-if="$index % 4 === 0">
-            <div ng-if="$index < space.events.length && space.events[$index].defaultImageThumb != ''" class="col col-25">
-                <img ng-src="{{ space.events[$index].defaultImageThumb }}" width="100%" />
-            </div>
-            <div ng-if="$index + 1 < space.events.length && space.events[$index + 1].defaultImageThumb != ''" class="col col-25">
-                <img ng-src="{{ space.events[$index + 1].defaultImageThumb }}" width="100%" />
-                
-            </div>
-            <div ng-if="$index + 2 < space.events.length && space.events[$index + 2].defaultImageThumb != ''" class="col col-25">
-                <img ng-src="{{ space.events[$index + 2].defaultImageThumb }}" width="100%" />
-            </div>
-            <div ng-if="space.events[$index + 3].defaultImageThumb != '' && $index + 3 < space.events.length" class="col col-25">
-                <img ng-src="{{ space.events[$index + 3].defaultImageThumb }}" width="100%" />
+<div collection-repeat="space in spaces" style="position: static" class="list card">
+    <div class="item item-divider item-assertive" >
+        {{ space.name }}
+    </div>
+    <div class="item" ng-init="init(this)">
+        <div ng-repeat="erow in space.events" class="row">
+            <div class="col col-25"
+                ng-repeat="event in erow">
+                <a class="photo" href="">
+                    <img class="" width="100%"
+                    ng-src="{{ event.defaultImageThumb }}">
+                </a>
             </div>
         </div>
     </div>
