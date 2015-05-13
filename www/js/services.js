@@ -1,22 +1,21 @@
 angular.module('viradapp.services', [])
 
-.factory('Virada', function($http) {
+.factory('Virada', function($http, Lazy) {
     var spaces = $http.get("assets/spaces-order.json")
     .then(function(res){
-        return res.data;
-    }); 
+        return Lazy(res.data);
+    });
 
     var events = $http.get("assets/events.json")
     .success(function(data){
     })
     .error(function(data, status, headers,config){
         console.log(status);
-        console.log(JSON.stringify(data));
-    }) 
+    })
     .then(function(res){
-        return res.data;
+        return Lazy(res.data);
     });
-    
+
     return {
         events: function() {
             return events;

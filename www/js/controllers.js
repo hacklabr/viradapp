@@ -14,11 +14,11 @@ angular.module('viradapp.controllers',[])
         $scope.atracao = Virada.get($stateParams.atracao);
     } else {
         Virada.spaces().then(function(data){
-            spaces = Lazy(data);
+            spaces = data;
             $scope.spaces = spaces.take(loads);
 
             Virada.events().then(function(data){
-                events = Lazy(data);
+                events = data;
                 $scope.spaces = spaces.take(loads)
                 .tap(function(space){
                     space.events = events.where({
@@ -55,8 +55,8 @@ angular.module('viradapp.controllers',[])
     var events;
     $scope.events = [];
     Virada.events().then(function(data){
-        events = Lazy(data);
-        $scope.events = Lazy(events).filter(function(event){
+        events = data;
+        $scope.events = events.filter(function(event){
             return event.defaultImageThumb != "";
         }).toArray();
     });
