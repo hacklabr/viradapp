@@ -1,14 +1,43 @@
-<!--
-  This template loads for the 'tab.friend-detail' state (app.js)
-  'friend' is a $scope variable created in the FriendsCtrl controller (controllers.js)
-  The FriendsCtrl pulls data from the Friends service (service.js)
-  The Friends service returns an array of friend data
--->
-<ion-view view-title="{{chat.name}}">
-  <ion-content class="padding">
-    <img ng-src="{{chat.face}}" style="width: 64px; height: 64px">
-    <p>
-      {{chat.lastText}}
-    </p>
-  </ion-content>
+<ion-view view-title="{{ atracao.name }}">
+    <ion-content>
+    <section id="main-section" class="row">
+        <article id="event-00" class="event-single col">
+            <img style="width: 100%" class="img-destacada-single-atracao" ng-src="{{atracao.defaultImage}}" alt="{{atracao.name}}" ng-if='atracao.defaultImage'/>
+            <header>
+                <h1>{{atracao.name}}</h1>
+            </header>
+            <div class="post-content clearfix">
+                <p>{{atracao.shortDescription}}</p>
+            </div>
+            <div class="post-content clearfix">
+                <p>{{atracao.description}}</p>
+            </div>
+            <!-- .post-content -->
+            <div class="servico">
+                <p>
+                    <span><span>Local:</span> <a href="{{space.url}}">{{space.name}}</a><br></span>
+                    <span><span>Endereço:</span> {{space.endereco}}<br></span>
+                    <span><span>Data:</span>{{ LL(atracao.startsOn) }}<br></span>
+                    <span><span>Horário:</span> {{atracao.startsAt}}<br></span>
+                    <span ng-if='atracao.terms.linguagem.length > 0'><span>Linguagem:</span> {{atracao.terms.linguagem.join(', ')}} <br></span>
+                    <span ng-if='atracao.classificacaoEtaria'><span>Classificação:</span> {{atracao.classificacaoEtaria}}<br></span>
+                    <span ng-if='atracao.acessibilidade.length > 0'><span>Acessibilidade:</span> {{atracao.acessibilidade.join(', ')}}<br></span>
+                </p>
+                <div class="hidden">URL : {{mapUrl}}</div>
+
+                <!-- src="{{mapUrl}}" -->
+                <iframe class="hidden-sm hidden-xs" width="100%" height="220" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                        ng-src="{{getTrustedURI(mapUrl)}}"></iframe>
+
+                <p class="hidden-md hidden-lg">
+                    <a class="btn btn-primary btn-xs" target="_blank" href="{{mapUrl}}">
+                        <span class="icon icon_pin"></span> Ver no mapa
+                    </a>
+                </p>
+            </div>
+        </article>
+        <!-- .event-single -->
+    </section>
+
+    </ion-content>
 </ion-view>

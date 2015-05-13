@@ -6,6 +6,12 @@ angular.module('viradapp.services', [])
         return Lazy(res.data);
     });
 
+    var spaces_data = $http.get("assets/spaces.json")
+    .then(function(res){
+        return Lazy(res.data);
+    });
+
+
     var events = $http.get("assets/events.json")
     .success(function(data){
     })
@@ -25,11 +31,16 @@ angular.module('viradapp.services', [])
         },
 
         get: function(event_id) {
-            return events.then(function(data){
-               return data.findWhere({
-                   id : parseInt(event_id)
-               });
-
+            return events.then(function(events){
+                return spaces_data.then(function(data){
+                    var event = events.findWhere({
+                        id : parseInt(event_id)
+                    });
+                    event.space = data.findWhere({
+                        id : parseInt(event.spaceId)
+                    });
+                    return event;
+                });
             });
         }
     };

@@ -14,6 +14,7 @@ angular.module('viradapp.controllers',[])
         Virada.get($stateParams.atracao)
         .then(function(data){
             $scope.atracao = data;
+            $scope.space = data.space;
         });
     } else {
         Virada.spaces().then(function(data){
@@ -35,6 +36,9 @@ angular.module('viradapp.controllers',[])
 
     }
 
+    $scope.LL = function(date){
+        return moment(date).format('LL');
+    };
 
     $scope.loadMore  = function(){
         setTimeout(function(){
@@ -61,6 +65,8 @@ angular.module('viradapp.controllers',[])
         events = data;
         $scope.events = events.filter(function(event){
             return event.defaultImageThumb != "";
+        }).take(20).sortBy(function(event){
+            return event.startsOn;
         }).toArray();
     });
 })
