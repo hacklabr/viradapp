@@ -11,7 +11,10 @@ angular.module('viradapp.controllers',[])
     var page = 1;
 
     if($stateParams.atracao){
-        $scope.atracao = Virada.get($stateParams.atracao);
+        Virada.get($stateParams.atracao)
+        .then(function(data){
+            $scope.atracao = data;
+        });
     } else {
         Virada.spaces().then(function(data){
             spaces = data;

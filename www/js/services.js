@@ -25,12 +25,12 @@ angular.module('viradapp.services', [])
         },
 
         get: function(event_id) {
-            for (var i = 0; i < spaces.length; i++) {
-                if (spaces[i].id === parseInt(event_id)) {
-                    return spaces[i];
-                }
-            }
-            return null;
+            return events.then(function(data){
+               return data.findWhere({
+                   id : parseInt(event_id)
+               });
+
+            });
         }
     };
 });
