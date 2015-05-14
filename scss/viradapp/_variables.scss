@@ -1,7 +1,32 @@
-// Viradapp's variables that overrides ionic's.
+// Viradapp's own variables and overrides.
+
+
+// Colors
+// -------------------------------
+
+$preto: #101010 !default;
+$vermelho: #fb3f2a !default;
+
+$gray-darker:            lighten(#000, 20%) !default;   // #333
+$gray-dark:              lighten(#000, 60%) !default;   // #999
+$gray:                   lighten(#000, 80%) !default;   // #ccc
+$gray-light:             lighten(#000, 87%) !default;   // #dedede
+$gray-lighter:           lighten(#000, 95%) !default;   // #f2f2f2
+
+$brand-primary: $preto !default;
+$brand-accent: $vermelho !default;
+$brand-auxiliar: #fff !default;
 
 
 // Base
 // -------------------------------
 
 $font-family-sans-serif: "Exo", sans-serif !default;
+
+$headings-font-weight:            bold !default;
+
+$base-background-color: $gray-light !default;
+$base-color: $gray-darker !default;
+
+$link-color: $brand-primary !default;
+$link-hover-color: $brand-accent !default;
