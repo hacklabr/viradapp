@@ -1,0 +1,67 @@
+<ion-view view-title="{{ space.name }}">
+    <ion-content>
+        <section id="main-section" class="row">
+            <article id="space-00" class="space-single">
+                <header>
+                    <h1>{{space.name}}</h1>
+                </header>
+                <img class="center-block" ng-src="img/virada-icon-2x.png">
+                    <div class="timeline clearfix">
+                        <div class="event-group" ng-repeat="event in spaceEvents">
+                            <div class="timeline-time" ng-if="event.duration === '24h00'">24 horas</div>
+                            <div class="timeline-time" ng-if="event.duration !== '24h00'">{{event.startsAt}}</div>
+                            <article class="event clearfix event-grid" ng-class="{'no-thumb' : !event.defaultImageThumb, 'evento-24h': event.duration === '24h00'}">
+                                <img ng-src="{{event.defaultImageThumb}}"/>
+                                <a href="#/tab/programacao/{{event.id}}">
+                                    <div class="event-content clearfix">
+                                        <h1>{{event.name}}</h1>
+                                    </div>
+                                </a>
+                                <a class="icon favorite favorite-wait favorite-event-{{event.id}}" ng-click="favorite(event.id)"><!--qdo selecionado adicionar classe 'active'--></a>
+                            </article>
+                        </div>
+                    </div>
+                    <!-- .timeline -->
+                    <div class="servico col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+                        <p>
+                            <span><span>Endereço:</span> {{space.endereco}}<br></span>
+                                <span><span>Telefone:</span> {{space.telefonePublico}}<br></span>
+                                    <span ng-if='space.acessibilidade'><span>Acessibilidade:</span> Sim<br></span>
+                                    </p>
+
+                                    <iframe width="100%" height="220" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                                        ng-src="{{getTrustedURI(mapUrl)}}"></iframe>
+                                    <p class="hidden-md hidden-lg">
+                                        <a class="btn btn-primary btn-xs" target="_blank" href="{{mapUrl}}">
+                                            <span class="icon icon_pin"></span> Ver no mapa
+                                        </a>
+                                    </p>
+                                </div>
+                            </article>
+                            <!-- .event-single -->
+                        </section>
+
+
+
+
+
+
+
+
+
+                        <ion-list>
+                            <ion-item class="item-remove-animate item-avatar item-icon-right"
+                                collection-repeat="event in events" type="item-text-wrap"
+                                href="#/tab/programacao/{{event.id}}">
+                                <img ng-src="{{ event.defaultImageThumb }}">
+                                    <h2>{{ event.name }}</h2>
+                                    <p>{{ event.shortDescription }}</p>
+                                    <i class="icon ion-chevron-right icon-accessory"></i>
+
+                                    <ion-option-button class="button-assertive" ng-click="remove(event)">
+                                        Delete
+                                    </ion-option-button>
+                                </ion-item>
+                            </ion-list>
+                        </ion-content>
+                    </ion-view>

@@ -3,7 +3,8 @@ viradapp.run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
-        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+        if (window.cordova && window.cordova.plugins &&
+            window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         }
         if (window.StatusBar) {
@@ -13,7 +14,8 @@ viradapp.run(function($ionicPlatform) {
     });
 })
 
-viradapp.config(function($stateProvider, $urlRouterProvider) {
+viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+    $ionicConfigProvider.scrolling.jsScrolling(false);
     $stateProvider
 
     // setup an abstract state for the tabs directive
@@ -40,7 +42,17 @@ viradapp.config(function($stateProvider, $urlRouterProvider) {
         views: {
             'tab-programacao': {
                 templateUrl: 'templates/atracao-detail.html',
-                controller: 'ProgramacaoCtrl'
+                controller: 'AtracaoCtrl'
+            }
+        }
+    })
+
+    .state('tab.palco-detail', {
+        url: '/programacao/palco/:palco',
+        views: {
+            'tab-programacao': {
+                templateUrl: 'templates/palco-detail.html',
+                controller: 'PalcoCtrl'
             }
         }
     })

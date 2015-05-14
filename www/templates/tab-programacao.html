@@ -1,27 +1,28 @@
 <ion-view view-title="Programação">
 <ion-content class="">
 <div ng-repeat="space in spaces" class="list">
-    <div class="item item-divider item-assertive" >
+    <ion-item href="#/tab/programacao/palco/{{space.id}}" class="item item-divider item-assertive" >
         {{ space.name }}
-    </div>
-    <ion-item class="item item-icon-left item-icon-right" 
+    </ion-item>
+    <ion-item class="item item-icon-left item-icon-right"
         ng-repeat="event in space.events"
         href="#/tab/programacao/{{event.id}}" >
         <i class="icon ion-clock icon-accessory">
             <span>
                 {{ event.startsAt }}
             </span>
-        </i> 
+        </i>
         <h2>{{ event.name }}</h2>
         <p>{{ event.shortDescription }}</p>
-        <i class="icon ion-chevron-right icon-accessory"></i> 
-        <ion-option-button class="button-assertive" 
+        <i class="icon ion-chevron-right icon-accessory"></i>
+        <ion-option-button class="button-assertive"
                 ng-click="minha_virada(event)">
-                <i class="icon ion-star icon-accessory"></i> 
+                <i class="icon ion-star icon-accessory"></i>
                 </ion-option-button>
     </ion-item>
 </div>
 <ion-infinite-scroll
+    ng-if="canLoad()"
     on-infinite="loadMore()"
         distance="1%">
 </ion-infinite-scroll>

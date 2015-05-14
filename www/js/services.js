@@ -42,6 +42,19 @@ angular.module('viradapp.services', [])
                     return event;
                 });
             });
+        },
+        getPalco: function(palco_id) {
+            return spaces_data.then(function(spaces){
+                var space = spaces.findWhere({
+                    id : parseInt(palco_id)
+                });
+                return events.then(function(events){
+                    space.events = events.where({
+                        spaceId : parseInt(palco_id)
+                    }).toArray();
+                    return space;
+                });
+            });
         }
     };
 });
