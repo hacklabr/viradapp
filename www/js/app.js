@@ -42,7 +42,17 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
         views: {
             'tab-programacao': {
                 templateUrl: 'templates/atracao-detail.html',
-                controller: 'ProgramacaoCtrl'
+                controller: 'AtracaoCtrl'
+            }
+        }
+    })
+
+    .state('tab.palco-detail', {
+        url: '/programacao/palco/:palco',
+        views: {
+            'tab-programacao': {
+                templateUrl: 'templates/palco-detail.html',
+                controller: 'PalcoCtrl'
             }
         }
     })
