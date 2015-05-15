@@ -1,0 +1,18 @@
+/**
+ * Items
+ * --------------------------------------------------
+ */
+
+ .item {
+ 	h2 {
+ 		font-weight: bold;
+ 	}
+ 	time {
+ 		color: $vermelho;
+ 		@extend %secondary-font;
+ 	}
+ 	.icon {
+ 		color: $vermelho;
+ 	}
+
+ }

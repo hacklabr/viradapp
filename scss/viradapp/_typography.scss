@@ -67,3 +67,9 @@ $auxiliar-n-font-svg-id:      "museo_sans500" !default;
     font-weight: normal;
     font-style: normal;
 }
+
+%secondary-font {
+    font-family: $font-family-secondary;
+    font-size: 12px;
+    text-transform: uppercase;
+}
