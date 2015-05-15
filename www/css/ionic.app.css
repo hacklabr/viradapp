@@ -7693,6 +7693,9 @@ a.button {
 .item .icon {
   color: #fb3f2a; }
 
+.item-divider {
+  padding: 0; }
+
 @font-face {
   font-family: 'Exo';
   src: url('../fonts/exo-regular-webfont.eot');
