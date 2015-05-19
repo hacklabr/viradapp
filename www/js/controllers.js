@@ -13,7 +13,7 @@ angular.module('viradapp.controllers',[])
     }
 })
 
-.controller('AtracaoCtrl', function($scope, $stateParams, Virada, Lazy){
+.controller('AtracaoCtrl', function($scope, $stateParams, Virada){
     if($stateParams.atracao){
         var start = new Date().getTime();
         Virada.get($stateParams.atracao)
@@ -26,7 +26,7 @@ angular.module('viradapp.controllers',[])
     } else {
     }
 })
-.controller('ProgramacaoCtrl', function($scope, $stateParams,      Virada, Lazy) {
+.controller('ProgramacaoCtrl', function($scope, $stateParams, Virada) {
     var spaces;
     $scope.spaces = [];
 
@@ -85,7 +85,7 @@ angular.module('viradapp.controllers',[])
 
 })
 
-.controller('MinhaViradaCtrl', function($scope, Virada, Lazy) {
+.controller('MinhaViradaCtrl', function($scope, Virada) {
     var events;
     $scope.events = [];
     Virada.events().then(function(data){
