@@ -1,12 +1,12 @@
 <ion-view view-title="Programação">
 <ion-content>
 <div ng-repeat="space in spaces" class="list">
-    <ion-item href="#/tab/programacao/palco/{{space.id}}" class="item item-divider" >
+    <ion-item href="#/virada/palco/{{space.id}}" class="item item-divider" >
         {{ space.name }}
     </ion-item>
     <ion-item class="item"
         ng-repeat="event in space.events"
-        href="#/tab/programacao/{{event.id}}" >
+        href="#/virada/atracao/{{event.id}}" >
         <i class="icon icon_clock icon-accessory">
 
         </i>

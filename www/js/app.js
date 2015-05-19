@@ -18,17 +18,13 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     $ionicConfigProvider.scrolling.jsScrolling(false);
     $stateProvider
 
-    // setup an abstract state for the tabs directive
     .state('tab', {
-        url: "/tab",
         abstract: true,
-        templateUrl: "templates/tabs.html"
+        templateUrl: "templates/menu.html"
     })
 
-    // Each tab has its own nav history stack:
-
     .state('tab.programacao', {
-        url: '/programacao',
+        url: '^/virada/programacao',
         views: {
             'tab-programacao': {
                 templateUrl: 'templates/tab-programacao.html',
@@ -37,32 +33,37 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
         }
     })
 
-    .state('tab.atracao-detail', {
-        url: '/programacao/:atracao',
+    .state('virada', {
+        url: "/virada",
+        abstract: true,
+        templateUrl: "templates/menu-virada.html"
+    })
+
+    .state('virada.minha-virada', {
+        url: '/minha-virada',
         views: {
-            'tab-programacao': {
+            'menu-virada': {
+                templateUrl: 'templates/tab-minha-virada.html',
+                controller: 'MinhaViradaCtrl'
+            }
+        }
+    })
+    .state('virada.atracao-detail', {
+        url: '/atracao/:atracao',
+        views: {
+            'menu-virada': {
                 templateUrl: 'templates/atracao-detail.html',
                 controller: 'AtracaoCtrl'
             }
         }
     })
 
-    .state('tab.palco-detail', {
-        url: '/programacao/palco/:palco',
+    .state('virada.palco-detail', {
+        url: '/palco/:palco',
         views: {
-            'tab-programacao': {
+            'menu-virada': {
                 templateUrl: 'templates/palco-detail.html',
                 controller: 'PalcoCtrl'
-            }
-        }
-    })
-
-    .state('tab.minha-virada', {
-        url: '/minha-virada',
-        views: {
-            'tab-minha-virada': {
-                templateUrl: 'templates/tab-minha-virada.html',
-                controller: 'MinhaViradaCtrl'
             }
         }
     })
@@ -77,7 +78,6 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
         }
     });
 
-    // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/tab/programacao');
+    $urlRouterProvider.otherwise('/virada/programacao');
 });
 
