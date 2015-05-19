@@ -1,0 +1,126 @@
+// Timeline for space and Minha Virada
+
+.space-single {
+    .timeline {
+        width: 260px;
+        margin-bottom: 48px;
+        @extend %center-block;
+        .event-group {
+            position: relative;
+            clear: both;
+            float: right;
+            width: 260px;
+            border-left: 2px solid $brand-accent;
+            .timeline-time {
+                position: absolute;
+                z-index: 100;
+                top: 6px;
+                left: -23px;
+                width: 46px;
+                padding: 3px;
+                @extend %secondary-font;
+                color: $brand-auxiliar;
+                background: $brand-accent;
+                text-align: center;
+                border-radius: $border-radius-base;
+            }
+            .event-grid {
+                width: 225px;
+                height: auto;
+                padding-top: 34px;
+                margin-left: 33px;
+                margin-bottom: 24px;
+                background-color: $gray-lighter;
+                img {
+			        width:100%
+			    }
+			    a {
+			        color: $brand-auxiliar;
+			    }
+                .event-content {
+                    position: absolute;
+                    top: 0;
+			        bottom: 0;
+			        width: 100%;
+			        height: auto;
+			        padding: 5px 36px;
+			        background-color: $brand-primary;
+			        h1 {
+			            display: inline-block;
+			            text-align: center;
+			            vertical-align: middle;
+			            width: 97%;
+			        }
+                }
+                .favorite {
+			        position: absolute;
+			        z-index: 100;
+			        bottom: 0;
+			        left: 0;
+			        padding: 9px;
+			        color: $brand-auxiliar;
+			        background-color: $brand-accent;
+			    }
+			    .event-time {
+			        position: absolute;
+			        z-index: 100;
+			        top: 0;
+			        right: 0;
+			        padding: 0 4px;
+			        color: $brand-auxiliar;
+			        background-color: $brand-accent;
+			    }
+			    &.evento-24h {
+			        .event-content {
+			            background-color: $gray-dark;
+			        }
+			        &:before {
+	                    color: $gray-dark;
+	                }
+			    }
+			    &.no-thumb {
+			    	height: 178px;
+			        .event-content {
+			            bottom: 0;
+			            height: 100%;
+			            padding: 15px 36px;
+			            &:before {
+			                content: '';
+			                display: inline-block;
+			                height: 100%;
+			                vertical-align: middle;
+			                margin-right: -0.25em; /* Adjusts for spacing */
+			            }
+			        }
+			    }
+                &:before {
+                    font-family: 'ElegantIcons';
+					speak: none;
+					font-style: normal;
+					font-weight: normal;
+					font-variant: normal;
+					text-transform: none;
+					line-height: 1;
+					-webkit-font-smoothing: antialiased;
+                    content: "\44";
+                    left: -18px;
+                    display: block;
+                    position: absolute;
+                    top: 0;
+                    font-size: 36px;
+                    color: $brand-primary;
+                }
+            }
+            &:first-child {
+                margin-top: 0;
+            }
+            &:last-child {
+                padding-bottom: 48px;
+                .event-time {
+                    bottom: 60px;
+                }
+            }
+        }
+    }
+
+}
