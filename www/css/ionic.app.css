@@ -2766,7 +2766,7 @@ ion-infinite-scroll {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #dedede;
+  background-color: #f2f2f2;
   overflow: hidden; }
 
 .view-container {
@@ -7732,21 +7732,39 @@ a.button {
 .list {
   margin-bottom: 0; }
 
+.servico {
+  background: #dedede;
+  border-left: 4px solid #fb3f2a;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  font-family: "Museo Sans", Verdana, sans-serif;
+  padding: 24px;
+  margin: 24px;
+  color: #999999; }
+  .servico p > span {
+    color: #fb3f2a; }
+
 /**
- * Timeline
- * --------------------------------------------------
- * Timeline for space and Minha Virada
- */
-.space-single .timeline {
+* Timeline
+* --------------------------------------------------
+* Timeline for space and Minha Virada
+*/
+.space-single header {
+  text-align: center; }
+  .space-single header h1 {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 24px; }
+
+.timeline {
   width: 260px;
   margin-bottom: 48px; }
-  .space-single .timeline .event-group {
+  .timeline .event-group {
     position: relative;
     clear: both;
     float: right;
     width: 260px;
     border-left: 2px solid #fb3f2a; }
-    .space-single .timeline .event-group .timeline-time {
+    .timeline .event-group .timeline-time {
       position: absolute;
       z-index: 100;
       top: 6px;
@@ -7757,31 +7775,38 @@ a.button {
       background: #fb3f2a;
       text-align: center;
       border-radius: 4px; }
-    .space-single .timeline .event-group .event-grid {
+    .timeline .event-group .event-grid {
+      position: relative;
       width: 225px;
       height: auto;
+      box-sizing: border-box;
       padding-top: 34px;
       margin-left: 33px;
       margin-bottom: 24px;
       background-color: #f2f2f2; }
-      .space-single .timeline .event-group .event-grid img {
-        width: 100%; }
-      .space-single .timeline .event-group .event-grid a {
+      .timeline .event-group .event-grid img {
+        width: 100%;
+        vertical-align: middle; }
+      .timeline .event-group .event-grid a {
         color: #fff; }
-      .space-single .timeline .event-group .event-grid .event-content {
+      .timeline .event-group .event-grid .event-content {
         position: absolute;
         top: 0;
-        bottom: 0;
         width: 100%;
         height: auto;
+        box-sizing: border-box;
         padding: 5px 36px;
         background-color: #101010; }
-        .space-single .timeline .event-group .event-grid .event-content h1 {
+        .timeline .event-group .event-grid .event-content h1 {
+          margin: 0;
+          font-size: 16px;
+          line-height: 1.5;
           display: inline-block;
           text-align: center;
           vertical-align: middle;
-          width: 97%; }
-      .space-single .timeline .event-group .event-grid .favorite {
+          width: 97%;
+          color: #fff; }
+      .timeline .event-group .event-grid .favorite {
         position: absolute;
         z-index: 100;
         bottom: 0;
@@ -7789,7 +7814,9 @@ a.button {
         padding: 9px;
         color: #fff;
         background-color: #fb3f2a; }
-      .space-single .timeline .event-group .event-grid .event-time {
+        .timeline .event-group .event-grid .favorite:before {
+          content: "\e031"; }
+      .timeline .event-group .event-grid .event-time {
         position: absolute;
         z-index: 100;
         top: 0;
@@ -7797,24 +7824,24 @@ a.button {
         padding: 0 4px;
         color: #fff;
         background-color: #fb3f2a; }
-      .space-single .timeline .event-group .event-grid.evento-24h .event-content {
+      .timeline .event-group .event-grid.evento-24h .event-content {
         background-color: #999999; }
-      .space-single .timeline .event-group .event-grid.evento-24h:before {
+      .timeline .event-group .event-grid.evento-24h:before {
         color: #999999; }
-      .space-single .timeline .event-group .event-grid.no-thumb {
+      .timeline .event-group .event-grid.no-thumb {
         height: 178px; }
-        .space-single .timeline .event-group .event-grid.no-thumb .event-content {
+        .timeline .event-group .event-grid.no-thumb .event-content {
           bottom: 0;
           height: 100%;
           padding: 15px 36px; }
-          .space-single .timeline .event-group .event-grid.no-thumb .event-content:before {
+          .timeline .event-group .event-grid.no-thumb .event-content:before {
             content: '';
             display: inline-block;
             height: 100%;
             vertical-align: middle;
             margin-right: -0.25em;
             /* Adjusts for spacing */ }
-      .space-single .timeline .event-group .event-grid:before {
+      .timeline .event-group .event-grid:before {
         font-family: 'ElegantIcons';
         speak: none;
         font-style: normal;
@@ -7830,12 +7857,21 @@ a.button {
         top: 0;
         font-size: 36px;
         color: #101010; }
-    .space-single .timeline .event-group:first-child {
+    .timeline .event-group:first-child {
       margin-top: 0; }
-    .space-single .timeline .event-group:last-child {
-      padding-bottom: 48px; }
-      .space-single .timeline .event-group:last-child .event-time {
-        bottom: 60px; }
+      .timeline .event-group:first-child .timeline-time {
+        top: 0; }
+      .timeline .event-group:first-child .event-grid {
+        margin-top: -6px; }
+    .timeline .event-group:nth-last-child(2) .event-grid {
+      margin-bottom: 30px; }
+    .timeline .event-group:last-child {
+      border-left: none; }
+      .timeline .event-group:last-child .timeline-time {
+        top: 0; }
+      .timeline .event-group:last-child .event-grid {
+        margin-top: -6px;
+        margin-bottom: 0; }
 
 /**
  * Typography
@@ -7883,12 +7919,12 @@ h1, h2, h3, h4, h5, h6 {
  * Utility Classes and placeholders
  * --------------------------------------------------
  */
-.space-single .timeline {
+.timeline {
   display: block;
   margin-left: auto;
   margin-right: auto; }
 
-.menu .item, .list-programacao .item time, .space-single .timeline .event-group .timeline-time {
+.menu .item, .list-programacao .item time, .timeline .event-group .timeline-time {
   font-family: "Museo Sans", Verdana, sans-serif;
   font-size: 12px;
   text-transform: uppercase; }
