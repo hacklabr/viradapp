@@ -8,6 +8,9 @@
                 <div class="button button-logo" menu-toggle="left">
                 </div>
             </ion-nav-buttons>
+            <ion-nav-buttons side="right">
+                <div class="button icon social_share"></div>
+            </ion-nav-buttons>
         </ion-nav-bar>
         <ion-nav-view name="menu-virada"></ion-nav-view>
     </ion-side-menu-content>
@@ -19,9 +22,21 @@
                     <i class="icon icon_clock"></i>
                     Programação
                 </ion-item>
-                <ion-item class="item-icon-left" menu-close href="#/tab/sobre">
+                <ion-item class="item-icon-left" menu-close href="#/virada/minha-virada">
+                    <i class="icon icon_star"></i>
+                    Minha Virada
+                </ion-item>
+                <ion-item class="item-icon-left" menu-close href="#/virada/minha-virada">
+                    <i class="icon icon_map"></i>
+                    Mapa
+                </ion-item>
+                <ion-item class="item-icon-left" menu-close href="#/virada/sobre">
                     <i class="icon icon_info"></i>
                     Sobre
+                </ion-item>
+                <ion-item class="item-icon-left" menu-close href="#/virada/sobre">
+                    <i class="icon icon_cog"></i>
+                    Configurações
                 </ion-item>
             </ion-list>
         </ion-content>

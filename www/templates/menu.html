@@ -9,8 +9,8 @@
                 </div>
             </ion-nav-buttons>
             <ion-nav-buttons side="right">
-                <button class="button button-icon button-clear ion-navicon" menu-toggle="right">
-                </button>
+                <div class="button icon icon_search" menu-toggle="right">
+                </div>
             </ion-nav-buttons>
         </ion-nav-bar>
         <ion-nav-view name="tab-programacao"></ion-nav-view>
@@ -23,9 +23,21 @@
                     <i class="icon icon_clock"></i>
                     Programação
                 </ion-item>
+                <ion-item class="item-icon-left" menu-close href="#/virada/minha-virada">
+                    <i class="icon icon_star"></i>
+                    Minha Virada
+                </ion-item>
+                <ion-item class="item-icon-left" menu-close href="#/virada/minha-virada">
+                    <i class="icon icon_map"></i>
+                    Mapa
+                </ion-item>
                 <ion-item class="item-icon-left" menu-close href="#/virada/sobre">
                     <i class="icon icon_info"></i>
                     Sobre
+                </ion-item>
+                <ion-item class="item-icon-left" menu-close href="#/virada/sobre">
+                    <i class="icon icon_cog"></i>
+                    Configurações
                 </ion-item>
             </ion-list>
         </ion-content>
@@ -33,19 +45,29 @@
 
     <ion-side-menu side="right">
         <ion-content>
-            <ion-list>
-                <ion-item menu-close ng-click="login()">
-                    Login
+            <ion-list list-class="list-inset">
+
+                <ion-item class="item-divider">
+                    Organizar por
                 </ion-item>
-                <ion-item menu-close href="#/app/search">
-                    Search
+                <ion-radio ng-model="choice" ng-value="'A'">Local</ion-radio>
+                <ion-radio ng-model="choice" ng-value="'B'">Atração</ion-radio>
+                <ion-radio ng-model="choice" ng-value="'C'">Horário</ion-radio>
+                <ion-item class="item-divider"></ion-item>
+                <div class="item item-toggle">
+                    Atrações próximas a mim.
+                    <label class="toggle toggle-assertive">
+                        <input type="checkbox">
+                        <div class="track">
+                        <div class="handle"></div>
+                        </div>
+                    </label>
+                </div>
+                <ion-item class="item-divider">
+                    <button>Filtrar Locais</button>
                 </ion-item>
-                <ion-item menu-close href="#/app/browse">
-                    Browse
-                </ion-item>
-                <ion-item menu-close href="#/app/playlists">
-                    Playlists
-                </ion-item>
+
+
             </ion-list>
         </ion-content>
     </ion-side-menu>
