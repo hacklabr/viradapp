@@ -7703,13 +7703,13 @@ a.button {
  * Items
  * --------------------------------------------------
  */
-.menu .item {
+.menu-left .item {
   background-color: transparent;
   color: #fff;
   border-color: #333333; }
-.menu .item-complex .item-content, .menu .item-radio .item-content {
+.menu-left .item-complex .item-content, .menu-left .item-radio .item-content {
   background-color: transparent; }
-.menu .item-icon-left .icon, .menu .item-icon-right .icon {
+.menu-left .item-icon-left .icon, .menu-left .item-icon-right .icon {
   font-size: 16px; }
 
 .list-programacao .item h2 {
@@ -7940,7 +7940,7 @@ a {
   margin-left: auto;
   margin-right: auto; }
 
-.menu .item, .list-programacao .item time, .timeline .event-group .timeline-time {
+.menu-left .item, .list-programacao .item time, .timeline .event-group .timeline-time {
   font-family: "Museo Sans", Verdana, sans-serif;
   font-size: 12px;
   text-transform: uppercase; }
