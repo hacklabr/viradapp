@@ -1,0 +1,20 @@
+
+/**
+* Single
+* --------------------------------------------------
+* Style for single pages
+*/
+.img-destacada-single-atracao {
+    max-width: 100%;
+}
+.single {
+    padding: $content-padding;
+    header {
+        text-align: center;
+        h1 {
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 24px;
+        }
+    }
+}

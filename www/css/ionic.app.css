@@ -7737,24 +7737,33 @@ a.button {
   border-left: 4px solid #fb3f2a;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   font-family: "Museo Sans", Verdana, sans-serif;
-  padding: 24px;
-  margin: 24px;
+  padding: 10px;
   color: #999999; }
-  .servico p > span {
+  .servico .label {
     color: #fb3f2a; }
+
+/**
+* Single
+* --------------------------------------------------
+* Style for single pages
+*/
+.img-destacada-single-atracao {
+  max-width: 100%; }
+
+.single {
+  padding: 10px; }
+  .single header {
+    text-align: center; }
+    .single header h1 {
+      font-size: 20px;
+      margin-top: 20px;
+      margin-bottom: 24px; }
 
 /**
 * Timeline
 * --------------------------------------------------
 * Timeline for space and Minha Virada
 */
-.space-single header {
-  text-align: center; }
-  .space-single header h1 {
-    font-size: 20px;
-    margin-top: 20px;
-    margin-bottom: 24px; }
-
 .timeline {
   width: 260px;
   margin-bottom: 48px; }
@@ -7913,6 +7922,13 @@ a.button {
   font-style: normal; }
 
 h1, h2, h3, h4, h5, h6 {
+  text-transform: uppercase; }
+
+a {
+  color: #101010;
+  text-decoration: none; }
+
+.button {
   text-transform: uppercase; }
 
 /**

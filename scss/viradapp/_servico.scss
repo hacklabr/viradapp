@@ -3,10 +3,9 @@
     border-left: 4px solid $brand-accent;
     box-shadow: 0 1px 1px rgba(0,0,0,.2);
     font-family: $font-family-secondary;
-    padding: 24px;
-    margin: 24px;
+    padding: $content-padding;
     color: $gray-dark;
-    p > span {
+    .label {
         color: $brand-accent;
     }
 }
