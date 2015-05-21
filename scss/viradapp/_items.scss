@@ -3,19 +3,59 @@
  * --------------------------------------------------
  */
 
-.menu-left {
+.menu {
 	.item {
 		background-color: transparent;
 		color: $brand-auxiliar;
 		border-color: $gray-darker;
+		border-left: none;
+		border-right: none;
 		@extend %secondary-font;
+	}
+	.item-divider {
+		color: $gray-darker;
 	}
 	.item-complex .item-content, .item-radio .item-content {
 		background-color: transparent;
 	}
+	.item-radio input {
+		&:checked ~ .item-content {
+			/* style the item content when its checked */
+			background: $gray-darker;
+		}
+		&:checked ~ .radio-icon {
+		    /* show the checkmark icon when its checked */
+		    visibility: visible;
+		    color: $brand-accent;
+		}
+	}
+	.item-radio {
+		.ion-checkmark:before {
+			font-family: "ElegantIcons";
+			content: "\4e";
+		}
+	}
 	.item-icon-left .icon, .item-icon-right .icon {
 		font-size: 16px;
 	}
+	.toggle {
+		top: 19px;
+		.track {
+		background-color: $gray-darker;
+		border: none;
+		width: 44px;
+		height: 14px;
+		border-radius: 7px;
+		}
+		.handle {
+			top: 2px;
+			width: 20px;
+			height: 20px;
+			border-radius: 20px;
+		}
+
+	}
+
 }
 .list-programacao {
 	.item {

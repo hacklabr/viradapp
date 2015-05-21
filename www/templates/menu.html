@@ -45,33 +45,36 @@
 
     <ion-side-menu side="right">
         <ion-content>
-            <ion-list list-class="list-inset">
+            <ion-list>
                 <ion-item class="item-divider">
-                    Organizar por
+                    Organizar por:
                 </ion-item>
                 <ion-radio ng-model="sorted" ng-change="change(this)"
-                    ng-value="'L'">Local</ion-radio>
+                    ng-value="'L'"><i class="icon icon_pin"></i> Local</ion-radio>
 
                 <ion-radio ng-model="sorted" ng-change="change(this)"
-                    ng-value="'A'">Atração</ion-radio>
+                    ng-value="'A'"><i class="icon arrow_up-down_alt"></i> Ordem alfabética</ion-radio>
 
                 <ion-radio ng-model="sorted" ng-change="change(this)"
-                    ng-value="'H'">Horário</ion-radio>
+                    ng-value="'H'"><i class="icon icon_clock"></i> Horário</ion-radio>
 
-                <ion-item class="item-divider"></ion-item>
+                <ion-item class="item-divider">
+                    Filtrar por:
+                </ion-item>
                 <div class="item item-toggle">
-                    Atrações próximas a mim.
+                    <i class="icon icon_circle-slelected"></i>
+                    Próximas a mim
                     <label class="toggle toggle-assertive">
                         <input type="checkbox">
                         <div class="track">
-                        <div class="handle"></div>
+                            <div class="handle"></div>
                         </div>
                     </label>
                 </div>
-                <ion-item class="item-divider" menu-close="true">
-                    <div ng-click="openModal()" class="button ">
-<i class="icon icon_search"></i>
-                        Filtrar Locais
+                <ion-item menu-close="true">
+                    <div ng-click="openModal()">
+                        <i class="icon icon_pin"></i>
+                        Local
                     </div>
                 </ion-item>
             </ion-list>
@@ -81,11 +84,11 @@
 
 <script id="modal.html" type="text/ng-template">
     <div class="modal">
-        <header class="bar bar-header bar-positive">
+        <header class="bar bar-header bar-assertive">
             <h1 class="title">I'm A Modal</h1>
             <div class="button button-clear"
                 ng-click="modal.hide()">
-                <span class="icon ion-close"></span>
+                <span class="icon icon_close"></span>
             </div>
         </header>
         <content has-header="true" padding="true">
