@@ -1,6 +1,6 @@
 {
   "name": "viradapp",
-  "app_id": "",
+  "app_id": "c6cdfa9c",
   "gulpStartupTasks": [
     "sass",
     "watch"

@@ -20,7 +20,8 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     $stateProvider
     .state('tab', {
         abstract: true,
-        templateUrl: "templates/menu.html"
+        templateUrl: "templates/menu.html",
+        controller: 'FilterCtrl'
     })
 
     .state('tab.programacao', {

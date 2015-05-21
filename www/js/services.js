@@ -11,7 +11,6 @@ angular.module('viradapp.services', [])
         return Lazy(res.data);
     });
 
-
     var events = $http.get("assets/events.json")
     .success(function(data){
     })

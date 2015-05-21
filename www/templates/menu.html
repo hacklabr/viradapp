@@ -46,13 +46,18 @@
     <ion-side-menu side="right">
         <ion-content>
             <ion-list list-class="list-inset">
-
                 <ion-item class="item-divider">
                     Organizar por
                 </ion-item>
-                <ion-radio ng-model="choice" ng-value="'A'">Local</ion-radio>
-                <ion-radio ng-model="choice" ng-value="'B'">Atração</ion-radio>
-                <ion-radio ng-model="choice" ng-value="'C'">Horário</ion-radio>
+                <ion-radio ng-model="sorted" ng-change="change(this)"
+                    ng-value="'L'">Local</ion-radio>
+
+                <ion-radio ng-model="sorted" ng-change="change(this)"
+                    ng-value="'A'">Atração</ion-radio>
+
+                <ion-radio ng-model="sorted" ng-change="change(this)"
+                    ng-value="'H'">Horário</ion-radio>
+
                 <ion-item class="item-divider"></ion-item>
                 <div class="item item-toggle">
                     Atrações próximas a mim.
@@ -63,12 +68,28 @@
                         </div>
                     </label>
                 </div>
-                <ion-item class="item-divider">
-                    <button>Filtrar Locais</button>
+                <ion-item class="item-divider" menu-close="true">
+                    <div ng-click="openModal()" class="button ">
+<i class="icon icon_search"></i>
+                        Filtrar Locais
+                    </div>
                 </ion-item>
-
-
             </ion-list>
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>
+
+<script id="modal.html" type="text/ng-template">
+    <div class="modal">
+        <header class="bar bar-header bar-positive">
+            <h1 class="title">I'm A Modal</h1>
+            <div class="button button-clear"
+                ng-click="modal.hide()">
+                <span class="icon ion-close"></span>
+            </div>
+        </header>
+        <content has-header="true" padding="true">
+            <p>This is a modal</p>
+        </content>
+    </div>
+</script>
