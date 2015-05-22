@@ -48,8 +48,16 @@ angular.module('viradapp.services', [])
                     id : parseInt(palco_id)
                 });
                 return events.then(function(events){
+                    var time = Date.now();
+
                     space.events = events.where({
                         spaceId : parseInt(palco_id)
+                    }).filter(function(ev){
+                        // TODO Show only events in the future
+                        // Here is just the basic idea!
+                        stOn = new Date(ev.startsOn).getTime();
+                        // FIXME Its to be greater than
+                        return stOn < time;
                     }).toArray();
                     return space;
                 });

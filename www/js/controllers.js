@@ -1,5 +1,6 @@
-angular.module('viradapp.controllers',[])
-.controller('PalcoCtrl', function($scope, $stateParams, Virada, Lazy){
+angular.module('viradapp.controllers', [])
+.controller('PalcoCtrl', function($scope, $stateParams, Virada, CONN){
+    console.log(CONN);
     if($stateParams.palco){
         var start = new Date().getTime();
         Virada.getPalco($stateParams.palco)
@@ -10,6 +11,7 @@ angular.module('viradapp.controllers',[])
             console.log("Tempo: " + (end - start));
         });
     } else {
+        //
     }
 })
 
@@ -26,8 +28,12 @@ angular.module('viradapp.controllers',[])
     } else {
     }
 })
-.controller('FilterCtrl', function($scope, $stateParams, Virada, Lazy, $ionicModal) {
+
+.controller('FilterCtrl', function($scope, $stateParams, Virada,$ionicModal, $timeout) {
     var config = {
+        duration :  moment.duration(1, 'days'),
+        start: moment("201405170000", "YYYYMMDDhhmm"),
+        end: moment("201405182359", "YYYYMMDDhhmm"),
         loads: 5,
         A: {
             loaded : 0,
@@ -43,56 +49,126 @@ angular.module('viradapp.controllers',[])
             loaded : 0,
             page : 0,
             data : []
-        }
-    }
+        },
+        filterd: []
+    };
     $scope.filters = {
         query: '',
         sorted: 'L',
         places: [],
-        starting: new Date().getTime(),
-        ending: new Date().getTime(),
+        starting: config.start.format('x'),
+        ending: config.end.format('x'),
         nearest: false
-    }
+    };
 
     $scope.sorted = 'L';
     var spaces;
-    $scope.ledata = [];
-
     var events;
 
-    var start = new Date().getTime();
-    // First run! After that, all sequence processing is on
-    // the loadMore and filterDate methods
-    if($scope.ledata.length == 0){
-    Virada.spaces().then(function(data){
-        spaces = data;
-        $scope.ledata = spaces.take(config.loads);
-        config.L.data = $scope.ledata;
+    $scope.ledata = [];
 
-        Virada.events().then(function(data){
-            events = data;
-            $scope.ledata = spaces.take(config.loads)
+    var start = new Date().getTime();
+
+
+    /**
+     * Init data, once initialized we have the following structures:
+     * spaces as a Lazy.js sequence
+     * events as a Lazy.js sequence
+     * $scope.ledata first data
+     *
+     */
+    function init (){
+        Virada.spaces().then(function(data){
+            spaces = data;
+            config.filtered = data;
+
+            Virada.events().then(function(data){
+                events = data;
+                $scope.ledata = config.filtered.take(config.loads)
                 .tap(function(space){
                     space.events = events.where({
-                        spaceId: parseInt(space.id)
+                        spaceId : parseInt(space.id, 10)
                     }).toArray();
 
-                Virada.getPalco(space.id).then(function(palco){
-                    space.palco = palco;
-                });
-            }).toArray();
+                    Virada.getPalco(space.id).then(function(palco){
+                        space.palco = palco;
+                    });
+                }).toArray();
 
-            config.L.data = $scope.ledata;
-            config.L.page++;
-            config.L.loaded = config.L.page*config.loads;
+                config.L.data = $scope.ledata;
+                config.L.page++;
+                config.L.loaded = config.L.page*config.loads;
 
-            var end = new Date().getTime();
-            console.log("Loaded: " + config.L.loaded + ", Tempo: "
-                        + (end - start));
+                var end = new Date().getTime();
+                console.log("Loaded: " + config.L.loaded + ", Tempo: "
+                            + (end - start));
+            });
         });
-    });
     }
 
+    // First run! After that, all sequence processing is on
+    // the loadMore and filterDate methods
+    if($scope.ledata.length === 0) {
+        init();
+    }
+
+    function viewByEvents(){
+        var space = {
+            events : config.filtered.take(5).take(config.loads).toArray()
+        };
+        $scope.ledata = [];
+        $scope.ledata.push(space);
+
+        config.A.data = $scope.ledata;
+        config.A.page++;
+        config.A.loaded = config.A.page*config.loads;
+    }
+
+    function filtering(){
+        var lefilter = function (event){
+            var hasSpace = false;
+            var space = spaces.findWhere({
+                id: event.spaceId.toString()
+            });
+            if(typeof space !== 'undefined'){
+                hasSpace = space.name.indexOf($scope.filters.query) >= 0;
+                event.spaceData = space;
+            }
+            var date = moment(event.startsOn + " " + event.startsAt,
+                          "YYYY-MM-DD hh:mm").format('x');
+
+            return (date <= $scope.filters.ending
+                    && date >= $scope.filters.starting)
+                    && (event.name.indexOf($scope.filters.query) >= 0
+                        || hasSpace);
+        };
+        switch ($scope.filters.sorted) {
+            case "A":
+                var data = events.filter(lefilter);
+                config.filtered = data;
+            break;
+            case "L":
+                var currSpaces = [];
+                var data = events.filter(lefilter).each(function(event){
+                    if(typeof event.spaceData !== 'undefined'){
+                        var curr = Lazy(currSpaces).findWhere({id : event.spaceData.id});
+                        if(typeof curr !== 'undefined'){
+                            delete event.spaceData;
+                            curr.events.push(event);
+                        } else {
+                            curr = event.spaceData;
+                            curr.events = [];
+                            curr.events.push(event);
+                            currSpaces.push(curr);
+                        }
+
+                    }
+                    return true;
+                });
+                config.filtered = Lazy(currSpaces);
+            break;
+        }
+    }
 
     /**
      * Sorted by
@@ -101,31 +177,54 @@ angular.module('viradapp.controllers',[])
         switch (item.sorted){
             case "A":
                 $scope.filters.sorted = "A";
-                if(config.A.data.length > 0){
-                    $scope.ledata = config.A.data;
-                    console.log("recovering... per event");
-                } else {
-                    var space = {
-                        events : events.take(config.loads).toArray()
-                    };
-                    $scope.ledata = [];
-                    $scope.ledata.push(space);
-
-                    config.A.data = $scope.ledata;
-                    config.A.page++;
-                    config.A.loaded = config.A.page*config.loads;
-                }
+            if(config.A.data.length > 0){
+                $scope.ledata = config.A.data;
+                console.log("recovering... per event");
+            } else {
+                filtering();
+                viewByEvents();
+            }
             break;
             case "L":
                 $scope.filters.sorted = "L";
-                $scope.ledata = config.L.data;
-                console.log("recovering... per local");
+            $scope.ledata = config.L.data;
+            console.log("recovering... per local");
             break;
             case "H":
                 console.log("Filter Time");
             break;
         }
     };
+
+
+    /**
+     * Watch filters
+     */
+
+    var TIMEOUT_DELAY = 1000;
+
+    $scope.$watch('filters', function(newValue, oldValue){
+        $timeout(function(){
+            if(oldValue.query !== newValue.query){
+                filtering();
+                switch($scope.filters.sorted){
+                    case "L":
+                        $scope.ledata = config.filtered.take(config.loads).toArray();
+                    break;
+                    case "A":
+                        $scope.ledata = [{
+                        events: config.filtered.take(config.loads).toArray()
+                    }];
+                    console.log($scope.ledata);
+                    break;
+                }
+            } else {
+                //page = 0;
+                console.log("All cool =)");
+            }
+        }, TIMEOUT_DELAY);
+    }, true);
+
 
 
     /**
@@ -137,50 +236,64 @@ angular.module('viradapp.controllers',[])
     };
 
     $scope.loadMore  = function(){
-        var start = new Date().getTime();
+        start = new Date().getTime();
         switch ($scope.filters.sorted) {
             case "A":
                 config.A.page++;
-                var d = events.drop(config.A.loaded)
-                        .take(config.loads).toArray();
+                var d = config.filtered.drop(config.A.loaded)
+                    .take(config.loads).toArray();
 
                 config.A.loaded = config.A.page*config.loads;
-                console.log($scope.ledata);
                 $scope.ledata[0].events.push.apply($scope.ledata[0].events, d);
                 config.A.data = $scope.ledata;
-                $scope.$broadcast('scroll.infiniteScrollComplete');
                 var end = new Date().getTime();
                 console.log("Loaded events: "
                             + config.A.loaded + ", Tempo: "
                             + (end - start));
-
             break;
             case "L":
                 config.L.page++;
-                var d = spaces
+                d = config.filtered
                     .drop(config.L.loaded)
                     .take(config.loads)
                     .tap(function(space){
                         space.events = events.where({
-                            spaceId: parseInt(space.id)
+                            spaceId : parseInt(space.id, 10)
                         }).toArray();
-                    }).toArray();
-                    config.L.loaded = config.L.page*config.loads;
-                    $scope.ledata.push.apply($scope.ledata, d);
-                    config.L.data = $scope.ledata;
-                    $scope.$broadcast('scroll.infiniteScrollComplete');
-                var end = new Date().getTime();
+                    });
+
+                d = d.toArray();
+
+                config.L.loaded = config.L.page*config.loads;
+                $scope.ledata.push.apply($scope.ledata, d);
+                config.L.data = $scope.ledata;
+                end = new Date().getTime();
                 console.log("Loaded spaces: "
                             + config.L.loaded + ", Tempo: "
                             + (end - start));
             break;
         }
+
+        $scope.$broadcast('scroll.infiniteScrollComplete');
     };
 
     $scope.canLoad = function(){
-        return typeof spaces != 'undefined'
-        && typeof events != 'undefined';
-    }
+        var allShown = false;
+        switch($scope.filters.sorted){
+            case "A":
+                if(typeof config.filtered !== 'undefined'){
+                    allShown = config.A.loaded >= config.filtered.size();
+                }
+            break;
+            case "L":
+                if(typeof config.filtered !== 'undefined'){
+                    allShown = config.L.loaded >= config.filtered.size();
+                }
+            break;
+        }
+        return typeof spaces !== 'undefined'
+            && typeof events !== 'undefined' && !allShown;
+    };
 
     $ionicModal.fromTemplateUrl('modal.html', {
         scope: $scope,
@@ -202,8 +315,9 @@ angular.module('viradapp.controllers',[])
     });
 
     // Execute action on hide modal
+    // TODO filter data here
     $scope.$on('modal.hidden', function() {
-        // TODO filter data here
+
     });
 
 })
@@ -218,7 +332,7 @@ angular.module('viradapp.controllers',[])
     Virada.events().then(function(data){
         events = data;
         $scope.events = events.filter(function(event){
-            return event.defaultImageThumb != "";
+            return event.defaultImageThumb !== "";
         }).take(20).sortBy(function(event){
             return event.startsOn;
         }).toArray();
