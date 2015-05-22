@@ -46,13 +46,12 @@
     <ion-side-menu side="right">
         <ion-content>
             <ion-list>
-                <label class="item item-input" ng-model="filter-query">
+                <label class="item item-input">
                     <i class="icon icon_search placeholder-icon"></i>
-                    <input type="text" placeholder="Buscar">
+                    <input ng-model="filters.query" type="text" placeholder="Buscar">
                 </label>
                 <ion-item class="item-divider">
                     Organizar por:
-                    <input type="text" ng-model="filters.query">
                 </ion-item>
                 <ion-radio ng-model="sorted" ng-change="change(this)"
                     ng-value="'L'"><i class="icon icon_pin"></i> Local</ion-radio>
