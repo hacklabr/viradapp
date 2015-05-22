@@ -83,16 +83,21 @@
 </ion-side-menus>
 
 <script id="modal.html" type="text/ng-template">
-    <div class="modal">
-        <header class="bar bar-header bar-assertive">
-            <h1 class="title">I'm A Modal</h1>
-            <div class="button button-clear"
-                ng-click="modal.hide()">
+    <ion-modal-view>
+        <ion-header-bar class="bar-assertive">
+            <h1 class="title">Filtrar locais</h1>
+            <div class="button button-clear" ng-click="modal.hide()">
                 <span class="icon icon_close"></span>
             </div>
-        </header>
-        <content has-header="true" padding="true">
-            <p>This is a modal</p>
-        </content>
-    </div>
+        </ion-header-bar>
+        <ion-content>
+            <div class="list list-inset">
+              <label class="item item-input">
+                <i class="icon icon_search placeholder-icon"></i>
+                <input type="text" placeholder="Search">
+              </label>
+              <ion-checkbox ng-model="isChecked">Nome do local</ion-checkbox>
+            </div>
+        </ion-content>
+  </ion-modal-view>
 </script>
