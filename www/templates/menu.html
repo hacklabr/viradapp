@@ -9,7 +9,7 @@
                 </div>
             </ion-nav-buttons>
             <ion-nav-buttons side="right">
-                <div class="button icon icon_search" menu-toggle="right">
+                <div class="button icon ion-android-more-vertical" menu-toggle="right">
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
@@ -46,6 +46,10 @@
     <ion-side-menu side="right">
         <ion-content>
             <ion-list>
+                <label class="item item-input" ng-model="filter-query">
+                    <i class="icon icon_search placeholder-icon"></i>
+                    <input type="text" placeholder="Buscar">
+                </label>
                 <ion-item class="item-divider">
                     Organizar por:
                 </ion-item>
@@ -77,6 +81,10 @@
                         Local
                     </div>
                 </ion-item>
+                <div class="item item-time-range">
+                    <i class="icon icon_clock"></i>
+                    Horário
+                </div>
             </ion-list>
         </ion-content>
     </ion-side-menu>

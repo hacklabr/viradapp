@@ -11,28 +11,49 @@
 		border-left: none;
 		border-right: none;
 		@extend %secondary-font;
+		.icon {
+			font-size: 16px;
+			vertical-align: middle;
+			margin-right: 11px;
+		}
 	}
 	.item-divider {
-		color: $gray-darker;
+		color: #666;
+	}
+	.item-input {
+		padding-right: 10px;
+		input, .placeholder-icon {
+			color: #fff;
+		}
+		input {
+			border-bottom: 1px solid #999;
+			&:focus {
+				border-bottom: 1px solid #fff;
+			}
+		}
 	}
 	.item-complex .item-content, .item-radio .item-content {
 		background-color: transparent;
 	}
-	.item-radio input {
-		&:checked ~ .item-content {
-			/* style the item content when its checked */
-			background: $gray-darker;
-		}
-		&:checked ~ .radio-icon {
-		    /* show the checkmark icon when its checked */
-		    visibility: visible;
-		    color: $brand-accent;
-		}
-	}
 	.item-radio {
-		.ion-checkmark:before {
-			font-family: "ElegantIcons";
-			content: "\4e";
+		input {
+			&:checked ~ .item-content {
+				/* style the item content when its checked */
+				background: $gray-darker;
+			}
+			&:checked ~ .radio-icon {
+			    /* show the checkmark icon when its checked */
+			    visibility: visible;
+			    color: $brand-accent;
+			}
+		}
+		.ion-checkmark {
+			font-size: 24px;
+			margin-right: 0;
+			&:before {
+				font-family: "ElegantIcons";
+				content: "\4e";
+			}
 		}
 	}
 	.item-icon-left .icon, .item-icon-right .icon {
@@ -54,6 +75,16 @@
 			border-radius: 20px;
 		}
 
+	}
+	.item-time-range {
+		input {
+			display: inline-block;
+			background-color: $gray-darker;
+			color: white;
+			border-radius: 2px;
+			padding: 0 5px;
+			width: 60px;
+		}
 	}
 
 }
@@ -79,4 +110,8 @@
 			text-transform: uppercase;
 		}
 	}
+}
+.modal .item-content {
+	text-transform: uppercase;
+	font-weight: bold;
 }
