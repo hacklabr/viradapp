@@ -35,7 +35,6 @@ angular.module('viradapp.controllers', [])
         start: moment("201405170000", "YYYYMMDDhhmm"),
         end: moment("201405182359", "YYYYMMDDhhmm"),
         loads: 5,
-        loadsBig: 10,
         A: {
             loaded : 0,
             page : 0,
@@ -87,22 +86,25 @@ angular.module('viradapp.controllers', [])
      */
     function init (){
         Virada.spaces().then(function(data){
-            spaces = data;
-            $scope.lespaces = data.take(config.loadsBig).toArray();
-            config.filtered = data;
+            i = 0;
+            data.async().tap(function(space){
+                space.index = i;
+                i++;
+            }).toArray().then(function(a){
+                config.filtered = Lazy(a);
+                spaces = Lazy(a);
+                Virada.events().then(function(data){
+                    events = data;
+                    $scope.ledata = config.filtered.take(config.loads)
+                    .tap(function(space){
+                        space.events = events.where({
+                            spaceId : parseInt(space.id, 10)
+                        }).toArray();
 
-            Virada.events().then(function(data){
-                events = data;
-                $scope.ledata = config.filtered.take(config.loads)
-                .tap(function(space){
-                    space.events = events.where({
-                        spaceId : parseInt(space.id, 10)
+                        Virada.getPalco(space.id).then(function(palco){
+                            space.palco = palco;
+                        });
                     }).toArray();
-
-                    Virada.getPalco(space.id).then(function(palco){
-                        space.palco = palco;
-                    });
-                }).toArray();
 
                 config.L.data = $scope.ledata;
                 config.L.page++;
@@ -110,8 +112,12 @@ angular.module('viradapp.controllers', [])
 
                 var end = new Date().getTime();
                 console.log("Loaded: " + config.L.loaded + ", Tempo: "
-                            + (end - start));
+                    + (end - start));
+                });
+
+                return Lazy(a);
             });
+
         });
     }
 
@@ -190,7 +196,7 @@ angular.module('viradapp.controllers', [])
             break;
             case "L":
                 data = events.filter(lefilter).each(toSpaces);
-                config.filtered = Lazy(currSpaces);
+                config.filtered = Lazy(currSpaces).sortBy('index');
             break;
         }
     }
@@ -204,7 +210,7 @@ angular.module('viradapp.controllers', [])
                 $scope.filters.sorted = "A";
                 if(config.A.data.length > 0){
                    $scope.ledata = config.A.data;
-                    console.log("recovering... per event");
+                   console.log("recovering... per event");
                 } else {
                     console.log("Change filter");
                     filtering();
@@ -234,21 +240,23 @@ angular.module('viradapp.controllers', [])
     var TIMEOUT_DELAY = 1000;
 
     $scope.$watch('filters', function(newValue, oldValue){
-        $timeout(function(){
-            filtering();
-            switch($scope.filters.sorted){
-                case "L":
-                    $scope.ledata = config.filtered
-                .take(config.loads).toArray();
-                break;
-                case "A":
-                    $scope.ledata = [{
-                    events: config.filtered.take(config.loads).toArray()
-                }];
-                console.log($scope.ledata);
-                break;
-            }
-        }, TIMEOUT_DELAY);
+        if(JSON.stringify(newValue) !== JSON.stringify(oldValue)){
+            $timeout(function(){
+                filtering();
+                switch($scope.filters.sorted){
+                    case "L":
+                        $scope.ledata = config.filtered
+                            .take(config.loads).toArray();
+                    break;
+                    case "A":
+                        $scope.ledata = [{
+                            events: config.filtered.take(config.loads).toArray()
+                        }];
+                        console.log($scope.ledata);
+                    break;
+                }
+            }, TIMEOUT_DELAY);
+        }
     }, true);
 
 
@@ -262,6 +270,7 @@ angular.module('viradapp.controllers', [])
     };
 
     $scope.loadMore  = function(){
+        console.log("Loading more...");
         start = new Date().getTime();
         switch ($scope.filters.sorted) {
             case "A":
