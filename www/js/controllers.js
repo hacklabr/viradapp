@@ -179,10 +179,14 @@ angular.module('viradapp.controllers', [])
             return true;
         };
 
+        var thename = function(event){
+            return event.name;
+        }
+
         var data;
         switch ($scope.filters.sorted) {
             case "A":
-                data = events.filter(lefilter);
+                data = events.filter(lefilter).sortBy(thename);
                 config.filtered = data;
             break;
             case "L":
