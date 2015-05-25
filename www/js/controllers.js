@@ -91,6 +91,7 @@ angular.module('viradapp.controllers', [])
                 space.index = i;
                 i++;
             }).toArray().then(function(a){
+                $scope.lespaces = a;
                 config.filtered = Lazy(a);
                 spaces = Lazy(a);
                 Virada.events().then(function(data){
