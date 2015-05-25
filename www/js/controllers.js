@@ -74,7 +74,6 @@ angular.module('viradapp.controllers', [])
     var events;
 
     $scope.ledata = [];
-    $scope.lespaces = [];
 
     var start = new Date().getTime();
 
@@ -203,18 +202,23 @@ angular.module('viradapp.controllers', [])
         switch (item.sorted){
             case "A":
                 $scope.filters.sorted = "A";
-            if(config.A.data.length > 0){
-                $scope.ledata = config.A.data;
-                console.log("recovering... per event");
-            } else {
-                filtering();
-                viewByEvents();
-            }
+                if(config.A.data.length > 0){
+                   $scope.ledata = config.A.data;
+                    console.log("recovering... per event");
+                } else {
+                    console.log("Change filter");
+                    filtering();
+                    viewByEvents();
+                }
             break;
             case "L":
                 $scope.filters.sorted = "L";
-            $scope.ledata = config.L.data;
-            console.log("recovering... per local");
+                if(config.L.data.length > 0){
+                    $scope.ledata = config.L.data;
+                    console.log("recovering... per local");
+                } else {
+                    filtering();
+                }
             break;
             case "H":
                 console.log("Filter Time");
@@ -302,6 +306,7 @@ angular.module('viradapp.controllers', [])
 
     $scope.canLoad = function(){
         var allShown = false;
+        if(typeof config.filtered === 'undefined') return false;
         switch($scope.filters.sorted){
             case "A":
                 if(typeof config.filtered !== 'undefined'){
@@ -314,8 +319,10 @@ angular.module('viradapp.controllers', [])
                 }
             break;
         }
+
         return typeof spaces !== 'undefined'
-            && typeof events !== 'undefined' && !allShown;
+            && typeof events !== 'undefined'
+            && !allShown;
     };
 
     $ionicModal.fromTemplateUrl('modal.html', {
