@@ -1,4 +1,4 @@
-var viradapp = angular.module("viradapp", ['lazy', 'ionic', 'viradapp.controllers', 'viradapp.services', 'checklist-model']);
+var viradapp = angular.module("viradapp", ['lazy', 'ionic', 'viradapp.controllers', 'viradapp.services']);
 
 viradapp.value('CONN', "DEFAULT");
 viradapp.run(function($ionicPlatform, CONN) {
