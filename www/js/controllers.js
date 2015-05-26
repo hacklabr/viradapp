@@ -253,13 +253,11 @@ angular.module('viradapp.controllers', [])
                         $scope.ledata = [{
                             events: config.filtered.take(config.loads).toArray()
                         }];
-                        console.log($scope.ledata);
                     break;
                 }
             }, TIMEOUT_DELAY);
         }
     }, true);
-
 
 
     /**
@@ -354,12 +352,43 @@ angular.module('viradapp.controllers', [])
         $scope.modal.remove();
     });
 
-    // Execute action on hide modal
-    // TODO filter data here
     $scope.$on('modal.hidden', function() {
-        filtering();
+        // Show button if places are chosen
     });
 
+    $scope.changed = function(id) {
+        var space = $scope.lespaces[id];
+        if(space.checked == true){
+            $scope.filters.places.data.push($scope.lespaces[id].id);
+        } else {
+            var i = $scope.filters.places.data.indexOf(space.id);
+            if(i >= 0) $scope.filters.places.data.splice(i, 1);
+        }
+    }
+
+    $scope.clearSearch = function() {
+        $scope.filters.places.query = '';
+        console.log($scope.filters.places.query);
+    }
+
+})
+.filter('searchPlaces', function(){
+  return function (items, query) {
+    if(typeof items === 'undefined') return;
+    var filtered = [];
+    var letterMatch = new RegExp(query, 'i');
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (query) {
+        if (letterMatch.test(item.name.substring(0, query.length))) {
+          filtered.push(item);
+        }
+      } else {
+        filtered.push(item);
+      }
+    }
+    return filtered;
+  };
 })
 .controller('ProgramacaoCtrl', function($scope, $stateParams, Virada, $ionicModal) {
 })

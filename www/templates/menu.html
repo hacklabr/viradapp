@@ -99,15 +99,20 @@
             </div>
         </ion-header-bar>
         <ion-content>
-            <div class="list list-inset">
+            <div class="list">
                 <label class="item item-input">
                     <i class="icon icon_search placeholder-icon"></i>
                     <input type="text" ng-model="filters.places.query" placeholder="Buscar">
-                </label>
-                <label ng-repeat="space in lespaces">
-                    <ion-checkbox class="checkbox-assertive" checklist-model="filters.places.data" type="checkbox"
-                        checklist-value="space.id">{{ space.name }}</ion-checkbox>
-                </label>
+                    <button ng-if="filters.places.query.length"
+                            class="button button-icon ion-android-close input-button"
+                                    ng-click="clearSearch()" />
+
+               </label>
+                <ion-checkbox item-height="50px" item-width="100%"
+                    collection-repeat="space in lespaces | searchPlaces:filters.places.query"
+                    class="checkbox-assertive" type="checkbox" ng-change="changed(space.index)"
+                    ng-value="{{ space.id }}" ng-checked="checked" ng-model="space.checked">
+                        {{ space.name }}</ion-checkbox>
             </div>
         </ion-content>
   </ion-modal-view>
