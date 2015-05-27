@@ -4,21 +4,31 @@
 Se você já tem o npm instalado, basta fazer:
 
 * Instalar o ionic globalmente
-    `$ sudo npm -g install ionic`
+```
+$ sudo npm -g install ionic
+```
 
 * Clonar o repositório
-`$ git clone https://github.com/hacklabr/viradapp.git`
+```
+$ git clone https://github.com/hacklabr/viradapp.git
+```
 
 * Fazer o build padrão
-`$ cp viradapp`
-`$ npm install`
-`$ gulp install # runs bower install` 
+```
+$ cp viradapp
+$ npm install
+$ gulp install # runs bower install
+```
 
 * Fazer o setup SASS
-`$ ionic setup sass`
+```
+$ ionic setup sass
+```
 
 * Rodar
-`$ ionic serve`
+```
+$ ionic serve
+```
 
 Ele vai te dar uma url padrão e abrir o navegador automaticamente! 
 
@@ -39,20 +49,30 @@ livereolad
 Para isso, você precisará ter a SDK Android instalada
 
 * Instala o phonegap
-`$ npm install phonegap`
+```
+$ npm install phonegap
+```
 
 * Adiciona a plataforma android ao projeto (aqui, se a SDK não estiver
 instalada já haverá falha)
-`$ ionic platform add android`
+```
+$ ionic platform add android
+```
 
 * Aqui, precisamos ter um dispositivo plugado ao computador aceitando 
 instalação de fontes desconhecidas e com o modo desenvolvedor ativado.
-`$ ionic run android`
+```
+$ ionic run android
+```
 
 * Para emular, é necessário que se crie um disposivo usando o Android SDK Manager
-`$ android`
+```
+$ android
+```
 
 * Uma vez criado o dispositivo
-`$ ionic emulate android`
+```
+$ ionic emulate android
+```
 
 
