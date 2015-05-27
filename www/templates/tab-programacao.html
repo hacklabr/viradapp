@@ -1,7 +1,9 @@
 <ion-view view-title="Programação">
 <ion-content>
 <div ng-hide="hasData">
-    <p>Em breve você verá a programação</p>
+    <article class="single">
+    <p class="text-center">Em breve você verá a programação!</p>
+    </article>
 </div>
 <div ng-repeat="space in ledata" class="list list-programacao">
     <ion-item ng-if="space.name" href="#/virada/palco/{{space.id}}" class="item item-divider" >
