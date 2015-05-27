@@ -94,7 +94,8 @@ angular.module('viradapp.services', [])
                         // Here is just the basic idea!
                         stOn = new Date(ev.startsOn).getTime();
                         // FIXME Its to be greater than
-                        return stOn < time;
+                        // return stOn >= time;
+                        return true;
                     }).toArray();
                     return space;
                 });
