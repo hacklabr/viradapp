@@ -50,11 +50,6 @@ angular.module('viradapp.controllers', [])
             page : 0,
             data : []
         },
-        M: {
-            loaded : 0,
-            page : 0,
-            data : []
-        }
     };
     $scope.filters = {
         query: '',
