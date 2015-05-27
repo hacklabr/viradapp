@@ -152,7 +152,11 @@ angular.module('viradapp.controllers', [])
                         return false;
                     }
                 }
-                hasSpace = space.name.indexOf($scope.filters.query) >= 0;
+
+                //hasSpace = space.name.indexOf($scope.filters.query) >= 0;
+                var lm = new RegExp(($scope.filters.query), 'ig');
+                hasSpace = lm.test(space.name.substring($scope.filters.query));
+
                 event.spaceData = space;
             }
             var date = moment(event.startsOn + " " + event.startsAt,
@@ -239,7 +243,8 @@ angular.module('viradapp.controllers', [])
     var TIMEOUT_DELAY = 1000;
 
     $scope.$watch('filters', function(newValue, oldValue){
-        if(JSON.stringify(newValue) !== JSON.stringify(oldValue)){
+        if(newValue.query !== oldValue.query
+            || newValue.places.data != oldValue.places.data){
             $timeout(function(){
                 filtering();
                 switch($scope.filters.sorted){
@@ -367,7 +372,6 @@ angular.module('viradapp.controllers', [])
 
     $scope.clearSearch = function() {
         $scope.filters.places.query = '';
-        console.log($scope.filters.places.query);
     }
 
 })
@@ -375,11 +379,11 @@ angular.module('viradapp.controllers', [])
   return function (items, query) {
     if(typeof items === 'undefined') return;
     var filtered = [];
-    var letterMatch = new RegExp(query, 'i');
+    var letterMatch = new RegExp((query), 'ig');
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
       if (query) {
-        if (letterMatch.test(item.name.substring(0, query.length))) {
+        if (letterMatch.test(item.name.substring(query.length))) {
           filtered.push(item);
         }
       } else {
