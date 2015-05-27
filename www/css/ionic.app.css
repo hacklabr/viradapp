@@ -4247,7 +4247,7 @@ ion-tabs.tabs-color-active-dark .tab-item {
   min-height: 100%;
   max-height: 100%;
   width: 275px;
-  background-color: #101010; }
+  background-color: #fb3f2a; }
   .menu .scroll-content {
     z-index: 10; }
   .menu .bar-header {
@@ -7686,6 +7686,8 @@ a.button {
     font-size: 24px; }
   .bar .buttons.back-button span.back-text {
     display: none; }
+.bar .buttons .button {
+  border: none; }
 .bar .title {
   display: none; }
 .bar .button-logo {
@@ -7709,7 +7711,7 @@ a.button {
 .menu .item {
   background-color: transparent;
   color: #fff;
-  border-color: #333333;
+  border-color: #ee1c04;
   border-left: none;
   border-right: none; }
   .menu .item .icon {
@@ -7717,24 +7719,25 @@ a.button {
     vertical-align: middle;
     margin-right: 11px; }
 .menu .item-divider {
-  color: #666; }
+  color: #fd998e; }
 .menu .item-input {
   padding-right: 10px; }
-  .menu .item-input input, .menu .item-input .placeholder-icon {
+  .menu .item-input input, .menu .item-input .placeholder-icon, .menu .item-input ::-webkit-input-placeholder {
     color: #fff; }
   .menu .item-input input {
-    border-bottom: 1px solid #999; }
+    border-bottom: 1px solid #f2f2f2; }
     .menu .item-input input:focus {
       border-bottom: 1px solid #fff; }
 .menu .item-complex .item-content, .menu .item-radio .item-content {
   background-color: transparent; }
 .menu .item-radio input:checked ~ .item-content {
   /* style the item content when its checked */
-  background: #333333; }
+  background: #fff;
+  color: #101010; }
 .menu .item-radio input:checked ~ .radio-icon {
   /* show the checkmark icon when its checked */
   visibility: visible;
-  color: #fb3f2a; }
+  color: #101010; }
 .menu .item-radio .ion-checkmark {
   font-size: 24px;
   margin-right: 0; }
@@ -7765,11 +7768,23 @@ a.button {
   width: 60px; }
 
 .list-programacao .item h2 {
-  font-weight: bold; }
+  font-weight: bold;
+  padding-left: 65px; }
+.list-programacao .item .event-time {
+  position: absolute;
+  line-height: 19px;
+  border-right: 1px solid #dedede;
+  padding-right: 5px; }
 .list-programacao .item time {
-  color: #fb3f2a; }
+  color: #fb3f2a;
+  vertical-align: top; }
 .list-programacao .item .icon {
-  color: #fb3f2a; }
+  color: #fb3f2a;
+  line-height: 19px; }
+  .list-programacao .item .icon.icon-accessory {
+    position: absolute;
+    top: 16px;
+    right: 16px; }
 .list-programacao .item-divider {
   padding: 0; }
   .list-programacao .item-divider .item-content {
@@ -7814,6 +7829,8 @@ a.button {
       font-size: 20px;
       margin-top: 20px;
       margin-bottom: 24px; }
+  .single p img {
+    vertical-align: top; }
 
 /**
 * Timeline

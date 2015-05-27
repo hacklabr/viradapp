@@ -7,13 +7,15 @@
             {{ space.palco.endereco }}
         </h3>
     </ion-item>
-    <ion-item class="item"
+    <ion-item class="item item-complex"
         ng-repeat="event in space.events"
         href="#/virada/atracao/{{event.id}}" >
-        <i class="icon icon_clock icon-accessory"></i>
-        <time>
-            {{ event.startsAt }}
-        </time>
+        <div class="event-time">
+            <i class="icon icon_clock"></i>
+            <time>
+                {{ event.startsAt }}
+            </time>
+        </div>
         <h2>{{ event.name }}</h2>
         <i class="icon ion-chevron-right icon-accessory"></i>
         <ion-option-button class="button-assertive"

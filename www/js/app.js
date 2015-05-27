@@ -34,7 +34,7 @@ viradapp.run(function($ionicPlatform, CONN) {
 })
 
 viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
-    //$ionicConfigProvider.scrolling.jsScrolling(false);
+    $ionicConfigProvider.scrolling.jsScrolling(false);
 
     $stateProvider
     .state('tab', {
