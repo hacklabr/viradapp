@@ -79,7 +79,10 @@
                 <ion-item menu-close="true">
                     <div ng-click="openModal()">
                         <i class="icon icon_pin"></i>
-                        Local
+                        Locais
+                        <span ng-show="filters.places.data.length" class="badge badge-assertive">
+                            {{ filters.places.data.length }}
+                        </span>
                     </div>
                 </ion-item>
                 <!--<div class="item item-time-range">
