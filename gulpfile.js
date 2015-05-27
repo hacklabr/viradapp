@@ -53,7 +53,7 @@ gulp.task('git-check', function(done) {
   done();
 });
 
-gulp.task('add-proxy', function() {
+gulp.task('add-proxy', ['devel'], function() {
     return replace({
         regex: "http://viradacultural.prefeitura.sp.gov.br/2014/wp-content/themes/viradacultural/app",
         replacement: "http://localhost:8100/api",
@@ -67,6 +67,26 @@ gulp.task('remove-proxy', function() {
     return replace({
         regex: "http://localhost:8100/api",
         replacement: "http://viradacultural.prefeitura.sp.gov.br/2014/wp-content/themes/viradacultural/app",
+        paths: replaceFiles,
+        recursive: false,
+        silent: false,
+    });
+});
+
+gulp.task('devel', function(){
+    return replace({
+        regex: "http://viradacultural.prefeitura.sp.gov.br/2015/wp-content/themes/viradacultural-2015/app",
+        replacement: "http://viradacultural.prefeitura.sp.gov.br/2014/wp-content/themes/viradacultural/app",
+        paths: replaceFiles,
+        recursive: false,
+        silent: false,
+    });
+});
+
+gulp.task('production', ['remove-proxy'], function(){
+    return replace({
+        regex: "http://viradacultural.prefeitura.sp.gov.br/2014/wp-content/themes/viradacultural/app",
+        replacement: "http://viradacultural.prefeitura.sp.gov.br/2015/wp-content/themes/viradacultural-2015/app",
         paths: replaceFiles,
         recursive: false,
         silent: false,
