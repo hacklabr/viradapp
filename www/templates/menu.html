@@ -9,7 +9,7 @@
                 </div>
             </ion-nav-buttons>
             <ion-nav-buttons  side="right">
-                <div ng-if="haveData"
+                <div ng-if="hasData"
                     class="button icon ion-android-more-vertical" menu-toggle="right">
                 </div>
             </ion-nav-buttons>
@@ -46,7 +46,7 @@
 
     <ion-side-menu side="right">
         <ion-content>
-        <ion-list ng-if="haveData">
+        <ion-list ng-if="hasData">
                 <label class="item item-input">
                     <i class="icon icon_search placeholder-icon"></i>
                     <input ng-model="filters.query" type="text" placeholder="Buscar">
