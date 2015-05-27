@@ -269,6 +269,7 @@ angular.module('viradapp.controllers', [])
     };
 
     $scope.loadMore  = function(){
+        if(typeof config.filtered == 'undefined') return false;
         console.log("Loading more...");
         start = new Date().getTime();
         switch ($scope.filters.sorted) {

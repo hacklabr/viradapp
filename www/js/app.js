@@ -1,6 +1,7 @@
-var viradapp = angular.module("viradapp", ['lazy', 'ionic', 'viradapp.controllers', 'viradapp.services']);
+var viradapp = angular.module("viradapp", ['ionic', 'viradapp.controllers', 'viradapp.services', 'ngCordova']);
 
 viradapp.value('CONN', "DEFAULT");
+viradapp.value('BASE_URL', "http://localhost:8100/api");
 viradapp.run(function($ionicPlatform, CONN) {
     $ionicPlatform.ready(function() {
         if (window.cordova && window.cordova.plugins &&
