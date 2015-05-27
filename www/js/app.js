@@ -68,6 +68,7 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
             }
         }
     })
+
     .state('virada.atracao-detail', {
         url: '/atracao/:atracao',
         views: {
@@ -84,6 +85,15 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
             'menu-virada': {
                 templateUrl: 'templates/palco-detail.html',
                 controller: 'PalcoCtrl'
+            }
+        }
+    })
+
+    .state('virada.about', {
+        url: '^/virada/sobre',
+        views: {
+            'menu-virada': {
+                templateUrl: 'templates/about.html',
             }
         }
     })

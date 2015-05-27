@@ -89,8 +89,11 @@ angular.module('viradapp.controllers', [])
                 $scope.lespaces = a;
                 config.filtered = Lazy(a);
                 spaces = Lazy(a);
+
                 Virada.events().then(function(data){
                     events = data;
+                    $scope.haveData = true;
+
                     $scope.ledata = config.filtered.take(config.loads)
                     .tap(function(space){
                         space.events = events.where({

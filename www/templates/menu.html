@@ -8,8 +8,9 @@
                 <div class="button button-logo" menu-toggle="left">
                 </div>
             </ion-nav-buttons>
-            <ion-nav-buttons side="right">
-                <div class="button icon ion-android-more-vertical" menu-toggle="right">
+            <ion-nav-buttons  side="right">
+                <div ng-if="haveData"
+                    class="button icon ion-android-more-vertical" menu-toggle="right">
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
@@ -23,29 +24,29 @@
                     <i class="icon icon_clock"></i>
                     Programação
                 </ion-item>
-                <ion-item class="item-icon-left" menu-close href="#/virada/minha-virada">
+                <!--<ion-item class="item-icon-left" menu-close href="#/virada/minha-virada">
                     <i class="icon icon_star"></i>
                     Minha Virada
                 </ion-item>
                 <ion-item class="item-icon-left" menu-close href="#/virada/minha-virada">
                     <i class="icon icon_map"></i>
                     Mapa
-                </ion-item>
+                </ion-item>-->
                 <ion-item class="item-icon-left" menu-close href="#/virada/sobre">
                     <i class="icon icon_info"></i>
                     Sobre
                 </ion-item>
-                <ion-item class="item-icon-left" menu-close href="#/virada/sobre">
+                <!--<ion-item class="item-icon-left" menu-close href="#/virada/sobre">
                     <i class="icon icon_cog"></i>
                     Configurações
-                </ion-item>
+                </ion-item>-->
             </ion-list>
         </ion-content>
     </ion-side-menu>
 
     <ion-side-menu side="right">
         <ion-content>
-            <ion-list>
+        <ion-list ng-if="haveData">
                 <label class="item item-input">
                     <i class="icon icon_search placeholder-icon"></i>
                     <input ng-model="filters.query" type="text" placeholder="Buscar">
@@ -65,7 +66,7 @@
                 <ion-item class="item-divider">
                     Filtrar por:
                 </ion-item>
-                <div class="item item-toggle">
+                <!--<div class="item item-toggle">
                     <i class="icon icon_circle-slelected"></i>
                     Próximas a mim
                     <label class="toggle toggle-assertive">
@@ -74,17 +75,17 @@
                             <div class="handle"></div>
                         </div>
                     </label>
-                </div>
+                </div>-->
                 <ion-item menu-close="true">
                     <div ng-click="openModal()">
                         <i class="icon icon_pin"></i>
                         Local
                     </div>
                 </ion-item>
-                <div class="item item-time-range">
+                <!--<div class="item item-time-range">
                     <i class="icon icon_clock"></i>
                     Horário
-                </div>
+                </div>-->
             </ion-list>
         </ion-content>
     </ion-side-menu>
