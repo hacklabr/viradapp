@@ -7680,7 +7680,6 @@ a.button {
  * --------------------------------------------------
  */
 .bar .buttons.back-button {
-  color: #fff;
   border: none; }
   .bar .buttons.back-button .icon:before {
     font-size: 24px; }
@@ -7705,6 +7704,29 @@ a.button {
   display: block; }
 
 /**
+* Friends
+* --------------------------------------------------
+* Style for friends groups (Palco, Minha Virada & Atração)
+*/
+.friends-group {
+  font-size: 10px;
+  line-height: 28px; }
+  .friends-group a {
+    color: #fff; }
+
+.friend {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  background-color: #fb3f2a;
+  overflow: hidden;
+  vertical-align: middle;
+  text-align: center; }
+  .friend img {
+    min-height: 100%; }
+
+/**
  * Items
  * --------------------------------------------------
  */
@@ -7719,7 +7741,7 @@ a.button {
     vertical-align: middle;
     margin-right: 11px; }
 .menu .item-divider {
-  color: #fd998e; }
+  color: #bb1604; }
 .menu .item-input {
   padding-right: 10px; }
   .menu .item-input input, .menu .item-input .placeholder-icon, .menu .item-input ::-webkit-input-placeholder {
@@ -7749,16 +7771,16 @@ a.button {
 .menu .toggle {
   top: 19px; }
   .menu .toggle .track {
-    background-color: #333333;
+    background-color: #bb1604;
     border: none;
-    width: 44px;
+    width: 40px;
     height: 14px;
     border-radius: 7px; }
   .menu .toggle .handle {
     top: 2px;
     width: 20px;
     height: 20px;
-    border-radius: 20px; }
+    border-radius: 10px; }
 .menu .item-time-range input {
   display: inline-block;
   background-color: #333333;
@@ -7768,11 +7790,13 @@ a.button {
   width: 60px; }
 
 .list-programacao .item h2 {
+  font-size: 12px;
   font-weight: bold;
+  line-height: 20px;
   padding-left: 65px; }
 .list-programacao .item .event-time {
   position: absolute;
-  line-height: 19px;
+  line-height: 20px;
   border-right: 1px solid #dedede;
   padding-right: 5px; }
 .list-programacao .item time {
@@ -7780,7 +7804,7 @@ a.button {
   vertical-align: top; }
 .list-programacao .item .icon {
   color: #fb3f2a;
-  line-height: 19px; }
+  line-height: 20px; }
   .list-programacao .item .icon.icon-accessory {
     position: absolute;
     top: 16px;
@@ -7789,11 +7813,9 @@ a.button {
   padding: 0; }
   .list-programacao .item-divider .item-content {
     background-color: #e9e9e9;
-    font-weight: bold;
-    text-transform: uppercase; }
+    font-weight: bold; }
 
 .modal .item-content {
-  text-transform: uppercase;
   font-weight: bold; }
 
 /**
@@ -7829,8 +7851,26 @@ a.button {
       font-size: 20px;
       margin-top: 20px;
       margin-bottom: 24px; }
-  .single p img {
-    vertical-align: top; }
+  .single img.logo-virada-cultural {
+    width: 180px;
+    height: auto;
+    margin-bottom: 10px; }
+  .single img.logo-smc {
+    width: 120px;
+    height: auto;
+    margin-bottom: 10px; }
+  .single p img.logo-hacklab {
+    vertical-align: top;
+    height: 15px; }
+  .single p img.logo-instituto-tim {
+    vertical-align: top;
+    height: 18px; }
+  .single footer .friends-group {
+    border-top: 1px solid #dedede;
+    margin-bottom: 48px;
+    padding-top: 12px;
+    line-height: 28px;
+    height: 42px; }
 
 /**
 * Timeline
@@ -7888,6 +7928,17 @@ a.button {
           vertical-align: middle;
           width: 97%;
           color: #fff; }
+      .timeline .event-group .event-grid .friends-group {
+        position: absolute;
+        z-index: 100;
+        bottom: 0;
+        right: 0;
+        height: 34px;
+        width: 100%;
+        padding: 3px 3px 3px 34px;
+        text-align: right;
+        background-color: #101010;
+        color: #fff; }
       .timeline .event-group .event-grid .favorite {
         position: absolute;
         z-index: 100;
@@ -7994,9 +8045,6 @@ a.button {
   font-weight: normal;
   font-style: normal; }
 
-h1, h2, h3, h4, h5, h6 {
-  text-transform: uppercase; }
-
 a {
   color: #101010;
   text-decoration: none; }
@@ -8013,7 +8061,7 @@ a {
   margin-left: auto;
   margin-right: auto; }
 
-.menu .item, .list-programacao .item time, .timeline .event-group .timeline-time {
+.friends-group, .menu .item, .list-programacao .item time, .timeline .event-group .timeline-time {
   font-family: "Museo Sans", Verdana, sans-serif;
   font-size: 12px;
   text-transform: uppercase; }

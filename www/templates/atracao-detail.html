@@ -12,6 +12,14 @@
                 <p>{{atracao.description}}</p>
             </div>
             <!-- .post-content -->
+            <footer>
+                <div class="friends-group">
+                    <a href="#" class="friend" title="Nome do amigo"><!--img com link pra minha virada respectiva --></a>
+                    <a href="#" class="friend" title="Nome do amigo"><!--img com link pra minha virada respectiva --></a>
+                    <a href="#" class="friend" title="Nome do amigo"><!--img com link pra minha virada respectiva --></a>
+                    <a href="#" class="friend" ng-click="openModal()"><div title="Nome dos amigos">+000</div></a><!-- link pra modal com lista de todos amigos quando exceder 3 amigos-->
+                </div>
+            </footer>
             <div class="servico">
                 <p>
                     <span><span class="label">Local:</span> <a href="#/virada/palco/{{space.id}}">{{space.name}}</a><br></span>
@@ -38,3 +46,23 @@
         <!-- .single -->
     </ion-content>
 </ion-view>
+
+<script id="friends-modal.html" type="text/ng-template">
+    <ion-modal-view>
+        <ion-header-bar class="bar-assertive">
+            <h1 class="title">XXX amigos também marcaram essa atração</h1>
+            <div class="button button-clear" ng-click="modal.hide()">
+                <span class="icon icon_close"></span>
+            </div>
+        </ion-header-bar>
+        <ion-content>
+            <div class="list">
+                <!-- link pra minha virada do amigo -->
+                 <a class="item item-avatar" href="#">
+                    <img src="">
+                    <h2>Nome do amigo</h2>
+                </a>
+            </div>
+        </ion-content>
+  </ion-modal-view>
+</script>

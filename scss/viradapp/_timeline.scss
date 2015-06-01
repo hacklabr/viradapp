@@ -62,6 +62,18 @@
                     color: $brand-auxiliar;
 		        }
             }
+            .friends-group {
+                position: absolute;
+                z-index: 100;
+                bottom: 0;
+                right: 0;
+                height: 34px;
+                width: 100%;
+                padding: 3px 3px 3px 34px;
+                text-align: right;
+                background-color: $brand-primary;
+                color: $brand-auxiliar;
+            }
             .favorite {
 		        position: absolute;
 		        z-index: 100;
