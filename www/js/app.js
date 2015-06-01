@@ -1,7 +1,7 @@
 var viradapp = angular.module("viradapp", ['ionic', 'viradapp.controllers', 'viradapp.services', 'ngCordova']);
 
 viradapp.value('CONN', "DEFAULT");
-viradapp.value('BASE_URL', "http://viradacultural.prefeitura.sp.gov.br/2015/wp-content/themes/viradacultural-2015/app");
+viradapp.value('BASE_URL', "http://localhost:8100/api");
 viradapp.run(function($ionicPlatform, CONN) {
     $ionicPlatform.ready(function() {
         if (window.cordova && window.cordova.plugins &&
