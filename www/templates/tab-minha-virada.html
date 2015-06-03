@@ -4,7 +4,13 @@
             <header>
                 <h1>Minha Virada</h1>
             </header>
-            <div class="timeline clearfix">
+            <label class="card" ng-show="!connected && initialized">
+                <button class="button button-block ion-social-facebook button-positive icon-left"
+                        ng-click="login()">
+                    Facebook login
+                </button>
+            </label>
+            <div class="timeline clearfix" ng-if="initialized && connected" class="ng-hide">
                 <div class="event-group" ng-repeat="event in events">
                     <div class="timeline-time" ng-if="event.duration === '24h00'">24 horas</div>
                     <div class="timeline-time" ng-if="event.duration !== '24h00'">{{event.startsAt}}</div>
@@ -15,7 +21,9 @@
                                 <h1>{{event.name}}</h1>
                             </div>
                         </a>
-                        <a class="icon favorite favorite-wait favorite-event-{{event.id}}" ng-click="favorite(event.id)"><!--qdo selecionado adicionar classe 'active'--></a>
+                        <a class="icon favorite favorite-wait favorite-event-{{event.id}}" ng-click="favorite(event.id)">
+                            <!--qdo selecionado adicionar classe 'active'-->
+                        </a>
                     </article>
                 </div>
             </div>

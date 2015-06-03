@@ -29,7 +29,7 @@ angular.module('viradapp.controllers', [])
     }
 })
 
-.controller('FilterCtrl', function($scope, $stateParams, Virada,$ionicModal, $timeout) {
+.controller('FilterCtrl', function($scope, $stateParams, Virada, $ionicModal, $timeout) {
     var config = {
         duration :  moment.duration(1, 'days'),
         start: moment("201405170000", "YYYYMMDDhhmm"),
@@ -424,21 +424,125 @@ angular.module('viradapp.controllers', [])
 .controller('AtracoesCtrl', function($scope, $stateParams, Virada, $ionicModal) {
 
 })
-.controller('MinhaViradaCtrl', function($scope, Virada) {
-    var events;
-    $scope.events = [];
-    Virada.events().then(function(data){
-        events = data;
-        $scope.events = events.filter(function(event){
-            return event.defaultImageThumb !== "";
-        }).take(20).sortBy(function(event){
-            return event.startsOn;
-        }).toArray();
-    });
-})
-
 .controller('SocialCtrl', function($scope) {
     $scope.settings = {
         enableFriends: true
     };
+})
+.controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading){
+    $ionicLoading.show({
+        noBackdrop: true,
+        duration: 20000,
+        template: '<ion-spinner icon="ripple"></ion-spinner>'
+    });
+    $rootScope.$on('initialized', function(ev, uid){
+        $ionicLoading.hide();
+        $scope.initialized = true;
+    });
+
+
+    $scope.initialized = false;
+    $scope.hasEvents = false;
+    $scope.events = [];
+    $scope.connected = false;
+    $scope.user_picture = '';
+
+    // Test if user has a token
+    // if true try to get data
+    //     if it fails, try to login again to get another token
+    // if false, emit initialized and show the button
+    if($localStorage.hasOwnProperty("accessToken") === false) {
+        $rootScope.$emit('initialized');
+    } else {
+        // Test if token is valid
+        MinhaVirada.init($localStorage.accessToken, $localStorage.uid)
+        .then(function(data){
+            if(!data){
+                MinhaVirada.connect();
+            }
+        });
+    }
+
+
+    $scope.login = function(){
+        MinhaVirada.connect();
+    }
+
+
+    $rootScope.$on('fb_connected', function(ev, data) {
+        $scope.connected = true;
+        $scope.home = false;
+
+        $localStorage.accessToken = data.token;
+        $localStorage.uid = data.uid;
+        console.log($localStorage);
+
+        $scope.accessToken = $localStorage.accessToken;
+
+        if ($location.$$hash) {
+            if ($location.$$hash == data.uid) {
+                $scope.itsme = true;
+                MinhaVirada.inMyPage(true);
+            }
+            return;
+        }
+
+        $scope.itsme = true;
+        MinhaVirada.inMyPage(true);
+
+        $scope.loadUserData(data.uid);
+        var curUlr = document.URL;
+        $location.hash(data.uid);
+        $scope.$emit('minhavirada_hashchanged',
+                     curUlr + '##' + $location.$$hash);
+
+
+        console.log("Inicializado");
+    });
+
+    $rootScope.$on('fb_not_connected', function(ev, uid) {
+        console.log("Não conectado");
+    });
+
+
+    $scope.loadUserData = function(uid) {
+        uid = 720235837;
+        $http
+        .get(GlobalConfiguration.TEMPLATE_URL
+             + '/includes/minha-virada-ajax.php?action=minhavirada_getJSON&uid='
+             + uid)
+        .success(function(data){
+            $scope.populateUserInfo(data);
+        });
+    };
+
+    $scope.populateUserInfo = function(data) {
+        if ( typeof(data.picture) != 'undefined' ) {
+            $scope.user_picture =
+                "background-image: url(" + data.picture + ");";
+            $scope.user_name = data.name;
+        } else {
+            //jQuery('.user-photo').hide();
+        }
+
+        Virada.events().then(function(events){
+            if (data.events && data.events.length > 0) {
+                $scope.hasEvents = true;
+                Lazy(data.events).tap(function(id){
+                    var event = events.findWhere({id : id});
+                    if(typeof event !== 'undefined'){
+                        $scope.events.push(event);
+                    }
+                    // e.url = eventUrl(e.id);
+                }).each(Lazy.noop);
+            };
+            MinhaVirada.atualizaEstrelas();
+        });
+    }
+
+    if ($location.$$hash) {
+        $scope.home = false;
+        $scope.loadUserData($location.$$hash);
+    }
+
 });

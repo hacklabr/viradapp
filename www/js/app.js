@@ -1,8 +1,5 @@
-var viradapp = angular.module("viradapp", ['ionic', 'viradapp.controllers', 'viradapp.services', 'ngCordova']);
-
-viradapp.value('CONN', "DEFAULT");
-viradapp.value('BASE_URL', "http://localhost:8100/api");
-viradapp.run(function($ionicPlatform, CONN) {
+var viradapp = angular.module("viradapp", ['ionic', 'viradapp.wrappers', 'viradapp.controllers', 'viradapp.services', 'viradapp.config', 'ngStorage', 'ngCordova']);
+viradapp.run(function($ionicPlatform, GlobalConfiguration) {
     $ionicPlatform.ready(function() {
         if (window.cordova && window.cordova.plugins &&
             window.cordova.plugins.Keyboard) {
@@ -10,30 +7,14 @@ viradapp.run(function($ionicPlatform, CONN) {
         }
         if (window.StatusBar) {
             StatusBar.styleLightContent();
+            StatusBar.overlaysWebView(false);
+            StatusBar.styleBlackTranslucent();
+            StatusBar.backgroundColorByName('black');
         }
-        // Connection Change Handler
-        // This function just change the global connection type
-        var connChangeHandler = function(conn){
-            if(window.Connection) {
-                if(Connection.NONE == conn.type){
-                    viradapp.value('CONN', Connection.NONE);
-                } else if(Connection.ETHERNET == conn.type
-                    || Connection.WIFI == conn.type
-                        || Connection.CELL_4G){
-                            CONN = "FAST";
-                        } else {
-                            CONN = "SLOW";
-                        }
-            } else {
-                CONN = "UNKNOWN";
-            }
-        }
-        document.addEventListener("online", connChangeHandler, false);
-        document.addEventListener("offline", connChangeHandler, false);
     });
 })
 
-viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $cordovaFacebookProvider) {
     //$ionicConfigProvider.scrolling.jsScrolling(false);
 
     $stateProvider

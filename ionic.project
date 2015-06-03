@@ -11,8 +11,12 @@
   ],
   "proxies": [
     {
+      "path": "/api/app",
+      "proxyUrl": "http://viradacultural.prefeitura.sp.gov.br/2015/wp-content/themes/viradacultural-2015/app"
+    },
+    {
       "path": "/api",
-      "proxyUrl": "http://viradacultural.prefeitura.sp.gov.br/2014/wp-content/themes/viradacultural/app"
+      "proxyUrl": "http://viradacultural.prefeitura.sp.gov.br/2015/wp-content/themes/viradacultural-2015"
     }
   ]
 }

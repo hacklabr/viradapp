@@ -1,7 +1,6 @@
 angular.module('viradapp.services', [])
 
-.factory('Virada', function($http, BASE_URL, $cordovaFile, $ionicPlatform) {
-    console.log($cordovaFile);
+.factory('Virada', function($http, GlobalConfiguration, $cordovaFile, $ionicPlatform, MinhaVirada) {
     var conf = {
         assets : "/assets/old/",
         spaces_data : {
@@ -17,37 +16,82 @@ angular.module('viradapp.services', [])
     var spaces = [];
     var spaces_data = [];
     var events = [];
-    // FIXME Change md5 file get data
-    var data_source = $http.get("assets/new/objects-md5.json").then(function(newMD5, status, header, config){
+
+    function getSpaces(){
+            spaces = $http.get(conf.spaces.url)
+            .then(function(res){
+                return Lazy(res.data);
+            });
+    }
+
+    function getSpacesData(){
+        spaces_data = $http.get(conf.spaces_data.url)
+        .then(function(res){
+            return Lazy(res.data);
+        });
+    }
+
+    function getEvents(){
+        events = $http.get(conf.events.url)
+        .then(function(res){
+            return Lazy(res.data);
+        });
+    }
+
+            // FIXME Change md5 file get data
+    var data_source = $http.get("assets/new/objects-md5.json")
+    .then(function(newMD5){
         return $http.get("assets/objects-md5.json").then(function(oldMD5){
+            $ionicPlatform.ready(function(){
+                if(newMD5.data[conf.spaces.file]
+                        !== oldMD5.data[conf.spaces.file]
+                    || newMD5.data[conf.spaces_data.file]
+                        !== oldMD5.data[conf.spaces_data.file]
+                    || newMD5.data[conf.events.file]
+                    !== oldMD5.data[conf.events.file] ){
+
+                    console.log("We are different, save me!");
+                    if(typeof cordova !== 'undefined'){
+                        $cordovaFile.checkDir(cordova.file.dataDirectory,
+                                               "objects1")
+                        .then(function(data){
+                            console.log(JSON.stringify(data));
+                        }, function (error) {
+                            console.log(JSON.stringify(error));
+                        });
+                    }
+                }
+            });
+
+
             conf.spaces.url = newMD5.data[conf.spaces.file] === oldMD5.data[conf.spaces.file] ?
                 conf.assets + conf.spaces.file :
-                BASE_URL + "/" + conf.spaces.file + "?v=" + newMD5.data[conf.spaces.file];
+                GlobalConfiguration.BASE_URL + "/" + conf.spaces.file + "?v=" + newMD5.data[conf.spaces.file];
             getSpaces();
 
             conf.events.url = newMD5.data[conf.events.file] === oldMD5.data[conf.events.file] ?
                 conf.assets + conf.events.file :
-                BASE_URL + "/" + conf.events.file + "?v=" + newMD5.data[conf.events.file];
+                GlobalConfiguration.BASE_URL + "/" + conf.events.file + "?v=" + newMD5.data[conf.events.file];
             getEvents();
 
             conf.spaces_data.url = newMD5.data[conf.spaces_data.file] ===
                 oldMD5.data[conf.spaces_data.file] ?
                 conf.assets + conf.spaces_data.file :
-                BASE_URL + "/" + conf.spaces_data.file + "?v=" + newMD5.data[conf.spaces_data.file];
+                GlobalConfiguration.BASE_URL + "/" + conf.spaces_data.file + "?v=" + newMD5.data[conf.spaces_data.file];
             getSpacesData();
 
             return {spaces : spaces, events: events, spaces_data: spaces_data};
         }).catch(function(){
-            conf.spaces.url = BASE_URL + "/" + conf.spaces.file + "?v="
-                + newMD5.data[conf.spaces.file];
+            conf.spaces.url = GlobalConfiguration.BASE_URL + "/" + conf.spaces.file + "?v="
+            + newMD5.data[conf.spaces.file];
             getSpaces();
 
-            conf.events.url = BASE_URL + "/" + conf.events.file + "?v="
-                + newMD5.data[conf.events.file];
+            conf.events.url = GlobalConfiguration.BASE_URL + "/" + conf.events.file + "?v="
+            + newMD5.data[conf.events.file];
             getEvents();
 
-            conf.spaces_data.url = BASE_URL + "/" + conf.spaces_data.file
-                + "?v=" + newMD5.data[conf.spaces_data.file];
+            conf.spaces_data.url = GlobalConfiguration.BASE_URL + "/" + conf.spaces_data.file
+            + "?v=" + newMD5.data[conf.spaces_data.file];
             getSpacesData();
 
             return {spaces : spaces, events: events, spaces_data: spaces_data};
@@ -69,26 +113,6 @@ angular.module('viradapp.services', [])
         });
     });
 
-    function getSpaces(){
-        spaces = $http.get(conf.spaces.url)
-        .then(function(res){
-            return Lazy(res.data);
-        });
-    }
-
-    function getSpacesData(){
-        spaces_data = $http.get(conf.spaces_data.url)
-        .then(function(res){
-            return Lazy(res.data);
-        });
-    }
-
-    function getEvents(){
-        events = $http.get(conf.events.url)
-        .then(function(res){
-            return Lazy(res.data);
-        });
-    }
 
     return {
         events: function() {
