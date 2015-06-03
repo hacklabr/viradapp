@@ -15,7 +15,7 @@ $ git clone https://github.com/hacklabr/viradapp.git
 
 * Fazer o build padrão
 ```
-$ cp viradapp
+$ cd viradapp
 $ npm install
 $ gulp install # runs bower install
 ```
@@ -28,6 +28,12 @@ $ ionic setup sass
 * Rodar
 ```
 $ ionic serve
+```
+
+* Para rodar no navegador, adicione um proxy com
+
+```
+$ gulp add-proxy 
 ```
 
 Ele vai te dar uma url padrão e abrir o navegador automaticamente! 
@@ -57,6 +63,11 @@ $ npm install phonegap
 instalada já haverá falha)
 ```
 $ ionic platform add android
+```
+
+* Remove o proxy adicionado
+```
+$ gulp remove-proxy
 ```
 
 * Aqui, precisamos ter um dispositivo plugado ao computador aceitando 
