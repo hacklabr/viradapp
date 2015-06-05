@@ -1,6 +1,6 @@
 angular.module('viradapp.controllers', [])
-.controller('PalcoCtrl', function($scope, $stateParams, Virada, CONN){
-    console.log(CONN);
+.controller('PalcoCtrl', function($scope, $stateParams, Virada, Conn){
+    console.log(Conn);
     if($stateParams.palco){
         var start = new Date().getTime();
         Virada.getPalco($stateParams.palco)
