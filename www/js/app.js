@@ -18,30 +18,25 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     //$ionicConfigProvider.scrolling.jsScrolling(false);
 
     $stateProvider
-    .state('tab', {
+    .state('virada', {
+        url: "/virada",
         abstract: true,
         templateUrl: "templates/menu.html",
         controller: 'FilterCtrl'
     })
 
-    .state('tab.programacao', {
-        url: '^/virada/programacao',
+    .state('virada.programacao', {
+        url: '/programacao',
         views: {
-            'tab-programacao': {
+            'menu-virada': {
                 templateUrl: 'templates/tab-programacao.html',
                 controller: 'ProgramacaoCtrl'
             }
         }
     })
 
-    .state('virada', {
-        url: "/virada",
-        abstract: true,
-        templateUrl: "templates/menu-virada.html"
-    })
-
     .state('virada.minha-virada', {
-        url: '/minha-virada',
+        url: '/programacao/minha-virada',
         views: {
             'menu-virada': {
                 templateUrl: 'templates/tab-minha-virada.html',
@@ -51,7 +46,7 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     })
 
     .state('virada.atracao-detail', {
-        url: '/atracao/:atracao',
+        url: '/programacao/atracao/:atracao',
         views: {
             'menu-virada': {
                 templateUrl: 'templates/atracao-detail.html',
@@ -61,7 +56,7 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     })
 
     .state('virada.palco-detail', {
-        url: '/palco/:palco',
+        url: '/programacao/palco/:palco',
         views: {
             'menu-virada': {
                 templateUrl: 'templates/palco-detail.html',
@@ -71,7 +66,7 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     })
 
     .state('virada.about', {
-        url: '^/virada/sobre',
+        url: '/programacao/sobre',
         views: {
             'menu-virada': {
                 templateUrl: 'templates/about.html',

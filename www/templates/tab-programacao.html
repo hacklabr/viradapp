@@ -6,7 +6,7 @@
     </article>
 </div>
 <div ng-repeat="space in ledata" class="list list-programacao">
-    <ion-item ng-if="space.name" href="#/virada/palco/{{space.id}}" class="item item-divider" >
+    <ion-item ng-if="space.name" href="#/virada/programacao/palco/{{space.id}}" class="item item-divider" >
         {{ space.name }}
         <h3>
             {{ space.palco.endereco }}
@@ -14,7 +14,7 @@
     </ion-item>
     <ion-item class="item item-complex"
         ng-repeat="event in space.events"
-        href="#/virada/atracao/{{event.id}}" >
+        href="#/virada/programacao/atracao/{{event.id}}" >
         <div class="event-time">
             <i class="icon icon_clock"></i>
             <time>
