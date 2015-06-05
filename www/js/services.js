@@ -127,37 +127,42 @@ angular.module('viradapp.services', [])
         },
 
         get: function(event_id) {
-            return events.then(function(events){
-                return spaces_data.then(function(data){
-                    var event = events.findWhere({
-                        id : parseInt(event_id)
+            return data_source.then(function(data){
+                return data.events.then(function(events){
+                    return data.spaces_data.then(function(data){
+                        data = Lazy(data);
+                        var event = events.findWhere({
+                            id : parseInt(event_id)
+                        });
+                        event.space = data.findWhere({
+                            id : parseInt(event.spaceId)
+                        });
+                        return event;
                     });
-                    event.space = data.findWhere({
-                        id : parseInt(event.spaceId)
-                    });
-                    return event;
                 });
             });
         },
         getPalco: function(palco_id) {
-            return spaces_data.then(function(spaces){
-                var space = spaces.findWhere({
-                    id : parseInt(palco_id)
-                });
-                return events.then(function(events){
-                    var time = Date.now();
+            return data_source.then(function(data){
+                return data.spaces_data.then(function(spaces){
+                    var space = spaces.findWhere({
+                        id : parseInt(palco_id)
+                    });
+                    return data.events.then(function(events){
+                        var time = Date.now();
 
-                    space.events = events.where({
-                        spaceId : parseInt(palco_id)
-                    }).filter(function(ev){
-                        // TODO Show only events in the future
-                        // Here is just the basic idea!
-                        stOn = new Date(ev.startsOn).getTime();
-                        // FIXME Its to be greater than
-                        // return stOn >= time;
-                        return true;
-                    }).toArray();
-                    return space;
+                        space.events = events.where({
+                            spaceId : parseInt(palco_id)
+                        }).filter(function(ev){
+                            // TODO Show only events in the future
+                            // Here is just the basic idea!
+                            stOn = new Date(ev.startsOn).getTime();
+                            // FIXME Its to be greater than
+                            // return stOn >= time;
+                            return true;
+                        }).toArray();
+                        return space;
+                    });
                 });
             });
         }
