@@ -24,7 +24,8 @@
     {
       "locator": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-file.git",
       "id": "cordova-plugin-file"
-    }
+    },
+    "org.apache.cordova.statusbar"
   ],
   "cordovaPlatforms": [
     "android",
