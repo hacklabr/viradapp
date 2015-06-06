@@ -1,4 +1,4 @@
-<ion-view view-title="{{ atracao.nome }}" can-swipe-back="true">
+<ion-view view-title="{{ atracao.nome }}" >
     <ion-content>
         <img class="img-destacada-single-atracao" ng-src="{{atracao.defaultImage}}" alt="{{atracao.name}}" ng-if='atracao.defaultImage'/>
         <article id="event-00" class="single">
@@ -12,6 +12,7 @@
                 <p>{{atracao.description}}</p>
             </div>
             <!-- .post-content -->
+            <script id="atracao-friends-footer" type="text/ng-template">
             <footer>
                 <div class="friends-group">
                     <a href="#" class="friend" title="Nome do amigo"><!--img com link pra minha virada respectiva --></a>
@@ -20,27 +21,23 @@
                     <a href="#" class="friend" ng-click="openModal()"><div title="Nome dos amigos">+000</div></a><!-- link pra modal com lista de todos amigos quando exceder 3 amigos-->
                 </div>
             </footer>
+            </script>
+            </div>
             <div class="servico">
                 <p>
                     <span><span class="label">Local:</span> <a href="#/virada/palco/{{space.id}}">{{space.name}}</a><br></span>
                     <span><span class="label">Endereço:</span> {{space.endereco}}<br></span>
-                    <span><span class="label">Data:</span>{{ LL(atracao.startsOn) }}<br></span>
+                    <span><span class="label">Data:</span> {{ LL(atracao.startsOn) }}<br></span>
                     <span><span class="label">Horário:</span> {{atracao.startsAt}}<br></span>
                     <span ng-if='atracao.terms.linguagem.length > 0'><span class="label">Linguagem:</span> {{atracao.terms.linguagem.join(', ')}} <br></span>
                     <span ng-if='atracao.classificacaoEtaria'><span class="label">Classificação:</span> {{atracao.classificacaoEtaria}}<br></span>
                     <span ng-if='atracao.acessibilidade.length > 0'><span class="label">Acessibilidade:</span> {{atracao.acessibilidade.join(', ')}}<br></span>
                 </p>
-                <div class="hide">URL : {{mapUrl}}</div>
-
-                <!-- src="{{mapUrl}}" -->
-                <iframe width="100%" height="220" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
-                        ng-src="{{getTrustedURI(mapUrl)}}"></iframe>
-
-                <p>
-                    <a class="button button-small button-assertive" target="_blank" href="{{mapUrl}}">
+                <!--                 <p>
+                    <a target="_blank" class="button button-small button-assertive" href="{{ mapUrl }}">
                         <span class="icon icon_pin"></span> Ver no mapa
                     </a>
-                </p>
+                    </p>-->
             </div>
         </article>
         <!-- .single -->

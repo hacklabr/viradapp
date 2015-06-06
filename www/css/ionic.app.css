@@ -7675,6 +7675,9 @@ a.button {
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
 
+.menu .pane {
+  background-color: transparent; }
+
 /**
  * Bar (Headers and Footers)
  * --------------------------------------------------

@@ -15,6 +15,7 @@
                                 <h1>{{event.name}}</h1>
                             </div>
                         </a>
+                        <script id="atracao-friends-group" type="text/ng-template">
                         <div class="friends-group">
                             <a href="#" class="friend" title="Nome do amigo">
                                 <!--aqui entra um avatar aleatório ou do último amigo a favoritar e!-sse evento com link pra Minha Virada do amigo -->
@@ -30,6 +31,7 @@
                             </a>
                             <a href="#" class="friend"><div title="Nome dos amigos">+000</div></a><!-- link pra modal com lista de todos amigos quando exceder 3 amigos-->
                         </div>
+                        </script>
                         <a class="icon favorite favorite-wait favorite-event-{{event.id}}" ng-click="favorite(event.id)"><!--qdo selecionado adicionar classe 'active'--></a>
                     </article>
                 </div>

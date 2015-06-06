@@ -8,13 +8,14 @@
                 <div class="button button-logo" menu-toggle="left">
                 </div>
             </ion-nav-buttons>
-            <ion-nav-buttons  side="right">
-                <div ng-if="hasData"
+            <ion-nav-buttons side="right">
+                <div ng-if="programacao"
                     class="button icon ion-android-more-vertical" menu-toggle="right">
                 </div>
+                <div ng-if="!programacao" class="button icon social_share"></div>
             </ion-nav-buttons>
         </ion-nav-bar>
-        <ion-nav-view name="menu-virada"></ion-nav-view>
+        <ion-nav-view name="menu-view"></ion-nav-view>
     </ion-side-menu-content>
 
     <ion-side-menu side="left">
@@ -44,74 +45,77 @@
         </ion-content>
     </ion-side-menu>
 
-    <ion-side-menu side="right">
+    <ion-side-menu ng-controller="FilterCtrl" side="right" is-enabled="programacao">
         <ion-content>
-        <ion-list ng-show="hasData">
-                <label class="item item-input">
-                    <i class="icon icon_search placeholder-icon"></i>
-                    <input ng-model="filters.query" type="text" placeholder="Buscar">
+            <ion-list ng-show="hasData">
+            <label class="item item-input">
+                <i class="icon icon_search placeholder-icon"></i>
+                <input ng-model="filters.query" type="text" placeholder="Buscar">
+            </label>
+            <ion-item class="item-divider">
+                Organizar por:
+            </ion-item>
+            <ion-radio ng-model="sorted" ng-change="change(this)"
+                ng-value="'L'"><i class="icon icon_pin"></i> Local</ion-radio>
+
+            <ion-radio ng-model="sorted" ng-change="change(this)"
+                ng-value="'A'">
+                <i class="icon arrow_up-down_alt"></i> Ordem alfabética
+            </ion-radio>
+
+            <!--<ion-radio ng-model="sorted" ng-change="change(this)"
+                ng-value="'H'"><i class="icon icon_clock"></i> Horário</ion-radio>-->
+
+            <ion-item class="item-divider">
+                Filtrar por:
+            </ion-item>
+            <!--<div class="item item-toggle">
+                <i class="icon icon_circle-slelected"></i>
+                Próximas a mim
+                <label class="toggle toggle-dark">
+                <input type="checkbox">
+                <div class="track">
+                <div class="handle"></div>
+                </div>
                 </label>
-                <ion-item class="item-divider">
-                    Organizar por:
-                </ion-item>
-                <ion-radio ng-model="sorted" ng-change="change(this)"
-                    ng-value="'L'"><i class="icon icon_pin"></i> Local</ion-radio>
-
-                <ion-radio ng-model="sorted" ng-change="change(this)"
-                    ng-value="'A'"><i class="icon arrow_up-down_alt"></i> Ordem alfabética</ion-radio>
-
-                <!--<ion-radio ng-model="sorted" ng-change="change(this)"
-                    ng-value="'H'"><i class="icon icon_clock"></i> Horário</ion-radio>-->
-
-                <ion-item class="item-divider">
-                    Filtrar por:
-                </ion-item>
-                <!--<div class="item item-toggle">
-                    <i class="icon icon_circle-slelected"></i>
-                    Próximas a mim
-                    <label class="toggle toggle-dark">
-                        <input type="checkbox">
-                        <div class="track">
-                            <div class="handle"></div>
-                        </div>
-                    </label>
                 </div>-->
-                <ion-item menu-close="true">
-                    <div ng-click="openModal()">
-                        <i class="icon icon_pin"></i>
-                        Locais
-                        <span ng-show="filters.places.data.length" class="badge badge-dark">
-                            {{ filters.places.data.length }}
-                        </span>
-                    </div>
-                </ion-item>
-                <!--<div class="item item-time-range">
-                    <i class="icon icon_clock"></i>
-                    Horário
+            <ion-item menu-close="true">
+                <div ng-click="openModal()">
+                    <i class="icon icon_pin"></i>
+                    Locais
+                    <span ng-show="filters.places.data.length" class="badge badge-dark">
+                        {{ filters.places.data.length }}
+                    </span>
+                </div>
+            </ion-item>
+            <!--<div class="item item-time-range">
+                <i class="icon icon_clock"></i>
+                Horário
                 </div>-->
             </ion-list>
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>
 
-<script id="modal.html" type="text/ng-template">
+<script id="places.html" type="text/ng-template">
     <ion-modal-view>
-        <ion-header-bar class="bar-assertive">
+        <ion-header-bar class="bar-assertive bar-icon-right">
             <h1 class="title">Filtrar locais</h1>
             <div class="button button-clear" ng-click="modal.hide()">
-                <span class="icon icon_close"></span>
+                <span class="icon ion-android-done"></span>
             </div>
         </ion-header-bar>
         <ion-content>
             <div class="list">
-                <label class="item item-input">
-                    <i class="icon icon_search placeholder-icon"></i>
-                    <input type="text" ng-model="filters.places.query" placeholder="Buscar">
-                    <button ng-if="filters.places.query.length"
-                            class="button button-icon ion-android-close input-button"
-                                    ng-click="clearSearch()" />
-
-               </label>
+                <!-- WARNING: Please, don't change it to label, will stop working -->
+                <div class="item item-input">
+                    <i class="button button-clear icon icon_search placeholder-icon"></i>
+                    <input type="text" ng-model="filters.places.query" placeholder="Buscar" />
+                    <div ng-if="filters.places.query.length"
+                        class="button button-clear" ng-click="resetSearch()">
+                        <span class="icon ion-backspace-outline"></span>
+                    </div>
+               </div>
                 <ion-checkbox item-height="50px" item-width="100%"
                     collection-repeat="space in lespaces | searchPlaces:filters.places.query"
                     class="checkbox-assertive" type="checkbox" ng-change="changed(space.index)"

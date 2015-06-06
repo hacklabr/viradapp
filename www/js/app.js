@@ -14,41 +14,43 @@ viradapp.run(function($ionicPlatform, GlobalConfiguration) {
     });
 })
 
-viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $cordovaFacebookProvider) {
+viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $compileProvider) {
     //$ionicConfigProvider.scrolling.jsScrolling(false);
+
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|tel|geo):/);
 
     $stateProvider
     .state('virada', {
         url: "/virada",
         abstract: true,
-        templateUrl: "templates/menu.html",
-        controller: 'FilterCtrl'
+        templateUrl: 'templates/menu.html'
+        // template: "<ion-nav-view name='template' />",
     })
 
     .state('virada.programacao', {
         url: '/programacao',
         views: {
-            'menu-virada': {
-                templateUrl: 'templates/tab-programacao.html',
+            'menu-view': {
+                templateUrl: 'templates/programacao.html',
                 controller: 'ProgramacaoCtrl'
-            }
+            },
         }
     })
 
     .state('virada.minha-virada', {
         url: '/programacao/minha-virada',
         views: {
-            'menu-virada': {
-                templateUrl: 'templates/tab-minha-virada.html',
+            'menu-view': {
+                templateUrl: 'templates/minha-virada.html',
                 controller: 'MinhaViradaCtrl'
-            }
+            },
         }
     })
 
     .state('virada.atracao-detail', {
         url: '/programacao/atracao/:atracao',
         views: {
-            'menu-virada': {
+            'menu-view': {
                 templateUrl: 'templates/atracao-detail.html',
                 controller: 'AtracaoCtrl'
             }
@@ -58,7 +60,7 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     .state('virada.palco-detail', {
         url: '/programacao/palco/:palco',
         views: {
-            'menu-virada': {
+            'menu-view': {
                 templateUrl: 'templates/palco-detail.html',
                 controller: 'PalcoCtrl'
             }
@@ -68,17 +70,17 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     .state('virada.about', {
         url: '/programacao/sobre',
         views: {
-            'menu-virada': {
+            'menu-view': {
                 templateUrl: 'templates/about.html',
             }
         }
     })
 
-    .state('tab.social', {
-        url: '/social',
+    .state('virada.social', {
+        url: '/virada/social',
         views: {
-            'tab-social': {
-                templateUrl: 'templates/tab-social.html',
+            'menu-view': {
+                templateUrl: 'templates/social.html',
                 controller: 'SocialCtrl'
             }
         }

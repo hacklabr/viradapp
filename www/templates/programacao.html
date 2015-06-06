@@ -6,7 +6,7 @@
     </article>
 </div>
 <div ng-repeat="space in ledata" class="list list-programacao">
-    <ion-item ng-if="space.name" href="#/virada/programacao/palco/{{space.id}}" class="item item-divider" >
+    <ion-item ng-if="space.name" ui-sref="virada.palco-detail({palco : space.id })" class="item item-divider" >
         {{ space.name }}
         <h3>
             {{ space.palco.endereco }}
