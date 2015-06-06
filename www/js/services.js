@@ -38,7 +38,7 @@ angular.module('viradapp.services', [])
         });
     }
 
-            // FIXME Change md5 file get data
+    // FIXME Change md5 file get data
     var data_source = $http.get("assets/new/objects-md5.json")
     .then(function(newMD5){
         return $http.get("assets/objects-md5.json").then(function(oldMD5){
@@ -50,7 +50,6 @@ angular.module('viradapp.services', [])
                     || newMD5.data[conf.events.file]
                     !== oldMD5.data[conf.events.file] ){
 
-                    console.log("We are different, save me!");
                     if(typeof cordova !== 'undefined'){
                         $cordovaFile.checkDir(cordova.file.dataDirectory,
                                                "objects1")

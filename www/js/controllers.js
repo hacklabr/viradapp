@@ -23,7 +23,8 @@ angular.module('viradapp.controllers', [])
     }
 })
 
-.controller('FilterCtrl', function($scope, $stateParams, Virada, $ionicModal, $timeout) {
+.controller('FilterCtrl', function($rootScope, $scope, $stateParams, Virada, $ionicModal, $timeout, $ionicScrollDelegate) {
+
     var config = {
         duration :  moment.duration(1, 'days'),
         start: moment("201405170000", "YYYYMMDDhhmm"),
@@ -202,27 +203,26 @@ angular.module('viradapp.controllers', [])
      * Watch filters
      */
 
-    var TIMEOUT_DELAY = 1000;
+    var TIMEOUT_DELAY = 2000;
 
-    $scope.$watch('filters', function(newValue, oldValue){
-        if(newValue.query !== oldValue.query
-            || newValue.places.data.length !== oldValue.places.data.length){
-            $timeout(function(){
-                console.log("Let's try");
-                filtering();
+    $scope.$watch('filters.query', function(newValue, oldValue){
+        if(newValue !== oldValue){
+            $timeout(watchHandler, TIMEOUT_DELAY);
+        }
+    }, true);
 
-                config.L.page = 1;
-                config.L.data = config.L.filtered
-                            .take(config.loads).toArray();
+    function watchHandler(){
+        filtering();
 
-                config.L.loaded = config.L.page*config.loads;
+        config.L.page = 1;
+        config.L.data = config.L.filtered.take(config.loads).toArray();
+        config.L.loaded = config.L.page*config.loads;
 
-                config.A.page = 1;
-
-                config.A.data =  [{
-                    events: config.A.filtered.take(config.loads).toArray()
-                }];
-                config.A.loaded = config.L.page*config.loads;
+        config.A.page = 1;
+        config.A.data =  [{
+            events: config.A.filtered.take(config.loads).toArray()
+        }];
+        config.A.loaded = config.L.page*config.loads;
 
         switch($scope.filters.sorted){
             case "L":
@@ -231,20 +231,9 @@ angular.module('viradapp.controllers', [])
             case "A":
                 $rootScope.ledata = config.A.data;
 
-                    break;
-                }
-            }, TIMEOUT_DELAY);
+            break;
         }
-    }, true);
-
-
-    /**
-     *   Util
-     */
-
-    $scope.LL = function(date){
-        return moment(date).format('LL');
-    };
+    }
 
     $rootScope.loadMore  = function(){
         switch ($scope.filters.sorted) {
@@ -341,6 +330,7 @@ angular.module('viradapp.controllers', [])
 
     $scope.$on('modal.hidden', function() {
         // Show button if places are chosen
+        watchHandler();
     });
 
     $scope.changed = function(id) {
