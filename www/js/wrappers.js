@@ -3,7 +3,9 @@ angular.module("viradapp.wrappers", [])
 .factory('Lazy', ['$window', function ($window){
     return $window.Lazy;
 }])
-
+.factory('moment', function($window){
+    return $window.moment;
+})
 .factory('MinhaVirada', function ($window, GlobalConfiguration, $cordovaOauth, $localStorage, $http, $rootScope, $ionicPlatform, $q){
     var uid = false;
     var accessToken = false;
@@ -289,5 +291,11 @@ angular.module("viradapp.wrappers", [])
         atualizaEstrelas: atualizaEstrelas,
         logout: logout
     };
+})
+.factory('Date', function(moment){
+    return {
+        LL :  function(date){
+            return moment(date).format('LL');
+        }
+    }
 });
-

@@ -1,29 +1,23 @@
 angular.module('viradapp.controllers', [])
 .controller('PalcoCtrl', function($scope, $stateParams, Virada, Conn){
-    console.log(Conn);
     if($stateParams.palco){
-        var start = new Date().getTime();
         Virada.getPalco($stateParams.palco)
         .then(function(data){
             $scope.space = data;
             $scope.spaceEvents = data.events;
-            var end = new Date().getTime();
-            console.log("Tempo: " + (end - start));
         });
     } else {
-        //
+        // none selected
     }
 })
 
-.controller('AtracaoCtrl', function($scope, $stateParams, Virada){
+.controller('AtracaoCtrl', function($scope, $stateParams, Virada, MinhaVirada, Date){
+    $scope.LL = Date.LL;
     if($stateParams.atracao){
-        var start = new Date().getTime();
         Virada.get($stateParams.atracao)
         .then(function(data){
             $scope.atracao = data;
             $scope.space = data.space;
-            var end = new Date().getTime();
-            console.log("Tempo: " + (end - start));
         });
     } else {
     }
