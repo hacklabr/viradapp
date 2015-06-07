@@ -23,52 +23,27 @@ angular.module('viradapp.controllers', [])
     }
 })
 
-.controller('FilterCtrl', function($rootScope, $scope, $stateParams, Virada, $ionicModal, $timeout, $ionicScrollDelegate) {
-
+.controller('FilterCtrl', function($rootScope, $scope, $stateParams, $filter, Programacao, Virada, $ionicModal, $timeout, $ionicScrollDelegate, Date, Filter, ListState) {
     var config = {
-        duration :  moment.duration(1, 'days'),
-        start: moment("201405170000", "YYYYMMDDhhmm"),
-        end: moment("201405182359", "YYYYMMDDhhmm"),
+        duration : Date.oneDay(),
+        start: Date.start(),
+        end: Date.end(),
         loads: 5,
-        A: {
-            loaded : 0,
-            page : 0,
-            data : []
-        },
-        L: {
-            loaded : 0,
-            page : 0,
-            data : []
-        },
-        H: {
-            loaded : 0,
-            page : 0,
-            data : []
-        },
+        A: new ListState(),
+        L: new ListState(),
+        H: new ListState()
     };
-    $scope.filters = {
-        query: '',
-        sorted: 'L',
-        places: {
-            data: [],
-            query: ''
-        },
-        starting: config.start.format('x'),
-        ending: config.end.format('x'),
-        nearest: false
-    };
-
-    $scope.sorted = 'L';
     var spaces;
     var events;
 
+    $scope.filters = new Filter(config.start, config.end);
+    $scope.sorted = 'L';
     $rootScope.ledata = [];
 
     /**
      * Init data, once initialized we have the following structures:
      * spaces as a Lazy.js sequence
      * events as a Lazy.js sequence
-     * $rootScope.ledata first data
      *
      */
     function init (){
@@ -107,63 +82,11 @@ angular.module('viradapp.controllers', [])
     }
 
     function filtering(){
-        var lefilter = function (event){
-            var hasSpace = false;
-            var space = spaces.findWhere({
-                id: event.spaceId.toString()
-            });
-            if(typeof space !== 'undefined'){
-                if($scope.filters.places.data.length > 0){
-                    // If the places array is not empty,
-                    // test if the event belongs to one of the places
-                    if(!Lazy($scope.filters.places.data).contains(space.id)){
-                        return false;
-                    }
-                }
-
-                var lm = new RegExp(($scope.filters.query), 'ig');
-                hasSpace = lm.test(space.name.substring($scope.filters.query));
-
-                event.spaceData = space;
-            }
-            var date = moment(event.startsOn + " " + event.startsAt,
-                          "YYYY-MM-DD hh:mm").format('x');
-
-            return (date <= $scope.filters.ending
-                    && date >= $scope.filters.starting)
-                    && (event.name.indexOf($scope.filters.query) >= 0
-                        || hasSpace);
-        };
-
-        var currSpaces = [];
-        var toSpaces = function(event){
-            if(typeof event.spaceData !== 'undefined'){
-                var curr = Lazy(currSpaces)
-                    .findWhere({id : event.spaceData.id});
-                if(typeof curr !== 'undefined'){
-                    delete event.spaceData;
-                    curr.events.push(event);
-                } else {
-                    curr = event.spaceData;
-                    curr.events = [];
-                    curr.events.push(event);
-                    currSpaces.push(curr);
-                }
-
-            }
-            return true;
-        };
-
-        var thename = function(event){
+        var data = $filter('lefilter')(events, spaces, $scope.filters);
+        config.A.filtered = data.sortBy(function(event){
             return event.name;
-        }
-
-        var data;
-        data = events.filter(lefilter);
-        config.A.filtered = data.sortBy(thename);
-
-        data.each(toSpaces);
-        config.L.filtered = Lazy(currSpaces).sortBy('index');
+        });
+        config.L.filtered = Lazy($filter('toSpaces')(data)).sortBy('index');
     }
 
     /**
@@ -178,7 +101,7 @@ angular.module('viradapp.controllers', [])
             case "A":
                 $scope.filters.sorted = "A";
                 if(config.A.data.length > 0){
-                   $rootScope.ledata = config.A.data;
+                    $rootScope.ledata = config.A.data;
                 } else {
                     filtering();
                     $rootScope.ledata = [];
@@ -203,7 +126,7 @@ angular.module('viradapp.controllers', [])
      * Watch filters
      */
 
-    var TIMEOUT_DELAY = 2000;
+    var TIMEOUT_DELAY = 200;
 
     $scope.$watch('filters.query', function(newValue, oldValue){
         if(newValue !== oldValue){
@@ -347,24 +270,6 @@ angular.module('viradapp.controllers', [])
         //$scope.loadMore();
     });
 
-})
-.filter('searchPlaces', function(){
-  return function (items, query) {
-    if(typeof items === 'undefined') return;
-    var filtered = [];
-    var letterMatch = new RegExp((query), 'ig');
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      if (query) {
-        if (letterMatch.test(item.name.substring(query.length))) {
-          filtered.push(item);
-        }
-      } else {
-        filtered.push(item);
-      }
-    }
-    return filtered;
-  };
 })
 .controller('ProgramacaoCtrl', function($rootScope, $scope, Virada, $ionicModal) {
     $scope.$on('$ionicView.beforeEnter', function(){

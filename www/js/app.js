@@ -1,4 +1,4 @@
-var viradapp = angular.module("viradapp", ['ionic', 'viradapp.wrappers', 'viradapp.controllers', 'viradapp.services', 'viradapp.config', 'ngStorage', 'ngCordova']);
+var viradapp = angular.module("viradapp", ['ionic', 'viradapp.wrappers', 'viradapp.controllers', 'viradapp.services', 'viradapp.config', 'viradapp.minha_virada', 'viradapp.programacao', 'ngStorage', 'ngCordova']);
 viradapp.run(function($ionicPlatform, GlobalConfiguration) {
     $ionicPlatform.ready(function() {
         if (window.cordova && window.cordova.plugins &&
