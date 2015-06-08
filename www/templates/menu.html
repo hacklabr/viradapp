@@ -48,10 +48,10 @@
     <ion-side-menu ng-controller="FilterCtrl" side="right" is-enabled="programacao">
         <ion-content>
             <ion-list ng-show="hasData">
-            <label class="item item-input">
+            <div class="item item-input">
                 <i class="icon icon_search placeholder-icon"></i>
                 <input ng-model-options="{ debounce: 300 }" ng-model="filters.query" type="text" placeholder="Buscar">
-            </label>
+            </div>
             <ion-item class="item-divider">
                 Organizar por:
             </ion-item>
