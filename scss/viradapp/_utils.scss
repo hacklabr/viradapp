@@ -14,3 +14,14 @@
     font-size: 12px;
     text-transform: uppercase;
 }
+
+.platform-ios.platform-cordova {
+  // iOS has a status bar which sits on top of the header.
+  // Bump down everything to make room for it. However, if
+  // if its in Cordova, and set to fullscreen, then disregard the bump.
+  &:not(.fullscreen) {
+    .espacinho {
+	  margin-top: $ios-statusbar-height;
+	}
+  }
+}

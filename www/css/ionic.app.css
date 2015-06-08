@@ -8068,3 +8068,6 @@ a {
   font-family: "Museo Sans", Verdana, sans-serif;
   font-size: 12px;
   text-transform: uppercase; }
+
+.platform-ios.platform-cordova:not(.fullscreen) .espacinho {
+  margin-top: 20px; }
