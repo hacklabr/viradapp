@@ -25,7 +25,14 @@
       "locator": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-file.git",
       "id": "cordova-plugin-file"
     },
-    "org.apache.cordova.statusbar"
+    {
+      "locator": "https://github.com/Nipher/phonegap-googlemaps-plugin",
+      "id": "plugin.google.maps",
+      "variables": {
+        "API_KEY_FOR_ANDROID": "AIzaSyDM80LcvX9D6yVKj92ejRGjfgHGS5yfyrQ",
+        "API_KEY_FOR_IOS": "AIzaSyDM80LcvX9D6yVKj92ejRGjfgHGS5yfyrQ"
+      }
+    }
   ],
   "cordovaPlatforms": [
     "android",
