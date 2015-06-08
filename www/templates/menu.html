@@ -50,7 +50,7 @@
             <ion-list ng-show="hasData">
             <label class="item item-input">
                 <i class="icon icon_search placeholder-icon"></i>
-                <input ng-model="filters.query" type="text" placeholder="Buscar">
+                <input ng-model-options="{ debounce: 300 }" ng-model="filters.query" type="text" placeholder="Buscar">
             </label>
             <ion-item class="item-divider">
                 Organizar por:
