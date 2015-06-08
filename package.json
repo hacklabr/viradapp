@@ -16,7 +16,6 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "org.apache.cordova.device",
     "org.apache.cordova.console",
     "com.ionic.keyboard",
     "cordova-plugin-whitelist",
@@ -32,7 +31,9 @@
         "API_KEY_FOR_ANDROID": "AIzaSyDM80LcvX9D6yVKj92ejRGjfgHGS5yfyrQ",
         "API_KEY_FOR_IOS": "AIzaSyDM80LcvX9D6yVKj92ejRGjfgHGS5yfyrQ"
       }
-    }
+    },
+    "org.apache.cordova.device",
+    "org.apache.cordova.statusbar"
   ],
   "cordovaPlatforms": [
     "android",

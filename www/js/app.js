@@ -5,12 +5,6 @@ viradapp.run(function($ionicPlatform, GlobalConfiguration) {
             window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         }
-        if (window.StatusBar) {
-            StatusBar.styleLightContent();
-            StatusBar.overlaysWebView(false);
-            StatusBar.styleBlackTranslucent();
-            StatusBar.backgroundColorByName('black');
-        }
     });
 })
 
