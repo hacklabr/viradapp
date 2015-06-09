@@ -19,6 +19,22 @@ angular.module("viradapp.wrappers", [])
         this.nearest = false;
     };
 })
+.factory('User', function(){
+    return function(){
+        this.uid = false;
+        this.accessToken = false;
+        this.connected = false;
+        this.name = false;
+        this.picture = false;
+        this.events = [];
+        this.initialized = false;
+        this.isBrowser = false;
+
+        this.valid = function valid(){
+            return this.uid;
+        }
+    }
+})
 .factory('ListState', function($window){
     return function(){
         this.loaded = 0;
@@ -39,6 +55,9 @@ angular.module("viradapp.wrappers", [])
         },
         oneDay: function(){
             return moment.duration(1, 'days');
+        },
+        timestamp: function(date, time){
+            return moment(date+time, "YYYY-MM-DDhh:mm").format('x');
         }
     }
 });

@@ -156,6 +156,7 @@ angular.module('viradapp.controllers', [])
 
             break;
         }
+
     }
 
     $rootScope.loadMore  = function(){
@@ -269,9 +270,9 @@ angular.module('viradapp.controllers', [])
     $scope.$on('$stateChangeSuccess', function() {
         //$scope.loadMore();
     });
-
 })
-.controller('ProgramacaoCtrl', function($rootScope, $scope, Virada, $ionicModal) {
+.controller('ProgramacaoCtrl', function($rootScope, $scope, MinhaVirada, $localStorage) {
+
     $scope.$on('$ionicView.beforeEnter', function(){
         $rootScope.programacao = true;
     });
@@ -285,7 +286,7 @@ angular.module('viradapp.controllers', [])
         enableFriends: true
     };
 })
-.controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading){
+.controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading, Date){
     $ionicLoading.show({
         noBackdrop: true,
         duration: 20000,
@@ -301,104 +302,134 @@ angular.module('viradapp.controllers', [])
     $scope.hasEvents = false;
     $scope.events = [];
     $scope.connected = false;
-    $scope.user_picture = '';
 
     // Test if user has a token
     // if true try to get data
     //     if it fails, try to login again to get another token
     // if false, emit initialized and show the button
     if($localStorage.hasOwnProperty("accessToken") === false) {
+        console.log("have access token?");
         $rootScope.$emit('initialized');
     } else {
         // Test if token is valid
         MinhaVirada.init($localStorage.accessToken, $localStorage.uid)
         .then(function(data){
+            console.log(data);
             if(!data){
-                MinhaVirada.connect();
+                $rootScope.$emit('initialized');
             }
         });
     }
-
 
     $scope.login = function(){
         MinhaVirada.connect();
     }
 
-
-    $rootScope.$on('fb_connected', function(ev, data) {
+    $rootScope.$on('fb_app_connected', function(ev, userData) {
         $scope.connected = true;
-        $scope.home = false;
-
-        $localStorage.accessToken = data.token;
-        $localStorage.uid = data.uid;
-        console.log($localStorage);
-
         $scope.accessToken = $localStorage.accessToken;
-
-        if ($location.$$hash) {
-            if ($location.$$hash == data.uid) {
-                $scope.itsme = true;
-                MinhaVirada.inMyPage(true);
-            }
-            return;
-        }
-
-        $scope.itsme = true;
-        MinhaVirada.inMyPage(true);
-
-        $scope.loadUserData(data.uid);
-        var curUlr = document.URL;
-        $location.hash(data.uid);
-        $scope.$emit('minhavirada_hashchanged',
-                     curUlr + '##' + $location.$$hash);
-
-
-        console.log("Inicializado");
+        if(userData) populateUserInfo(userData);
     });
 
     $rootScope.$on('fb_not_connected', function(ev, uid) {
+        $scope.message = "Não foi possível conectar";
         console.log("Não conectado");
     });
 
+    $rootScope.$on('data_not_loaded', function(ev) {
+        $scope.message = "Não foi possível carregar seus dados";
+        console.log("Não foi possivel carregar os dados");
+    });
 
-    $scope.loadUserData = function(uid) {
-        uid = 720235837;
-        $http
-        .get(GlobalConfiguration.TEMPLATE_URL
-             + '/includes/minha-virada-ajax.php?action=minhavirada_getJSON&uid='
-             + uid)
-        .success(function(data){
-            $scope.populateUserInfo(data);
-        });
-    };
+    $rootScope.$on('user_data_saved', function(ev){
+        $scope.message = "dados salvos!";
+        // console.log("Os dados foram salvos com sucesso");
+        // console.log(JSON.stringify($localStorage.user));
+        updateUserInfo($localStorage.user);
+    });
 
-    $scope.populateUserInfo = function(data) {
-        if ( typeof(data.picture) != 'undefined' ) {
-            $scope.user_picture =
-                "background-image: url(" + data.picture + ");";
-            $scope.user_name = data.name;
-        } else {
-            //jQuery('.user-photo').hide();
+    function updateUserInfo(user){
+        if(user.events.length !== $scope.events.length){
+            // Events array has changed
+            $scope.events = [];
+            fillEvents(user);
         }
+    }
 
+    function fillEvents(data){
         Virada.events().then(function(events){
             if (data.events && data.events.length > 0) {
                 $scope.hasEvents = true;
-                Lazy(data.events).tap(function(id){
+                Lazy(data.events).sortBy(function(id){
+                    var event = events.findWhere({id : id});
+                    return Date.timestamp(event.startsOn+event.startsAt);
+                }).tap(function(id){
                     var event = events.findWhere({id : id});
                     if(typeof event !== 'undefined'){
                         $scope.events.push(event);
                     }
-                    // e.url = eventUrl(e.id);
                 }).each(Lazy.noop);
+
             };
-            MinhaVirada.atualizaEstrelas();
         });
+    }
+
+    function populateUserInfo (data) {
+        if ( typeof(data.picture) !== 'undefined' ) {
+            $scope.user_picture = data.picture;
+            $scope.user_name = data.name;
+        }
+        fillEvents(data);
     }
 
     if ($location.$$hash) {
         $scope.home = false;
         $scope.loadUserData($location.$$hash);
+    }
+
+})
+.controller('AppCtrl', function($scope, $rootScope, $localStorage, MinhaVirada){
+    $scope.anon = true;
+    if($localStorage.uid){
+        $scope.anon = false;
+        MinhaVirada.loadUserData($localStorage.uid).then(function(userData){
+            // Here I have a user data is he/she has lots of stuff
+            // Or a dummy userData, if the user has no data yet (first login)
+            $localStorage.user = userData;
+            // console.log(JSON.stringify($localStorage.user));
+        });
+    }
+
+    $rootScope.$on('fb_connected', function(ev, data) {
+        // console.log("fb_connected");
+        $rootScope.connected = true;
+
+        if($localStorage.accessToken !== data.token){
+            $localStorage.accessToken = data.token;
+
+            // But still could be another user or another token, test it
+            if($localStorage.uid !== data.uid){
+                // Is another user, time to throw data out
+                $localStorage.uid = data.uid;
+                $scope.anon = false;
+                delete $localStorage.user;
+            }
+        }
+        MinhaVirada.loadUserData($localStorage.uid)
+        .then(function(userData){
+            $localStorage.user = userData;
+            // console.log(JSON.stringify($localStorage.user));
+            $rootScope.$emit('fb_app_connected', userData);
+        });
+    });
+
+    $rootScope.minha_virada = function(eventId){
+        if($localStorage.hasOwnProperty("accessToken") === false ||
+           $localStorage.hasOwnProperty("uid") === false) {
+            MinhaVirada.connect();
+        } else {
+            MinhaVirada.add(eventId);
+        }
     }
 
 });

@@ -1,18 +1,7 @@
 angular.module("viradapp.minha_virada", [])
-.factory('MinhaVirada', function ($window, GlobalConfiguration, $cordovaOauth, $localStorage, $http, $rootScope, $ionicPlatform, $q){
-    var uid = false;
-    var accessToken = false;
-    var eventId = false;
-    var connected = false;
-    var username = false;
-    var name = false;
-    var picture = false;
-    var events = [];
-    var modalDismissed = false;
-    var data = false;
-    var initialized = false;
-    var inMyPage = false;
-    var isBrowser = false;
+.factory('MinhaVirada', function ($window, GlobalConfiguration, $cordovaOauth, $localStorage, $http, $rootScope, $ionicPlatform, $q, User){
+
+    var user = new User();
 
     var _xhr_api = function (obj) {
         var method = obj.method || 'GET',
@@ -20,7 +9,7 @@ angular.module("viradapp.minha_virada", [])
             xhr = new XMLHttpRequest(),
             url;
 
-        params['access_token'] = accessToken;
+        params['access_token'] = user.accessToken;
 
         url = 'https://graph.facebook.com' + obj.path + '?'
         + toQueryString(params);
@@ -55,10 +44,9 @@ angular.module("viradapp.minha_virada", [])
         return deferred.promise;
     }
 
-    var connect = function(callback) {
+    var connect = function() {
         $ionicPlatform.ready(function(){
-            if (connected) {
-                eval(callback);
+            if (user.connected) {
                 return;
             }
 
@@ -70,16 +58,17 @@ angular.module("viradapp.minha_virada", [])
                 "user_relationships"
             ])
             .then(function(response){
-                _connected(response, callback);
+                _connected(response);
             }, function(error){
+                console.log(error);
                 if('Cannot authenticate via a web browser' === error){
-                    _browser(callback);
+                    _browser();
                 }
             });
         });
     };
 
-    var _connected = function(response, callback){
+    var _connected = function(response){
         var authData = {};
         if(typeof response.authResponse !== 'undefined'){
             authData.access_token = response.authResponse.accessToken;
@@ -87,14 +76,13 @@ angular.module("viradapp.minha_virada", [])
         } else {
             authData = response;
         }
-        console.log(JSON.stringify(authData));
 
-        initializeUserData(authData, callback ? callback : false);
-        connected = true;
-        accessToken = authData.access_token;
+        initializeUserData(authData);
+        user.connected = true;
+        user.accessToken = authData.access_token;
     }
 
-    var _browser = function(callback) {
+    var _browser = function() {
         window.fbAsyncInit = function() {
             FB.init({
                 appId      : GlobalConfiguration.APP_ID,
@@ -107,15 +95,13 @@ angular.module("viradapp.minha_virada", [])
             // Se nao estiver, não fazemos nada.
             // Só vamos fazer alguma coisa se ele clicar
             FB.getLoginStatus(function(response) {
+                console.log(response);
                 if (response.status === 'connected') {
-                    _connected(response, callback);
+                    _connected(response);
                 } else{
                     $rootScope.$emit('initialized');
-                    atualizaEstrelas();
                     $rootScope.$emit('fb_not_connected');
                 }
-
-                $rootScope.$emit('sdk_loaded');
             });
 
         };
@@ -132,112 +118,138 @@ angular.module("viradapp.minha_virada", [])
         }(document, 'script', 'facebook-jssdk'));
     };
 
+    // Try to get user data
+
     var init = function(at, uid){
         return initializeUserData({access_token: at, uid: uid});
     }
 
-    var initializeUserData = function(response, callback) {
-
-        connected = true;
-
-        accessToken = response.access_token;
+    var initializeUserData = function(response) {
+        user.accessToken = response.access_token;
         return api({
             path: '/me',
             params: {fields: ['id', 'name', 'picture.height(200)']}
         })
         .then(function(response) {
-            name = response.name;
-            picture = response.picture.data.url;
-            uid = response.id;
+            user.name = response.name;
+            user.picture = response.picture.data.url;
+            user.uid = response.id;
+            user.connected = true;
 
-            $rootScope.$emit('fb_connected', {uid: uid, token: accessToken});
+            $rootScope.$emit('fb_connected',
+                             {
+                                 uid: user.uid,
+                                 token: user.accessToken
+                             });
             $rootScope.$emit('initialized');
-            save();
+            return true;
         })
         .catch(function(d){
-            connected = false;
+            user.connected = false;
             return false;
         });
     };
 
-    var prepareJSON = function() {
+    function loadUserData (uid) {
+        if(typeof uid !== 'undefined' && !user.uid){
+            user.uid = uid;
+        };
+
+        return $http
+        .get(GlobalConfiguration.TEMPLATE_URL
+             + '/includes/minha-virada-ajax.php?action=minhavirada_getJSON&uid='
+             + uid)
+        .then(function(data){
+            // Se não existe usuário ou não está logado,
+            // Não tem uid, no caso
+            if(data.data.length == 0){
+                userJSON = prepareJSON();
+                if(user.valid()){
+                    save(userJSON);
+                }
+                return userJSON;
+            } else {
+                user.events = data.data.events;
+                return data.data;
+            }
+        })
+        .catch(function(data){
+            $rootScope.$emit('data_not_loaded');
+            return $localStorage.user;
+        });
+    };
+
+    function prepareJSON () {
         var json = {
-            uid: uid,
-            picture: picture,
-            events: events,
-            name: name,
-            modalDismissed: modalDismissed
+            uid: user.uid,
+            picture: user.picture,
+            events: user.events,
+            name: user.name,
         }
         return json;
     };
 
-    var save = function() {
-        var userJSON = prepareJSON();
-        console.log(JSON.stringify(userJSON));
-        $localStorage.user = userJSON;
-        // TODO SAVE TO API! IMPORTANT! RETURN PROMISE!!!! =D
+    var save = function(userJSON) {
+        // console.log(JSON.stringify(userJSON));
+        var url = GlobalConfiguration.TEMPLATE_URL
+        + '/includes/minha-virada-ajax.php';
 
-        //jQuery.post( GlobalConfiguration.templateURL + '/includes/minha-virada-ajax.php', {action: 'minhavirada_updateJSON', dados: userJSON }, function( data ) {
-        // atualiza estrelas
-        //  atualizaEstrelas();
-        //  if (!modalDismissed)
-        //jQuery('#modal-favorita-evento').modal('show');
-        //});
-    };
+        var data = serialize({
+            action: 'minhavirada_updateJSON',
+            dados : userJSON
+        });
 
-    atualizaEstrelas = function() {
-        if(initialized) {
-            //jQuery('.favorite').removeClass('favorite-wait');
-        }
+        var options = {
+            headers : {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+            }
+        };
 
-        if (!connected)
-            return;
-        //jQuery('.favorite').removeClass('active');
-        for (var i = 0; i < events.length; i++) {
-            //jQuery('.favorite-event-'+events[i]).addClass('active');
-        }
+        $http
+        .post(url, data, options)
+        .success(function(data, status, headers, config){
+            $rootScope.$emit('user_data_saved')
+            return data;
+        })
+        .error(function(data, status, headers, config){
+            $rootScope.$emit('user_data_fail');
+            return false;
+        });
     };
 
     // retorna falso se não tem, ou o índice se tem
-    var has_event = function(eventId) {
-        if (!connected)
+    function hasEvent(eventId) {
+        if (!user.connected)
             return false;
-
-        for (var i = 0; i < events.length; i++) {
-
-            if (events[i] == eventId)
+        for (var i = 0; i < user.events.length; i++) {
+            if (user.events[i] == eventId)
                 return i;
         }
         return false;
     };
 
     var click = function(eventId) {
-        eventId = eventId;
-        connect('doClick');
+        if(!user.connected){
+            connect();
+            return;
+        }
+        if(typeof user.events === 'undefined'){
+            user.events = [];
+        }
+        doClick(eventId);
     };
 
-    var doClick = function() {
-        //console.log(events);
-        //console.log(eventId);
+    var doClick = function(eventId) {
         if (eventId) {
-            var has_event = has_event(eventId);
+            var has_event = hasEvent(eventId);
+            // console.log(has_event);
+
             if (has_event !== false ) { // o indice pode ser 0
-
-                //if (confirm('Tem certeza que quer remover esta atração da sua seleção?')) {
-
-                events.splice(has_event, 1);
-
-                // Se estiver editando a pagina minha virada, exclui o evento da página
-                // if (inMyPage)
-                //jQuery('#event-group-' + eventId).fadeOut(function() {
-                //  jQuery(this).remove();
-                //});
-                //}
-
+                user.events.splice(has_event, 1);
             } else {
-                events.push(eventId);
+                user.events.push(eventId);
             }
-            save();
+            save(prepareJSON());
         }
     };
 
@@ -251,18 +263,17 @@ angular.module("viradapp.minha_virada", [])
         return parts.join("&");
     };
 
-
-    var logout = function(callback){
-        $ionicPlatform.ready(function(){
-            delete $localStorage.accessToken
-            connected = false;
-            FB.logout(function(){
-                window.location.reload()
-                console.log(response);
-                return false;
-            });
-            console.log();
-        });
+    var serialize = function(obj, prefix) {
+        var str = [];
+        for(var p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                str.push(typeof v == "object" ?
+                         serialize(v, k) :
+                         encodeURIComponent(k) + "=" + encodeURIComponent(v));
+            }
+        }
+        return str.join("&");
     }
 
     var revoke = function (success, error) {
@@ -277,12 +288,9 @@ angular.module("viradapp.minha_virada", [])
     return {
         connect: connect,
         init: init,
-        add: doClick,
-        inMyPage: function(myPage){
-            inMyPage = myPage;
-        },
-        atualizaEstrelas: atualizaEstrelas,
-        logout: logout
+        add: click,
+        revoke: revoke,
+        loadUserData: loadUserData
     };
 })
 

@@ -21,8 +21,9 @@ viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvide
     .state('virada', {
         url: "/virada",
         abstract: true,
-        templateUrl: 'templates/menu.html'
+        templateUrl: 'templates/menu.html',
         // template: "<ion-nav-view name='template' />",
+        controller: 'AppCtrl'
     })
 
     .state('virada.programacao', {
