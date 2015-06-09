@@ -1,9 +1,9 @@
-<ion-view view-title="{{ atracao.nome }}" >
+<ion-view title="{{atracao.name}}" >
     <ion-content>
-        <img class="img-destacada-single-atracao" ng-src="{{atracao.defaultImage}}" alt="{{atracao.name}}" ng-if='atracao.defaultImage'/>
+        <img class="img-destacada-single-atracao" style="width: 100%;" ng-src="{{atracao.defaultImageThumb}}" alt="{{atracao.name}}" ng-if='atracao.defaultImageThumb'/>
         <article id="event-00" class="single">
             <header>
-                <h1>{{atracao.name}}</h1>
+                <h1>{{ atracao.name }}</h1>
             </header>
             <div class="post-content clearfix">
                 <p>{{atracao.shortDescription}}</p>
