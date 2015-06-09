@@ -60,7 +60,6 @@ angular.module("viradapp.minha_virada", [])
             .then(function(response){
                 _connected(response);
             }, function(error){
-                console.log(error);
                 if('Cannot authenticate via a web browser' === error){
                     _browser();
                 }
@@ -95,7 +94,6 @@ angular.module("viradapp.minha_virada", [])
             // Se nao estiver, não fazemos nada.
             // Só vamos fazer alguma coisa se ele clicar
             FB.getLoginStatus(function(response) {
-                console.log(response);
                 if (response.status === 'connected') {
                     _connected(response);
                 } else{
@@ -257,7 +255,6 @@ angular.module("viradapp.minha_virada", [])
     var doClick = function(eventId) {
         if (eventId) {
             var has_event = hasEvent(eventId);
-            // console.log(has_event);
 
             if (has_event !== false ) { // o indice pode ser 0
                 user.events.splice(has_event, 1);
@@ -300,12 +297,22 @@ angular.module("viradapp.minha_virada", [])
             error: error});
     }
 
+    var hasUser = function(){
+        return user.accessToken && user.uid;
+    }
+
+    var setUser = function (u){
+        user = u;
+    }
+
     return {
         connect: connect,
         init: init,
         add: click,
         revoke: revoke,
-        loadUserData: loadUserData
+        loadUserData: loadUserData,
+        hasUser: hasUser,
+        setUser: setUser
     };
 })
 

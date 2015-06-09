@@ -340,7 +340,6 @@ angular.module('viradapp.controllers', [])
         // Test if token is valid
         MinhaVirada.init($localStorage.accessToken, $localStorage.uid)
         .then(function(data){
-            console.log(data);
             if(!data){
                 $rootScope.$emit('initialized');
             }
@@ -369,8 +368,6 @@ angular.module('viradapp.controllers', [])
 
     $rootScope.$on('user_data_saved', function(ev){
         $scope.message = "dados salvos!";
-        // console.log("Os dados foram salvos com sucesso");
-        // console.log(JSON.stringify($localStorage.user));
         updateUserInfo($localStorage.user);
     });
 
@@ -378,7 +375,9 @@ angular.module('viradapp.controllers', [])
         if(typeof $scope.events === 'undefined'){
             $scope.events = [];
         }
-        console.log(JSON.stringify(user));
+        if(typeof user.events === 'undefined'){
+            user.events = [];
+        }
         if(user.events.length !== $scope.events.length){
             // Events array has changed
             $scope.events = [];
@@ -420,12 +419,10 @@ angular.module('viradapp.controllers', [])
             // Here I have a user data is he/she has lots of stuff
             // Or a dummy userData, if the user has no data yet (first login)
             $localStorage.user = userData;
-            // console.log(JSON.stringify($localStorage.user));
         });
     }
 
     $rootScope.$on('fb_connected', function(ev, data) {
-        // console.log("fb_connected");
         $rootScope.connected = true;
 
         if($localStorage.accessToken !== data.token){
@@ -442,7 +439,6 @@ angular.module('viradapp.controllers', [])
         MinhaVirada.loadUserData($localStorage.uid)
         .then(function(userData){
             $localStorage.user = userData;
-            // console.log(JSON.stringify($localStorage.user));
             $rootScope.$emit('fb_app_connected', userData);
         });
     });
@@ -452,7 +448,15 @@ angular.module('viradapp.controllers', [])
            $localStorage.hasOwnProperty("uid") === false) {
             MinhaVirada.connect();
         } else {
-            MinhaVirada.add(eventId);
+            if(typeof $localStorage.user !== 'undefined'
+               && !MinhaVirada.hasUser()){
+                   MinhaVirada.init($localStorage.accessToken, $localStorage.uid)
+                   .then(function(){
+                       MinhaVirada.add(eventId);
+                   });
+            } else {
+                MinhaVirada.add(eventId);
+            }
         }
     }
 

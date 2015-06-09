@@ -54,9 +54,9 @@ angular.module('viradapp.services', [])
                         $cordovaFile.checkDir(cordova.file.dataDirectory,
                                                "objects1")
                         .then(function(data){
-                            console.log(JSON.stringify(data));
+                            // console.log(JSON.stringify(data));
                         }, function (error) {
-                            console.log(JSON.stringify(error));
+                            // console.log(JSON.stringify(error));
                         });
                     }
                 }
