@@ -1,8 +1,17 @@
 angular.module('viradapp.controllers', [])
-.controller('PalcoCtrl', function($scope, $stateParams, Virada, Conn){
+.controller('PalcoCtrl', function($rootScope, $scope, $stateParams, Virada, Conn){
+    $scope.$on('$ionicView.beforeEnter', function(){
+        $rootScope.curr = 'palco';
+    });
+
+    $scope.$on('$ionicView.beforeLeave', function(){
+        $rootScope.curr = false;
+    });
+
     if($stateParams.palco){
         Virada.getPalco($stateParams.palco)
         .then(function(data){
+            $rootScope.palco = data;
             $scope.space = data;
             $scope.spaceEvents = data.events;
         });
@@ -11,11 +20,20 @@ angular.module('viradapp.controllers', [])
     }
 })
 
-.controller('AtracaoCtrl', function($scope, $stateParams, Virada, MinhaVirada, Date){
+.controller('AtracaoCtrl', function($rootScope, $scope, $stateParams, Virada, MinhaVirada, Date){
+    $scope.$on('$ionicView.beforeEnter', function(){
+        $rootScope.curr = 'atracao';
+    });
+
+    $scope.$on('$ionicView.beforeLeave', function(){
+        $rootScope.curr = false;
+    });
+
     $scope.LL = Date.LL;
     if($stateParams.atracao){
         Virada.get($stateParams.atracao)
         .then(function(data){
+            $rootScope.atracao = data;
             $scope.atracao = data;
             $scope.space = data.space;
         });
@@ -287,6 +305,14 @@ angular.module('viradapp.controllers', [])
     };
 })
 .controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading, Date){
+    $scope.$on('$ionicView.beforeEnter', function(){
+        $rootScope.curr = 'minha_virada';
+    });
+
+    $scope.$on('$ionicView.beforeLeave', function(){
+        $rootScope.curr = false;
+    });
+
     $ionicLoading.show({
         noBackdrop: true,
         duration: 20000,
@@ -349,6 +375,10 @@ angular.module('viradapp.controllers', [])
     });
 
     function updateUserInfo(user){
+        if(typeof $scope.events === 'undefined'){
+            $scope.events = [];
+        }
+        console.log(JSON.stringify(user));
         if(user.events.length !== $scope.events.length){
             // Events array has changed
             $scope.events = [];
@@ -381,14 +411,8 @@ angular.module('viradapp.controllers', [])
         }
         fillEvents(data);
     }
-
-    if ($location.$$hash) {
-        $scope.home = false;
-        $scope.loadUserData($location.$$hash);
-    }
-
 })
-.controller('AppCtrl', function($scope, $rootScope, $localStorage, MinhaVirada){
+.controller('AppCtrl', function($scope, $rootScope, $localStorage, MinhaVirada, $ionicHistory, $cordovaSocialSharing, GlobalConfiguration){
     $scope.anon = true;
     if($localStorage.uid){
         $scope.anon = false;
@@ -430,6 +454,42 @@ angular.module('viradapp.controllers', [])
         } else {
             MinhaVirada.add(eventId);
         }
+    }
+
+
+    $scope.shareButtons = ['palco', 'atracao', 'minha_virada'];
+
+    $scope.share = function(b){
+        var subject = "Virada Cultural 2015!";
+        var message = "";
+        var link = GlobalConfiguration.SHARE_URL;
+        switch (b){
+            case 'palco':
+                message = "Venha conferir as atrações do Palco "
+                    + $rootScope.palco.name;
+                link = link + "/programacao/local/##" + $rootScope.palco.id;
+                break;
+            case 'atracao':
+                message = "Venha conferir a atração "
+                    + $rootScope.atracao.name;
+                link = link + "/programacao/atracao/##" + $rootScope.atracao.id;
+                break;
+            case 'minha_virada':
+                message = "Venha conferir a Minha Virada ";
+                link = link + "/minha-virada/##" + $localStorage.uid;
+                break;
+        }
+
+        $cordovaSocialSharing.share(message, subject, null, link)
+        .then(function(result) {
+            // Success!
+        }, function(err) {
+            // An error occured. Show a message to the user
+        });
+    }
+
+    $scope.showMe = function(b){
+        return b === $rootScope.curr;
     }
 
 });

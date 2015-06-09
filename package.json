@@ -33,7 +33,11 @@
       }
     },
     "org.apache.cordova.device",
-    "org.apache.cordova.statusbar"
+    "org.apache.cordova.statusbar",
+    {
+      "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+      "id": "nl.x-services.plugins.socialsharing"
+    }
   ],
   "cordovaPlatforms": [
     "android",

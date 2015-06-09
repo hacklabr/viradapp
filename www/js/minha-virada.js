@@ -179,6 +179,22 @@ angular.module("viradapp.minha_virada", [])
         });
     };
 
+    function reloadUserData (uid) {
+        return $http
+        .get(GlobalConfiguration.TEMPLATE_URL
+             + '/includes/minha-virada-ajax.php?action=minhavirada_getJSON&uid='
+             + uid)
+        .then(function(data){
+            if(typeof data.data.events !== 'undefined'){
+                user.events = data.data.events;
+            } else {
+                user.events = [];
+            }
+            $localStorage.user = user;
+        })
+    };
+
+
     function prepareJSON () {
         var json = {
             uid: user.uid,
@@ -190,7 +206,6 @@ angular.module("viradapp.minha_virada", [])
     };
 
     var save = function(userJSON) {
-        // console.log(JSON.stringify(userJSON));
         var url = GlobalConfiguration.TEMPLATE_URL
         + '/includes/minha-virada-ajax.php';
 
