@@ -29,5 +29,13 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
     background-color: transparent;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
+.hidden .item-radio .radio-icon {
+    visibility: hidden !important;
+}
+
 // Include Viradapp styles
 @import "viradapp/viradapp";

@@ -7678,6 +7678,12 @@ a.button {
 .menu .pane {
   background-color: transparent; }
 
+.hidden {
+  visibility: hidden; }
+
+.hidden .item-radio .radio-icon {
+  visibility: hidden !important; }
+
 /**
  * Bar (Headers and Footers)
  * --------------------------------------------------

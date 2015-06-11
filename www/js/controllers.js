@@ -40,8 +40,30 @@ angular.module('viradapp.controllers', [])
     } else {
     }
 })
+.controller('ButtonsCtrl', function($scope, $ionicSideMenuDelegate, $rootScope, Virada, MinhaVirada, $ionicGesture){
+    ionic.Platform.ready(function(){
+        $ionicGesture.on('swiperight', function(){
 
-.controller('FilterCtrl', function($rootScope, $scope, $stateParams, $filter, Programacao, Virada, $ionicModal, $timeout, $ionicScrollDelegate, Date, Filter, ListState) {
+        }, angular.element(document.querySelector("#menu-view")), {});
+
+
+        $scope.$watch(function(){
+            return $ionicSideMenuDelegate.isOpenLeft();
+        }, function(isOpen){
+            var leftMenu = angular.element(document.querySelector("#left-menu"));
+            if(isOpen){
+                leftMenu.removeClass('hidden');
+            } else {
+                leftMenu.addClass('hidden');
+            }
+            $rootScope.$emit("sidemenu_toggle", isOpen);
+        });
+        $scope.toggleLeftSideMenu = function() {
+            $ionicSideMenuDelegate.toggleLeft();
+        }
+    });
+})
+.controller('FilterCtrl', function($rootScope, $scope, $stateParams, $filter, Programacao, Virada, $ionicModal, $timeout, $ionicSideMenuDelegate, Date, Filter, ListState) {
     var config = {
         duration : Date.oneDay(),
         start: Date.start(),
@@ -299,10 +321,51 @@ angular.module('viradapp.controllers', [])
         $rootScope.programacao = false;
     });
 })
-.controller('SocialCtrl', function($scope) {
-    $scope.settings = {
-        enableFriends: true
-    };
+.controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada) {
+    ionic.Platform.ready(function () {
+        var map;
+        $scope.$on('$ionicView.beforeEnter', function(){
+            angular.element(document.querySelector("#left-menu")).addClass('hidden');
+            angular.element(document.querySelector("#right-menu")).addClass('hidden');
+        });
+
+        $scope.$on('$ionicView.beforeLeave', function(){
+            angular.element(document.querySelector("#left-menu")).removeClass('hidden');
+            angular.element(document.querySelector("#right-menu")).removeClass('hidden');
+            // Save instance and destroy
+            // map.remove();
+        });
+
+        $rootScope.$on('sidemenu_toggle', function(ev, isOpen){
+            if(typeof map !== 'undefined' ){
+                if(isOpen){
+                    map.setClickable(false);
+                } else {
+                    map.setClickable(true);
+                }
+            }
+        });
+
+        var w = angular.element(document.querySelector("#map-wrapper"));
+        $scope.frameHeight = w[0].clientHeight;
+        var div = document.getElementById("map_canvas");
+
+        if(typeof plugin !== 'undefined'){
+            // Initialize the map view
+            map = plugin.google.maps.Map.getMap(div);
+
+            map.setClickable(true);
+
+            // Wait until the map is ready status.
+            map.addEventListener(plugin.google.maps.event.MAP_READY, onMapReady);
+        }
+
+        function onMapReady() {
+        }
+
+        function onBtnClicked() {
+        }
+    });
 })
 .controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading, Date){
     $scope.$on('$ionicView.beforeEnter', function(){

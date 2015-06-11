@@ -35,6 +35,11 @@ angular.module("viradapp.wrappers", [])
         }
     }
 })
+.factory('MapState', function(){
+    return function(){
+        // map options that will be kept in memory ;)
+    }
+})
 .factory('ListState', function($window){
     return function(){
         this.loaded = 0;
