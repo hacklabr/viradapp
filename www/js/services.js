@@ -141,7 +141,14 @@ angular.module('viradapp.services', [])
                 });
             });
         },
-        getPalco: function(palco_id) {
+        getPalcos: function(){
+            return data_source.then(function(data){
+                return data.spaces_data.then(function(spaces){
+                    return spaces;
+                });
+            });
+        },
+        getPalcoEvents: function(palco_id) {
             return data_source.then(function(data){
                 return data.spaces_data.then(function(spaces){
                     var space = spaces.findWhere({

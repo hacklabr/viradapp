@@ -4,7 +4,7 @@ angular.module("viradapp.programacao", [])
         init: function(){console.log("stub service")},
     }
 })
-.filter('lefilter', function(){
+.filter('newlefilter', function(){
     /**
      * This filter receives 3 objects:
      * 1 - Events Lazy sequence
@@ -43,6 +43,50 @@ angular.module("viradapp.programacao", [])
                         || hasSpace);
         };
 
+        // MOVE TO INIT
+        events.groupBy('spaceId').sortBy();
+
+        return events.filter(lefilter);
+    };
+
+})
+.filter('lefilter', function(){
+    /**
+     * This filter receives 3 objects:
+     * 1 - Events Lazy sequence
+     * 2 - Spaces Lazy sequence
+     * 3 - And a Filter object
+     *
+     * Returns the Filtered Lazy Sequence
+     *
+     */
+    return function(events, spaces, filters){
+        var lefilter = function (event){
+            var hasSpace = false;
+            var space = spaces.findWhere({
+                id: event.spaceId.toString()
+            });
+            if(typeof space !== 'undefined'){
+                if(filters.places.data.length > 0){
+                    // If the places array is not empty,
+                    // test if the event belongs to one of the places
+                    if(!Lazy(filters.places.data).contains(space.id)){
+                        return false;
+                    }
+                }
+
+                var lm = new RegExp((filters.query), 'ig');
+                hasSpace = lm.test(space.name.substring(filters.query));
+            }
+            var date = moment(event.startsOn + " " + event.startsAt,
+                          "YYYY-MM-DD hh:mm").format('x');
+
+            return (date <= filters.ending
+                    && date >= filters.starting)
+                    && (event.name.indexOf(filters.query) >= 0
+                        || hasSpace);
+        };
+
         return events.filter(lefilter);
     };
 })
@@ -54,17 +98,20 @@ angular.module("viradapp.programacao", [])
      * Returns an array with filtered spaces
      *
      */
-    return function(data){
+    return function(data, spaces){
         var currSpaces = [];
         var toSpaces = function(event){
-            if(typeof event.spaceData !== 'undefined'){
+            var space = spaces.findWhere({
+                id: event.spaceId.toString()
+            });
+
+            if(typeof space !== 'undefined'){
                 var curr = Lazy(currSpaces)
-                    .findWhere({id : event.spaceData.id});
+                    .findWhere({id : event.spaceId.toString()});
                 if(typeof curr !== 'undefined'){
-                    delete event.spaceData;
                     curr.events.push(event);
                 } else {
-                    curr = event.spaceData;
+                    curr = space;
                     curr.events = [];
                     curr.events.push(event);
                     currSpaces.push(curr);
@@ -73,8 +120,8 @@ angular.module("viradapp.programacao", [])
             }
             return true;
         };
-        data.each(toSpaces);
 
+        data.each(toSpaces);
         return currSpaces;
     };
 })

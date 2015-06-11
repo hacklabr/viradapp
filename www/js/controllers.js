@@ -9,7 +9,7 @@ angular.module('viradapp.controllers', [])
     });
 
     if($stateParams.palco){
-        Virada.getPalco($stateParams.palco)
+        Virada.getPalcoEvents($stateParams.palco)
         .then(function(data){
             $rootScope.palco = data;
             $scope.space = data;
@@ -58,6 +58,7 @@ angular.module('viradapp.controllers', [])
             }
             $rootScope.$emit("sidemenu_toggle", isOpen);
         });
+
         $scope.toggleLeftSideMenu = function() {
             $ionicSideMenuDelegate.toggleLeft();
         }
@@ -92,26 +93,33 @@ angular.module('viradapp.controllers', [])
                 $scope.sorted = 'A';
             }
             $rootScope.hasData = true;
-            i = 0;
-            data.async(2).tap(function(space){
-                space.index = i;
-                i++;
-            }).toArray().then(function(a){
-                $rootScope.lespaces = a;
-                spaces = Lazy(a);
+            Virada.getPalcos().then(function(spaces_data){
+               i = 0;
+               data.async(2).tap(function(space){
+                   var spaceData = spaces_data.findWhere({
+                       id : parseInt(space.id)
+                   });
 
-                Virada.events().then(function(data){
-                    events = data;
-                    if(data.length() == 0){ //Nothing to do!
-                        $rootScope.hasData = false;
-                        return;
-                    }
-                    sortBy($scope.sorted);
-                });
+                   space.index = i;
+                   space.data = spaceData;
+                   i++;
+               }).toArray().then(function(a){
+                   $rootScope.lespaces = a;
+                   spaces = Lazy(a);
 
-                return Lazy(a);
+                   Virada.events().then(function(data){
+                       events = data;
+                       if(data.length() == 0){ //Nothing to do!
+                           $rootScope.hasData = false;
+                           return;
+                        }
+                        sortBy($scope.sorted);
+                   });
+
+                   return Lazy(a);
+               });
+
             });
-
         });
     }
 
@@ -126,7 +134,7 @@ angular.module('viradapp.controllers', [])
         config.A.filtered = data.sortBy(function(event){
             return event.name;
         });
-        config.L.filtered = Lazy($filter('toSpaces')(data)).sortBy('index');
+        config.L.filtered = Lazy($filter('toSpaces')(data, spaces)).sortBy('index');
     }
 
     /**
