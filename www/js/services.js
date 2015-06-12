@@ -50,15 +50,16 @@ angular.module('viradapp.services', [])
                     || newMD5.data[conf.events.file]
                     !== oldMD5.data[conf.events.file] ){
 
-                    if(typeof cordova !== 'undefined'){
-                        $cordovaFile.checkDir(cordova.file.dataDirectory,
-                                               "objects1")
-                        .then(function(data){
-                            // console.log(JSON.stringify(data));
-                        }, function (error) {
-                            // console.log(JSON.stringify(error));
-                        });
-                    }
+                        // if(typeof cordova !== 'undefined'){
+                        // $cordovaFile.checkDir(cordova.file.dataDirectory,
+                        //                       "objects1")
+                        // .then(function(data){
+                        // console.log(JSON.stringify(data));
+                        // }, function (error) {
+                        // console.log(JSON.stringify(error));
+                        // });
+                        // }
+
                 }
             });
 
