@@ -40,7 +40,10 @@
     "org.apache.cordova.inappbrowser"
   ],
   "cordovaPlatforms": [
-    "android",
+    {
+      "platform": "android",
+      "locator": "wp8"
+    },
     "ios"
   ]
 }
