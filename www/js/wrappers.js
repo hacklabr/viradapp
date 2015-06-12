@@ -53,10 +53,10 @@ angular.module("viradapp.wrappers", [])
             return moment(date).format('LL');
         },
         start: function(){
-            return moment("201405170000", "YYYYMMDDhhmm");
+            return moment("201506190000", "YYYYMMDDhhmm");
         },
         end: function(){
-            return moment("201405182359", "YYYYMMDDhhmm");
+            return moment("201506222359", "YYYYMMDDhhmm");
         },
         oneDay: function(){
             return moment.duration(1, 'days');
