@@ -15,7 +15,7 @@ viradapp.run(function($ionicPlatform, GlobalConfiguration) {
 viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $compileProvider) {
     //$ionicConfigProvider.scrolling.jsScrolling(false);
 
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|tel|geo):/);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|tel|geo|ms-appx|x-wmapp0):/);
 
     $stateProvider
     .state('virada', {
