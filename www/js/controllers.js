@@ -74,8 +74,8 @@ angular.module('viradapp.controllers', [])
         L: new ListState(),
         H: new ListState()
     };
-    var spaces;
-    var events;
+    var spaces = Lazy([]);
+    var events = Lazy([]);
 
     $scope.filters = new Filter(config.start, config.end);
     $scope.sorted = 'L';
@@ -113,6 +113,7 @@ angular.module('viradapp.controllers', [])
                            $rootScope.hasData = false;
                            return;
                         }
+
                         sortBy($scope.sorted);
                    });
 
@@ -443,9 +444,6 @@ angular.module('viradapp.controllers', [])
     });
 
     function updateUserInfo(user){
-        if(typeof $scope.events === 'undefined'){
-            $scope.events = [];
-        }
         if(typeof user.events === 'undefined'){
             user.events = [];
         }
