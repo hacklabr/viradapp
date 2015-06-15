@@ -86,7 +86,8 @@ angular.module("viradapp.minha_virada", [])
             FB.init({
                 appId      : GlobalConfiguration.APP_ID,
                 status     : false,
-                xfbml      : true
+                xfbml      : true,
+                version    : 'v2.3',
             });
 
             // Ao carregar a pagina vemos se o usuario ja esta
@@ -97,6 +98,7 @@ angular.module("viradapp.minha_virada", [])
                 if (response.status === 'connected') {
                     _connected(response);
                 } else{
+                    FB.login();
                     $rootScope.$emit('initialized');
                     $rootScope.$emit('fb_not_connected');
                 }
@@ -111,7 +113,7 @@ angular.module("viradapp.minha_virada", [])
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) {return;}
             js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/pt_BR/all.js";
+            js.src = "//connect.facebook.net/pt_BR/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
     };
@@ -154,8 +156,8 @@ angular.module("viradapp.minha_virada", [])
         };
 
         return $http
-        .get(GlobalConfiguration.TEMPLATE_URL
-             + '/includes/minha-virada-ajax.php?action=minhavirada_getJSON&uid='
+        .get(GlobalConfiguration.SOCIAL_API_URL
+             + '/minhavirada/?uid='
              + uid)
         .then(function(data){
             // Se não existe usuário ou não está logado,
@@ -165,11 +167,13 @@ angular.module("viradapp.minha_virada", [])
                 if(user.valid()){
                     save(userJSON);
                 }
-                return userJSON;
+                user_data = userJSON;
             } else {
                 user.events = data.data.events;
-                return data.data;
+                user_data = data.data;
             }
+            $rootScope.$emit('user_data_loaded');
+            return user_data
         })
         .catch(function(data){
             $rootScope.$emit('data_not_loaded');
@@ -179,8 +183,8 @@ angular.module("viradapp.minha_virada", [])
 
     function reloadUserData (uid) {
         return $http
-        .get(GlobalConfiguration.TEMPLATE_URL
-             + '/includes/minha-virada-ajax.php?action=minhavirada_getJSON&uid='
+        .get(GlobalConfiguration.SOCIAL_API_URL
+             + '/minhavirada/?uid='
              + uid)
         .then(function(data){
             if(typeof data.data.events !== 'undefined'){
@@ -189,9 +193,9 @@ angular.module("viradapp.minha_virada", [])
                 user.events = [];
             }
             $localStorage.user = user;
+            $rootScope.$emit('user_data_loaded');
         })
     };
-
 
     function prepareJSON () {
         var json = {
@@ -204,22 +208,14 @@ angular.module("viradapp.minha_virada", [])
     };
 
     var save = function(userJSON) {
-        var url = GlobalConfiguration.TEMPLATE_URL
-        + '/includes/minha-virada-ajax.php';
-
-        var data = serialize({
-            action: 'minhavirada_updateJSON',
-            dados : userJSON
-        });
-
+        var url = GlobalConfiguration.SOCIAL_API_URL + '/minhavirada/'
         var options = {
             headers : {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                'Content-Type': 'application/json; charset=UTF-8;'
             }
         };
-
         $http
-        .post(url, data, options)
+        .post(url, userJSON, options)
         .success(function(data, status, headers, config){
             $rootScope.$emit('user_data_saved')
             return data;
@@ -231,7 +227,7 @@ angular.module("viradapp.minha_virada", [])
     };
 
     // retorna falso se não tem, ou o índice se tem
-    function hasEvent(eventId) {
+    var hasEvent = function(eventId) {
         if (!user.connected)
             return false;
         for (var i = 0; i < user.events.length; i++) {
@@ -258,10 +254,13 @@ angular.module("viradapp.minha_virada", [])
 
             if (has_event !== false ) { // o indice pode ser 0
                 user.events.splice(has_event, 1);
+                is_in_minha_virada = false;
             } else {
                 user.events.push(eventId);
+                is_in_minha_virada = true;
             }
             save(prepareJSON());
+            return is_in_minha_virada;
         }
     };
 
@@ -305,14 +304,29 @@ angular.module("viradapp.minha_virada", [])
         user = u;
     }
 
+    // FIXME MinhaVirada should not touch events
+    var fillEvents = function (events){
+        if (user.events && user.events.length > 0) {
+            Lazy(user.events).tap(function(id){
+                var event = events.findWhere({id : id});
+                if(typeof event !== 'undefined'){
+                    event.in_minha_virada = true;
+                }
+            }).each(Lazy.noop);
+        };
+    }
+
     return {
         connect: connect,
         init: init,
+        // TODO remove add, use toogle instead
         add: click,
+        toogle: click,
         revoke: revoke,
         loadUserData: loadUserData,
         hasUser: hasUser,
-        setUser: setUser
+        setUser: setUser,
+        hasEvent: hasEvent,
+        fillEvents: fillEvents
     };
 })
-

@@ -4,8 +4,28 @@
             <!--<img ng-class="{hide: !user_picture}" ng-src="{{ user_picture }}" />
                 <span>{{ user_name }}</span>
             -->
+            <div ng-show="!connected && initialized">
+                <div class="card">
+                    <div class="item item-text-wrap">
+                        <p>Aqui você irá associar sua conta do Facebook à plataforma da Virada Cultural, tornando públicas algumas informações sobre seu acesso, como <strong>em quais eventos você pretende comparecer</strong>.</p>
+                        <p>Consulte também os <a href=#  onclick="window.open('http://viradacultural.prefeitura.sp.gov.br/2015/a-virada/', '_system', 'location=yes'); return false;">Termos de uso</a> e a <a href=#  onclick="window.open('http://viradacultural.prefeitura.sp.gov.br/2015/a-virada/', '_system', 'location=yes'); return false;">Política de privacidade</a></p>
+                    </div>
+                </div>
+
+
+                <p ng-if="!terms_accepted">Deseja continuar?</p>
+                <p ng-if="terms_accepted">Faça login com Facebook para continuar.</p>
+            </div>
+            <label class="card" ng-show="!connected && initialized">
+                <button class="button button-block button-positive"
+                        ng-if="!terms_accepted"
+                        ng-click="accept_terms()">
+                    Sim
+                </button>
+            </label>
             <label class="card" ng-show="!connected && initialized">
                 <button class="button button-block ion-social-facebook button-positive icon-left"
+                        ng-if="terms_accepted"
                         ng-click="login()">
                     Facebook login
                 </button>
@@ -21,8 +41,8 @@
                                 <h1>{{event.name}}</h1>
                             </div>
                         </a>
-                        <a class="icon active favorite favorite-wait favorite-event-{{event.id}}" ng-click="minha_virada(event.id)">
-                            <!--qdo selecionado adicionar classe 'active'-->
+                        <a class="icon active favorite favorite-wait favorite-event-{{event.id}} icon_star_alt"
+                           ng-click="minha_virada(event)">
                         </a>
                     </article>
                 </div>

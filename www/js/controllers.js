@@ -320,7 +320,7 @@ angular.module('viradapp.controllers', [])
         //$scope.loadMore();
     });
 })
-.controller('ProgramacaoCtrl', function($rootScope, $scope, MinhaVirada, $localStorage) {
+.controller('ProgramacaoCtrl', function($rootScope, $scope, Virada, MinhaVirada, $localStorage) {
 
     $scope.$on('$ionicView.beforeEnter', function(){
         $rootScope.programacao = true;
@@ -329,6 +329,13 @@ angular.module('viradapp.controllers', [])
     $scope.$on('$ionicView.beforeLeave', function(){
         $rootScope.programacao = false;
     });
+
+    $rootScope.$on('user_data_loaded', function(ev, data) {
+        Virada.events().then(function(events){
+            MinhaVirada.fillEvents(events);
+        });
+    });
+
 })
 .controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada) {
     ionic.Platform.ready(function () {
@@ -400,6 +407,11 @@ angular.module('viradapp.controllers', [])
     $scope.hasEvents = false;
     $scope.events = [];
     $scope.connected = false;
+    $scope.terms_accepted = false;
+
+    $scope.accept_terms = function() {
+        $scope.terms_accepted = true;
+    }
 
     // Test if user has a token
     // if true try to get data
@@ -454,20 +466,20 @@ angular.module('viradapp.controllers', [])
         }
     }
 
-    function fillEvents(data){
+    function fillEvents(user){
         Virada.events().then(function(events){
-            if (data.events && data.events.length > 0) {
+            if (user.events && user.events.length > 0) {
                 $scope.hasEvents = true;
-                Lazy(data.events).sortBy(function(id){
+                Lazy(user.events).sortBy(function(id){
                     var event = events.findWhere({id : id});
                     return Date.timestamp(event.startsOn+event.startsAt);
                 }).tap(function(id){
                     var event = events.findWhere({id : id});
                     if(typeof event !== 'undefined'){
+                        event.in_minha_virada = true;
                         $scope.events.push(event);
                     }
                 }).each(Lazy.noop);
-
             };
         });
     }
@@ -512,7 +524,9 @@ angular.module('viradapp.controllers', [])
         });
     });
 
-    $rootScope.minha_virada = function(eventId){
+    $rootScope.minha_virada = function(event){
+        // Toogle event.in_minha_virada.
+        eventId = event.id
         if($localStorage.hasOwnProperty("accessToken") === false ||
            $localStorage.hasOwnProperty("uid") === false) {
             MinhaVirada.connect();
@@ -521,14 +535,17 @@ angular.module('viradapp.controllers', [])
                && !MinhaVirada.hasUser()){
                    MinhaVirada.init($localStorage.accessToken, $localStorage.uid)
                    .then(function(){
-                       MinhaVirada.add(eventId);
+                       event.in_minha_virada =  MinhaVirada.toogle(eventId);
                    });
             } else {
-                MinhaVirada.add(eventId);
+                event.in_minha_virada = MinhaVirada.toogle(eventId);
             }
         }
     }
 
+    $rootScope.is_in_minha_virada = function(eventId){
+        return MinhaVirada.hasEvent(eventId);
+    }
 
     $scope.shareButtons = ['palco', 'atracao', 'minha_virada'];
 
