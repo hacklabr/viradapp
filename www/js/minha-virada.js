@@ -245,10 +245,11 @@ angular.module("viradapp.minha_virada", [])
         if(typeof user.events === 'undefined'){
             user.events = [];
         }
-        doClick(eventId);
+        return doClick(eventId);
     };
 
     var doClick = function(eventId) {
+        is_in_minha_virada = false;
         if (eventId) {
             var has_event = hasEvent(eventId);
 
