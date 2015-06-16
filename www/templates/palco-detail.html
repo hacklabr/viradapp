@@ -1,9 +1,9 @@
-<ion-view view-title="{{space.name}}">
+<ion-view>
+    <ion-nav-title>
+        {{ space.name }}
+    </ion-nav-title>
     <ion-content>
         <article id="space-00" class="single">
-            <header>
-                <h1>{{space.name}}</h1>
-            </header>
             <div class="timeline clearfix">
                 <div class="event-group" ng-repeat="event in spaceEvents">
                     <div class="timeline-time" ng-if="event.duration === '24h00'">24 horas</div>
