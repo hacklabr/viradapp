@@ -23,16 +23,16 @@ angular.module("viradapp.wrappers", [])
     return function(){
         this.uid = false;
         this.accessToken = false;
-        this.connected = false;
+        // this.connected = false;
         this.name = false;
         this.picture = false;
         this.events = [];
-        this.initialized = false;
-        this.isBrowser = false;
+        // this.initialized = false;
+        // this.isBrowser = false;
 
-        this.valid = function valid(){
-            return this.uid;
-        }
+        //this.valid = function valid(){
+        //    return this.uid;
+        //}
     }
 })
 .factory('MapState', function(){

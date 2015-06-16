@@ -2,6 +2,9 @@ angular.module("viradapp.minha_virada", [])
 .factory('MinhaVirada', function ($window, GlobalConfiguration, $cordovaOauth, $localStorage, $http, $rootScope, $ionicPlatform, $q, User){
 
     var user = new User();
+    var config = {
+        connected: false,
+    };
 
     var _xhr_api = function (obj) {
         var method = obj.method || 'GET',
@@ -46,11 +49,11 @@ angular.module("viradapp.minha_virada", [])
 
     var connect = function() {
         $ionicPlatform.ready(function(){
-            if (user.connected) {
+            if (config.connected) {
                 return;
             }
 
-            $cordovaOauth
+            return $cordovaOauth
             .facebook(GlobalConfiguration.APP_ID, [
                 "email",
                 "user_website",
@@ -58,10 +61,10 @@ angular.module("viradapp.minha_virada", [])
                 "user_relationships"
             ])
             .then(function(response){
-                _connected(response);
+                return _connected(response);
             }, function(error){
                 if('Cannot authenticate via a web browser' === error){
-                    _browser();
+                    return _browser();
                 }
             });
         });
@@ -76,9 +79,10 @@ angular.module("viradapp.minha_virada", [])
             authData = response;
         }
 
-        initializeUserData(authData);
-        user.connected = true;
+        config.connected = true;
         user.accessToken = authData.access_token;
+
+        return initializeUserData(authData);
     }
 
     var _browser = function() {
@@ -96,13 +100,12 @@ angular.module("viradapp.minha_virada", [])
             // Só vamos fazer alguma coisa se ele clicar
             FB.getLoginStatus(function(response) {
                 if (response.status === 'connected') {
-                    _connected(response);
+                    return _connected(response);
                 } else{
                     FB.login(function(response) {
                         if (response.status === 'connected') {
                             // Logged into your app and Facebook.
-                            console.log(response);
-                            _connected(response)
+                            return _connected(response)
                         } else {
                             $rootScope.$emit('initialized');
                             $rootScope.$emit('fb_not_connected');
@@ -141,22 +144,34 @@ angular.module("viradapp.minha_virada", [])
             user.name = response.name;
             user.picture = response.picture.data.url;
             user.uid = response.id;
-            user.connected = true;
+            config.connected = true;
 
-            $rootScope.$emit('fb_connected',
+            $rootScope.$emit('initialized');
+            if($localStorage.accessToken !== user.accessToken){
+                $localStorage.accessToken = user.accessToken;
+
+                // But still could be another user or another token, test it
+                if($localStorage.uid !== user.uid){
+                    $localStorage.uid = user.uid;
+                }
+            }
+
+            loadUserData(user.uid).then(function(userData){
+                $rootScope.$emit('fb_connected',
                              {
                                  uid: user.uid,
                                  token: user.accessToken
+
                              });
-            $rootScope.$emit('initialized');
-            loadUserData(user.uid).then(function(userData){
+
                 $localStorage.user = userData;
+                user.events = userData.events;
                 $rootScope.$emit('fb_app_connected', userData);
             });
             return true;
         })
         .catch(function(d){
-            user.connected = false;
+            config.connected = false;
             return false;
         });
     };
@@ -174,18 +189,20 @@ angular.module("viradapp.minha_virada", [])
             // Se não existe usuário ou não está logado,
             // Não tem uid, no caso
             if(data.data.length == 0){
-                userJSON = prepareJSON();
-                user_data = userJSON;
+                user_data = prepareJSON();
             } else {
-                user.events = data.data.events;
-                user_data = data.data;
+                d = data.data;
+                user.uid = d.uid;
+                user.name = d.name;
+                user.picture = d.picture;
+                user.events = d.events;
             }
             $rootScope.$emit('user_data_loaded');
-            return user_data
+            return user;
         })
         .catch(function(data){
             $rootScope.$emit('data_not_loaded');
-            return $localStorage.user;
+            return false;
         });
     };
 
@@ -211,11 +228,15 @@ angular.module("viradapp.minha_virada", [])
             picture: user.picture,
             events: user.events,
             name: user.name,
+            modalDismissed: true
         }
         return json;
     };
 
     var save = function(userJSON) {
+        console.log("--- Saving data ---");
+        console.log(userJSON.events);
+        console.log("--- End ---");
         var url = GlobalConfiguration.SOCIAL_API_URL + '/minhavirada/'
         var options = {
             headers : {
@@ -234,20 +255,8 @@ angular.module("viradapp.minha_virada", [])
         });
     };
 
-    // retorna falso se não tem, ou o índice se tem
-    var hasEvent = function(eventId) {
-        if (!user.connected)
-            return false;
-        for (var i = 0; i < user.events.length; i++) {
-            if (user.events[i] == eventId)
-                return i;
-        }
-        return false;
-    };
-
     var click = function(eventId) {
-        if(!user.connected){
-            connect();
+        if(!config.connected){
             return;
         }
         if(typeof user.events === 'undefined'){
@@ -261,7 +270,7 @@ angular.module("viradapp.minha_virada", [])
         if (eventId) {
             var has_event = hasEvent(eventId);
 
-            if (has_event !== false ) { // o indice pode ser 0
+            if (has_event >= 0 ) { // o indice pode ser 0
                 user.events.splice(has_event, 1);
                 is_in_minha_virada = false;
             } else {
@@ -272,6 +281,13 @@ angular.module("viradapp.minha_virada", [])
             return is_in_minha_virada;
         }
     };
+
+    // retorna falso se não tem, ou o índice se tem
+    var hasEvent = function(eventId) {
+        return Lazy(user.events).indexOf(eventId);
+    };
+
+
 
     var toQueryString  = function (obj) {
         var parts = [];
@@ -305,8 +321,8 @@ angular.module("viradapp.minha_virada", [])
             error: error});
     }
 
-    var hasUser = function(){
-        return user.accessToken && user.uid;
+    var userValid = function(){
+        return user.accessToken;
     }
 
     var setUser = function (u){
@@ -333,7 +349,7 @@ angular.module("viradapp.minha_virada", [])
         toogle: click,
         revoke: revoke,
         loadUserData: loadUserData,
-        hasUser: hasUser,
+        hasUser: userValid,
         setUser: setUser,
         hasEvent: hasEvent,
         fillEvents: fillEvents

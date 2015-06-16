@@ -497,27 +497,16 @@ angular.module('viradapp.controllers', [])
     if($localStorage.uid){
         $scope.anon = false;
         MinhaVirada.loadUserData($localStorage.uid).then(function(userData){
-            // Here I have a user data is he/she has lots of stuff
-            // Or a dummy userData, if the user has no data yet (first login)
-            $localStorage.user = userData;
+            if(userData){
+                $localStorage.user = userData;
+            }
         });
     }
 
     $rootScope.$on('fb_connected', function(ev, data) {
         $rootScope.connected = true;
 
-        if($localStorage.accessToken !== data.token){
-            $localStorage.accessToken = data.token;
-
-            // But still could be another user or another token, test it
-            if($localStorage.uid !== data.uid){
-                // Is another user, time to throw data out
-                $localStorage.uid = data.uid;
-                $scope.anon = false;
-                delete $localStorage.user;
-            }
-        }
-        /* MinhaVirada.loadUserData($localStorage.uid)
+                /* MinhaVirada.loadUserData($localStorage.uid)
         .then(function(userData){
             $localStorage.user = userData;
             $rootScope.$emit('fb_app_connected', userData);
@@ -531,12 +520,21 @@ angular.module('viradapp.controllers', [])
            $localStorage.hasOwnProperty("uid") === false) {
             MinhaVirada.connect();
         } else {
-            if(typeof $localStorage.user !== 'undefined'
-               && !MinhaVirada.hasUser()){
-                   MinhaVirada.init($localStorage.accessToken, $localStorage.uid)
-                   .then(function(){
-                       event.in_minha_virada =  MinhaVirada.toogle(eventId);
-                   });
+            if(!MinhaVirada.hasUser()){
+                MinhaVirada
+                .init($localStorage.accessToken, $localStorage.uid)
+                .then(function(connected){
+                    if(connected){
+                        event.in_minha_virada =  MinhaVirada.toogle(eventId);
+                    } else {
+                        MinhaVirada.connect().then(function(data){
+                            if(data){
+                                event.in_minha_virada =
+                                    MinhaVirada.toogle(eventId);
+                            }
+                        });
+                    }
+                });
             } else {
                 event.in_minha_virada = MinhaVirada.toogle(eventId);
             }
