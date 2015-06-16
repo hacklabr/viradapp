@@ -98,9 +98,16 @@ angular.module("viradapp.minha_virada", [])
                 if (response.status === 'connected') {
                     _connected(response);
                 } else{
-                    FB.login();
-                    $rootScope.$emit('initialized');
-                    $rootScope.$emit('fb_not_connected');
+                    FB.login(function(response) {
+                        if (response.status === 'connected') {
+                            // Logged into your app and Facebook.
+                            console.log(response);
+                            _connected(response)
+                        } else {
+                            $rootScope.$emit('initialized');
+                            $rootScope.$emit('fb_not_connected');
+                        }
+                    });
                 }
             });
 
@@ -142,6 +149,10 @@ angular.module("viradapp.minha_virada", [])
                                  token: user.accessToken
                              });
             $rootScope.$emit('initialized');
+            loadUserData(user.uid).then(function(userData){
+                $localStorage.user = userData;
+                $rootScope.$emit('fb_app_connected', userData);
+            });
             return true;
         })
         .catch(function(d){
@@ -164,9 +175,6 @@ angular.module("viradapp.minha_virada", [])
             // Não tem uid, no caso
             if(data.data.length == 0){
                 userJSON = prepareJSON();
-                if(user.valid()){
-                    save(userJSON);
-                }
                 user_data = userJSON;
             } else {
                 user.events = data.data.events;

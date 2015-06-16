@@ -517,11 +517,11 @@ angular.module('viradapp.controllers', [])
                 delete $localStorage.user;
             }
         }
-        MinhaVirada.loadUserData($localStorage.uid)
+        /* MinhaVirada.loadUserData($localStorage.uid)
         .then(function(userData){
             $localStorage.user = userData;
             $rootScope.$emit('fb_app_connected', userData);
-        });
+        });*/
     });
 
     $rootScope.minha_virada = function(event){
