@@ -156,6 +156,7 @@ angular.module("viradapp.minha_virada", [])
                 }
             }
 
+            $rootScope.$emit('initialized');
             loadUserData(user.uid).then(function(userData){
                 $rootScope.$emit('fb_connected',
                              {
@@ -167,6 +168,7 @@ angular.module("viradapp.minha_virada", [])
                 $localStorage.user = userData;
                 user.events = userData.events;
                 $rootScope.$emit('fb_app_connected', userData);
+
             });
             return true;
         })
@@ -266,7 +268,6 @@ angular.module("viradapp.minha_virada", [])
     };
 
     var doClick = function(eventId) {
-        is_in_minha_virada = false;
         if (eventId) {
             var has_event = hasEvent(eventId);
 

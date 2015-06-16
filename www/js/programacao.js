@@ -121,8 +121,22 @@ angular.module("viradapp.programacao", [])
             return true;
         };
 
+        var flattened = [];
+        var flattenList = function(space){
+            var spc = space.data;
+            spc.index = space.index;
+            flattened.push(spc);
+
+            Lazy(space.events).each(function(event){
+                flattened.push(event);
+            });
+        }
+
         data.each(toSpaces);
-        return currSpaces;
+        Lazy(currSpaces).sortBy('index').each(flattenList);
+        // return currSpaces;
+        // console.log(flattened);
+        return flattened;
     };
 })
 .filter('searchPlaces', function(){

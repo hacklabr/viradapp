@@ -1,6 +1,6 @@
 angular.module('viradapp.services', [])
 
-.factory('Virada', function($http, GlobalConfiguration, $cordovaFile, $ionicPlatform, MinhaVirada) {
+.factory('Virada', function($http, GlobalConfiguration, $cordovaFile, $ionicPlatform, MinhaVirada, $q, $cacheFactory) {
     var conf = {
         assets : "/assets/old/",
         spaces_data : {
@@ -18,10 +18,23 @@ angular.module('viradapp.services', [])
     var events = [];
 
     function getSpaces(){
-            spaces = $http.get(conf.spaces.url)
+        var $httpCache = $cacheFactory.get('$http');
+        var deferred = $q.defer();
+
+        spaces = $httpCache.get(conf.spaces.url);
+        if(!spaces){
+            console.log("not using cache");
+            $http.get(conf.spaces.url, {cache : true})
             .then(function(res){
-                return Lazy(res.data);
+                // return Lazy(res.data);
+                console.log(res);
+                deferred.resolve(Lazy(res.data));
             });
+        } else {
+            deferred.resolve(spaces);
+        }
+        console.log(deferred.promise);
+        spaces = deferred.promise;
     }
 
     function getSpacesData(){
@@ -122,6 +135,7 @@ angular.module('viradapp.services', [])
         },
         spaces: function() {
             return data_source.then(function(data){
+                console.log(data);
                 return data.spaces;
             });
         },

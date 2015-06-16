@@ -135,7 +135,7 @@ angular.module('viradapp.controllers', [])
         config.A.filtered = data.sortBy(function(event){
             return event.name;
         });
-        config.L.filtered = Lazy($filter('toSpaces')(data, spaces)).sortBy('index');
+        config.L.filtered = Lazy($filter('toSpaces')(data, spaces));
     }
 
     /**
@@ -146,24 +146,16 @@ angular.module('viradapp.controllers', [])
     }
 
     function sortBy(sorted){
+        filtering();
         switch (sorted){
             case "A":
                 $scope.filters.sorted = "A";
-                if(config.A.data.length > 0){
-                    $rootScope.ledata = config.A.data;
-                } else {
-                    filtering();
-                    $rootScope.ledata = [];
-                }
+                $rootScope.ledata = config.A.filtered.toArray();
+
             break;
             case "L":
                 $scope.filters.sorted = "L";
-                if(config.L.data.length > 0){
-                    $rootScope.ledata = config.L.data;
-                } else {
-                    filtering();
-                    $rootScope.ledata = [];
-                }
+                $rootScope.ledata = config.L.filtered.toArray();
             break;
             case "H":
                 console.log("Filter Time");
@@ -186,71 +178,17 @@ angular.module('viradapp.controllers', [])
     function watchHandler(){
         filtering();
 
-        config.L.page = 1;
-        config.L.data = config.L.filtered.take(config.loads).toArray();
-        config.L.loaded = config.L.page*config.loads;
-
-        config.A.page = 1;
-        config.A.data =  [{
-            events: config.A.filtered.take(config.loads).toArray()
-        }];
-        config.A.loaded = config.L.page*config.loads;
-
         switch($scope.filters.sorted){
             case "L":
-                $rootScope.ledata = config.L.data;
+                $rootScope.ledata = config.L.filtered.toArray();
             break;
             case "A":
-                $rootScope.ledata = config.A.data;
+                $rootScope.ledata = config.A.filtered.toArray();
 
             break;
         }
 
     }
-
-    $rootScope.loadMore  = function(){
-        switch ($scope.filters.sorted) {
-            case "A":
-                if(typeof config.A.filtered == 'undefined') return false;
-                config.A.page++;
-                var d = config.A.filtered.drop(config.A.loaded)
-                    .take(config.loads).toArray();
-
-                if($rootScope.ledata.length == 0){
-                    $rootScope.ledata[0] = {events : []}
-                }
-
-                config.A.loaded = config.A.page*config.loads;
-                $rootScope.ledata[0].events.push
-                    .apply($rootScope.ledata[0].events, d);
-
-                config.A.data = $rootScope.ledata;
-                console.log("Loaded events: "  + config.A.loaded);
-            break;
-            case "L":
-                if(typeof config.L.filtered == 'undefined') return false;
-                config.L.page++;
-                d = config.L.filtered
-                    .drop(config.L.loaded)
-                    .take(config.loads)
-                    .tap(function(space){
-                        space.events = events.where({
-                            spaceId : parseInt(space.id, 10)
-                        }).toArray();
-                    });
-
-                d = d.toArray();
-
-                config.L.loaded = config.L.page*config.loads;
-                $rootScope.ledata.push.apply($rootScope.ledata, d);
-                config.L.data = $rootScope.ledata;
-                console.log("Loaded spaces: " + config.L.loaded);
-            break;
-        }
-        setTimeout(function(){
-            $rootScope.$broadcast('scroll.infiniteScrollComplete');
-        }, 1000);
-    };
 
     $rootScope.canLoad = function(){
         var allShown = false;
@@ -505,12 +443,6 @@ angular.module('viradapp.controllers', [])
 
     $rootScope.$on('fb_connected', function(ev, data) {
         $rootScope.connected = true;
-
-                /* MinhaVirada.loadUserData($localStorage.uid)
-        .then(function(userData){
-            $localStorage.user = userData;
-            $rootScope.$emit('fb_app_connected', userData);
-        });*/
     });
 
     $rootScope.minha_virada = function(event){
@@ -536,6 +468,7 @@ angular.module('viradapp.controllers', [])
                     }
                 });
             } else {
+                console.log("Aqui");
                 event.in_minha_virada = MinhaVirada.toogle(eventId);
             }
         }
