@@ -93,32 +93,55 @@ angular.module('viradapp.controllers', [])
                 $scope.sorted = 'A';
             }
             $rootScope.hasData = true;
+            function setPosition (space){
+                var position = {};
+                if(typeof plugin !== 'undefined'){
+                    position = new plugin.google.maps
+                    .LatLng(space.data.location.latitude,
+                            space.data.location.longitude);
+                } else {
+                    position = {
+                        "lat" : space.data.location.latitude,
+                        "lng" : space.data.location.longitude
+                    }
+                }
+                space.map = {
+                    icon : "grey",
+                    "position" : position,
+                    "title" : space.name
+                };
+            }
             Virada.getPalcos().then(function(spaces_data){
-               i = 0;
-               data.async(2).tap(function(space){
-                   var spaceData = spaces_data.findWhere({
-                       id : parseInt(space.id)
-                   });
+                var i = 0;
+                var count = 0;
+                var d = data.async(2).tap(function(space){
+                    var spaceData = spaces_data.findWhere({
+                        id : parseInt(space.id)
+                    });
 
-                   space.index = i;
-                   space.data = spaceData;
-                   i++;
-               }).toArray().then(function(a){
-                   $rootScope.lespaces = a;
-                   spaces = Lazy(a);
+                    space.index = i;
+                    space.data = spaceData;
+                    if(typeof space.data !== 'undefined')
+                        setPosition(space);
+                    else
+                        count++;
+                    i++;
+                }).toArray().onComplete(function(a){
+                    $rootScope.lespaces = a;
+                    spaces = Lazy(a);
 
-                   Virada.events().then(function(data){
-                       events = data;
-                       if(data.length() == 0){ //Nothing to do!
-                           $rootScope.hasData = false;
-                           return;
+
+                    Virada.events().then(function(data){
+                        events = data;
+                        if(data.length() == 0){ //Nothing to do!
+                            $rootScope.hasData = false;
+                            return;
                         }
-
                         sortBy($scope.sorted);
-                   });
+                    });
 
-                   return Lazy(a);
-               });
+                    return Lazy(a);
+                });
 
             });
         });
@@ -126,9 +149,11 @@ angular.module('viradapp.controllers', [])
 
     // First run! After that, all sequence processing is on
     // the loadMore and filterDate methods
-    if($rootScope.ledata.length === 0) {
-        init();
-    }
+    ionic.Platform.ready(function(){
+        if($rootScope.ledata.length === 0) {
+            init();
+        }
+    });
 
     function filtering(){
         var data = $filter('lefilter')(events, spaces, $scope.filters);
@@ -189,6 +214,49 @@ angular.module('viradapp.controllers', [])
         }
 
     }
+
+    $rootScope.loadMore  = function(){
+        switch ($scope.filters.sorted) {
+            case "A":
+                if(typeof config.A.filtered == 'undefined') return false;
+                config.A.page++;
+                var d = config.A.filtered.drop(config.A.loaded)
+                    .take(config.loads).toArray();
+
+                if($rootScope.ledata.length == 0){
+                    $rootScope.ledata[0] = {events : []}
+                }
+
+                config.A.loaded = config.A.page*config.loads;
+                $rootScope.ledata[0].events.push
+                    .apply($rootScope.ledata[0].events, d);
+
+                config.A.data = $rootScope.ledata;
+                console.log("Loaded events: "  + config.A.loaded);
+            break;
+            case "L":
+                if(typeof config.L.filtered == 'undefined') return false;
+                config.L.page++;
+                d = config.L.filtered
+                    .drop(config.L.loaded)
+                    .take(config.loads)
+                    .tap(function(space){
+                        space.events = events.where({
+                            spaceId : parseInt(space.id, 10)
+                        }).toArray();
+                    });
+                d = d.toArray();
+
+                config.L.loaded = config.L.page*config.loads;
+                $rootScope.ledata.push.apply($rootScope.ledata, d);
+                config.L.data = $rootScope.ledata;
+                console.log("Loaded spaces: " + config.L.loaded);
+            break;
+        }
+        setTimeout(function(){
+            $rootScope.$broadcast('scroll.infiniteScrollComplete');
+        }, 500);
+    };
 
     $rootScope.canLoad = function(){
         var allShown = false;
@@ -265,6 +333,7 @@ angular.module('viradapp.controllers', [])
     });
 
     $scope.$on('$ionicView.beforeLeave', function(){
+        // console.log(config);
         $rootScope.programacao = false;
     });
 
@@ -275,20 +344,23 @@ angular.module('viradapp.controllers', [])
     });
 
 })
-.controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada) {
+.controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada, MapState, $state, $ionicPopup) {
     ionic.Platform.ready(function () {
         var map;
         $scope.$on('$ionicView.beforeEnter', function(){
             angular.element(document.querySelector("#left-menu")).addClass('hidden');
             angular.element(document.querySelector("#right-menu")).addClass('hidden');
+            if(typeof map === 'undefined')
+                init();
         });
 
-        $scope.$on('$ionicView.beforeLeave', function(){
+        $scope.$on('$ionicView.leave', function(){
             angular.element(document.querySelector("#left-menu")).removeClass('hidden');
             angular.element(document.querySelector("#right-menu")).removeClass('hidden');
             // Save instance and destroy
             // map.remove();
         });
+
 
         $rootScope.$on('sidemenu_toggle', function(ev, isOpen){
             if(typeof map !== 'undefined' ){
@@ -300,28 +372,110 @@ angular.module('viradapp.controllers', [])
             }
         });
 
-        var w = angular.element(document.querySelector("#map-wrapper"));
-        $scope.frameHeight = w[0].clientHeight;
-        var div = document.getElementById("map_canvas");
+        var spaces = [];
 
-        if(typeof plugin !== 'undefined'){
-            // Initialize the map view
-            map = plugin.google.maps.Map.getMap(div);
+        var center = new plugin.google.maps.LatLng(-23.562392, -46.655052);
+        var mapState = new MapState(plugin.google.maps.MapTypeId.HYBRID, center);
 
-            map.setClickable(true);
-
-            // Wait until the map is ready status.
-            map.addEventListener(plugin.google.maps.event.MAP_READY, onMapReady);
+        function getMyLocation (location){
+            return MinhaVirada.updateLocation(location);
         }
 
-        function onMapReady() {
+        function init(){
+            var w = angular.element(document.querySelector("#map-wrapper"));
+            $scope.frameHeight = w[0].clientHeight;
+            var div = document.getElementById("map_canvas");
+
+            if(typeof plugin !== 'undefined'){
+                // Initialize the map view
+                map = plugin.google.maps.Map.getMap(div, mapState.options);
+
+                map.setClickable(true);
+
+                // Wait until the map is ready status.
+                map.addEventListener(plugin.google.maps.event.MAP_READY, onMapReady);
+                map.addEventListener(plugin.google.maps.event.CAMERA_CHANGE, onCameraChange);
+            }
+            spaces = Lazy($rootScope.lespaces);
+
+            function onMapReady() {
+                map.getMyLocation(getMyLocation);
+                spaces.async(2).tap(function(space){
+                    if(typeof space.data !== 'undefined'){
+                        map.addMarker(space.map, function(marker){
+                            space.marker = marker;
+                            mapState.markers.concat([marker]);
+                            marker.addEventListener(
+                                plugin.google.maps.event.MARKER_CLICK,
+                                function(){
+                                    // marker.setAnimation(plugin.google.maps.Animation.BOUNCE);
+                                    marker.hideInfoWindow();
+                                    map.setClickable(false);
+                                    $scope.showConfirm(space);
+                                    // get_place_events(place.id);
+                                });
+                        });
+                    }
+                }).each(Lazy.noop);
+            }
+
+
+            function onCameraChange(){
+                map.getVisibleRegion(function(latLngBounds) {
+                    spaces.async(2).tap(function(space){
+                        if(space.data !== 'undefined'){
+                            var isContained = latLngBounds.contains(space.map.position);
+                            if(isContained){
+                                if(!space.marker.isVisible()){
+                                    space.marker.setVisible(true);
+                                    // space.marker.setAnimation(plugin.google.maps.Animation.DROP);
+                                }
+                            } else {
+                                space.marker.setVisible(false);
+                            }
+                        }
+                    }).each(Lazy.noop);
+                });
+            }
         }
 
-        function onBtnClicked() {
+        $scope.showConfirm = function(space) {
+            if(space.shortDescription == null){
+                space.shortDescription = "Sem descrição"
+            }
+            var confirmPopup = $ionicPopup.confirm({
+                title: space.name,
+                template:
+                    '<p>' + space.shortDescription.substring(0, 100)  + '</p>'
+                    + '<p>Ver a programação completa?</p>'
+            });
+            confirmPopup.then(function(res) {
+                if(res) {
+                    $state.go('virada.palco-detail',
+                              {palco : space.id});
+                } else {
+                    map.setClickable(true);
+                }
+            });
+        };
+
+        $scope.showFriends = function (uid){
+          MinhaVirada.getFriends().then(function(){
+            // Show friends on the map
+          });
         }
     });
 })
 .controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading, Date){
+    $scope.logout = function(){
+        MinhaVirada.logout();
+    }
+
+    $rootScope.$on('logged_out', function(ev){
+        console.log($localStorage);
+    });
+
+
     $scope.$on('$ionicView.beforeEnter', function(){
         $rootScope.curr = 'minha_virada';
     });

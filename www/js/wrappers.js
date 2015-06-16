@@ -36,7 +36,27 @@ angular.module("viradapp.wrappers", [])
     }
 })
 .factory('MapState', function(){
-    return function(){
+    return function(mapTypeId, center){
+        this.options = {
+            'backgroundColor': 'transparent',
+            'mapType': mapTypeId,
+            'controls': {
+                'myLocationButton': true,
+                'indoorPicker': true,
+                'zoom': true
+            },
+            'gestures': {
+                'scroll': true,
+                'tilt': true,
+                'rotate': false,
+                'zoom': true
+            },
+            'camera': {
+                'latLng': center,
+                'zoom': 16,
+            }
+        };
+        this.markers = Lazy([]);
         // map options that will be kept in memory ;)
     }
 })

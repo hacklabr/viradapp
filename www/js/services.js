@@ -171,7 +171,6 @@ angular.module('viradapp.services', [])
                     });
                     return data.events.then(function(events){
                         var time = Date.now();
-
                         space.events = events.where({
                             spaceId : parseInt(palco_id)
                         }).filter(function(ev){
