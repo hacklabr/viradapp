@@ -327,6 +327,15 @@ angular.module('viradapp.controllers', [])
                 }
 
             break;
+            case "H":
+                if(typeof config.H.filtered !== 'undefined'){
+                    allShown = config.H.loaded >= config.H.filtered.size();
+                } else {
+                    return false;
+                }
+
+            break;
+
         }
 
         $rootScope.$broadcast('scroll.infiniteScrollComplete');
