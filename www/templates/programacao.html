@@ -59,8 +59,9 @@
 </ion-list>
 <ion-infinite-scroll
     icon="ion-loading-c"
-    distance="1%">
-    <!-- on-infinite="loadMore()" -->
+    distance="5%"
+    on-infinite="loadMore()"
+    ng-if="canLoad()">
 </ion-infinite-scroll>
 </ion-content>
 </ion-view>

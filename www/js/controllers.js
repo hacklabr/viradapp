@@ -69,7 +69,7 @@ angular.module('viradapp.controllers', [])
         duration : Date.oneDay(),
         start: Date.start(),
         end: Date.end(),
-        loads: 5,
+        loads: 15,
         A: new ListState(),
         L: new ListState(),
         H: new ListState()
@@ -171,16 +171,27 @@ angular.module('viradapp.controllers', [])
     }
 
     function sortBy(sorted){
-        filtering();
         switch (sorted){
             case "A":
                 $scope.filters.sorted = "A";
-                $rootScope.ledata = config.A.filtered.toArray();
+                // $rootScope.ledata = config.A.filtered.toArray();
+                if(config.A.data.length > 0){
+                    $rootScope.ledata = config.A.data;
+                } else {
+                    filtering();
+                    $rootScope.ledata = [];
+                }
 
             break;
             case "L":
                 $scope.filters.sorted = "L";
-                $rootScope.ledata = config.L.filtered.toArray();
+                // $rootScope.ledata = config.L.filtered.toArray();
+                if(config.L.data.length > 0){
+                    $rootScope.ledata = config.L.data;
+                } else {
+                    filtering();
+                    $rootScope.ledata = [];
+                }
             break;
             case "H":
                 console.log("Filter Time");
@@ -203,12 +214,22 @@ angular.module('viradapp.controllers', [])
     function watchHandler(){
         filtering();
 
+        config.L.page = 1;
+        config.L.data = config.L.filtered.take(config.loads).toArray();
+        config.L.loaded = config.L.page*config.loads;
+
+        config.A.page = 1;
+        config.A.data = config.A.filtered.take(config.loads).toArray();
+        config.A.loaded = config.A.page*config.loads;
+
         switch($scope.filters.sorted){
             case "L":
-                $rootScope.ledata = config.L.filtered.toArray();
+                // $rootScope.ledata = config.L.filtered.toArray();
+                $rootScope.ledata = config.L.data;
             break;
             case "A":
-                $rootScope.ledata = config.A.filtered.toArray();
+                // $rootScope.ledata = config.A.filtered.toArray();
+                $rootScope.ledata = config.A.data;
 
             break;
         }
@@ -220,17 +241,12 @@ angular.module('viradapp.controllers', [])
             case "A":
                 if(typeof config.A.filtered == 'undefined') return false;
                 config.A.page++;
-                var d = config.A.filtered.drop(config.A.loaded)
-                    .take(config.loads).toArray();
-
-                if($rootScope.ledata.length == 0){
-                    $rootScope.ledata[0] = {events : []}
-                }
+                var d = config.A.filtered
+                        .drop(config.A.loaded)
+                        .take(config.loads).toArray();
 
                 config.A.loaded = config.A.page*config.loads;
-                $rootScope.ledata[0].events.push
-                    .apply($rootScope.ledata[0].events, d);
-
+                $rootScope.ledata.push.apply($rootScope.ledata, d);
                 config.A.data = $rootScope.ledata;
                 console.log("Loaded events: "  + config.A.loaded);
             break;
@@ -239,13 +255,7 @@ angular.module('viradapp.controllers', [])
                 config.L.page++;
                 d = config.L.filtered
                     .drop(config.L.loaded)
-                    .take(config.loads)
-                    .tap(function(space){
-                        space.events = events.where({
-                            spaceId : parseInt(space.id, 10)
-                        }).toArray();
-                    });
-                d = d.toArray();
+                    .take(config.loads).toArray();
 
                 config.L.loaded = config.L.page*config.loads;
                 $rootScope.ledata.push.apply($rootScope.ledata, d);
