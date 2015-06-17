@@ -63,6 +63,7 @@ angular.module("viradapp.programacao", [])
     return function(events, spaces, filters){
         var lefilter = function (event){
             var hasSpace = false;
+            var lm = new RegExp((filters.query), 'ig');
             var belongsTo = true;
             var space = spaces.findWhere({
                 id: event.spaceId.toString()
@@ -76,7 +77,6 @@ angular.module("viradapp.programacao", [])
                     }
                 }
 
-                var lm = new RegExp((filters.query), 'ig');
                 hasSpace = lm.test(space.name.substring(filters.query));
             } else if(filters.places.data.length > 0){
                 belongsTo = false;
@@ -84,10 +84,14 @@ angular.module("viradapp.programacao", [])
             var date = moment(event.startsOn + " " + event.startsAt,
                           "YYYY-MM-DD hh:mm").format('x');
 
+            var hasInTitle = false;
+            if(typeof space !== 'undefined'){
+                hasInTitle = lm.test(event.name.substring(filters.query));
+            }
+
             return belongsTo && (date <= filters.ending
                     && date >= filters.starting)
-                    && (event.name.indexOf(filters.query) >= 0
-                        || hasSpace);
+                    && (hasInTitle || hasSpace);
         };
 
         return events.filter(lefilter);
