@@ -211,6 +211,14 @@ angular.module('viradapp.controllers', [])
         }
     };
 
+    $rootScope.clearFilters = function(){
+        $scope.filters = new Filter(config.start, config.end);
+        $scope.view.sorted = $scope.filters.sorted;
+
+        watchHandler();
+    }
+
+
     /**
      * Watch filters
      */
