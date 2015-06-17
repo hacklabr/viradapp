@@ -69,7 +69,7 @@ angular.module('viradapp.controllers', [])
         duration : Date.oneDay(),
         start: Date.start(),
         end: Date.end(),
-        loads: 15,
+        loads: ionic.Platform.isIOS() ? 1500 : 150,
         A: new ListState(),
         L: new ListState(),
         H: new ListState()
