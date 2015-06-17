@@ -78,7 +78,9 @@ angular.module('viradapp.controllers', [])
     var events = Lazy([]);
 
     $scope.filters = new Filter(config.start, config.end);
-    $scope.sorted = 'L';
+    $scope.view = {
+        sorted : 'L'
+    };
     $rootScope.ledata = [];
 
     /**
@@ -90,7 +92,7 @@ angular.module('viradapp.controllers', [])
     function init (){
         Virada.spaces().then(function(data){
             if(data.length() == 0) {
-                $scope.sorted = 'A';
+                $scope.view.sorted = 'A';
             }
             $rootScope.hasData = true;
             function setPosition (space){
@@ -137,7 +139,7 @@ angular.module('viradapp.controllers', [])
                             $rootScope.hasData = false;
                             return;
                         }
-                        sortBy($scope.sorted);
+                        sortBy($scope.view.sorted);
                     });
 
                     return Lazy(a);
@@ -160,6 +162,9 @@ angular.module('viradapp.controllers', [])
         config.A.filtered = data.sortBy(function(event){
             return event.name;
         });
+        config.H.filtered = data.sortBy(function(event){
+            return event.timestamp;
+        });
         config.L.filtered = Lazy($filter('toSpaces')(data, spaces));
     }
 
@@ -167,7 +172,7 @@ angular.module('viradapp.controllers', [])
      * Sorted by
      */
     $rootScope.change = function(item){
-        sortBy(item.sorted);
+        sortBy(item.view.sorted);
     }
 
     function sortBy(sorted){
@@ -194,7 +199,14 @@ angular.module('viradapp.controllers', [])
                 }
             break;
             case "H":
-                console.log("Filter Time");
+                $scope.filters.sorted = "H";
+                // $rootScope.ledata = config.L.filtered.toArray();
+                if(config.H.data.length > 0){
+                    $rootScope.ledata = config.H.data;
+                } else {
+                    filtering();
+                    $rootScope.ledata = [];
+                }
             break;
         }
     };
@@ -218,6 +230,11 @@ angular.module('viradapp.controllers', [])
         config.L.data = config.L.filtered.take(config.loads).toArray();
         config.L.loaded = config.L.page*config.loads;
 
+        config.H.page = 1;
+        config.H.data = config.H.filtered.take(config.loads).toArray();
+        config.H.loaded = config.H.page*config.loads;
+
+
         config.A.page = 1;
         config.A.data = config.A.filtered.take(config.loads).toArray();
         config.A.loaded = config.A.page*config.loads;
@@ -230,7 +247,10 @@ angular.module('viradapp.controllers', [])
             case "A":
                 // $rootScope.ledata = config.A.filtered.toArray();
                 $rootScope.ledata = config.A.data;
-
+            break;
+            case "H":
+                // $rootScope.ledata = config.A.filtered.toArray();
+                $rootScope.ledata = config.H.data;
             break;
         }
 
@@ -262,6 +282,19 @@ angular.module('viradapp.controllers', [])
                 config.L.data = $rootScope.ledata;
                 console.log("Loaded spaces: " + config.L.loaded);
             break;
+            case "H":
+                if(typeof config.H.filtered == 'undefined') return false;
+                config.H.page++;
+                d = config.H.filtered
+                    .drop(config.H.loaded)
+                    .take(config.loads).toArray();
+
+                config.H.loaded = config.H.page*config.loads;
+                $rootScope.ledata.push.apply($rootScope.ledata, d);
+                config.H.data = $rootScope.ledata;
+                console.log("Loaded spaces: " + config.H.loaded);
+            break;
+
         }
         setTimeout(function(){
             $rootScope.$broadcast('scroll.infiniteScrollComplete');
