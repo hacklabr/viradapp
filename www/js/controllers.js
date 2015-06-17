@@ -617,15 +617,22 @@ angular.module('viradapp.controllers', [])
             fillEvents(user);
         }
     }
-
     function fillEvents(user){
         Virada.events().then(function(events){
             if (user.events && user.events.length > 0) {
                 $scope.hasEvents = true;
                 Lazy(user.events).sortBy(function(id){
                     var event = events.findWhere({id : id});
-                    return Date.timestamp(event.startsOn+event.startsAt);
+                    if(typeof event !== 'undefined'){
+                        return Date.timestamp(event.startsOn + event.startsAt);
+                    } else {
+                        return false;
+                    }
                 }).tap(function(id){
+                    /* MinhaVirada.getFriendsOnEvent(id).then(function(data){
+                        if(data[id].length > 0)
+                            console.log(data[id]);
+                            });*/
                     var event = events.findWhere({id : id});
                     if(typeof event !== 'undefined'){
                         event.in_minha_virada = true;
