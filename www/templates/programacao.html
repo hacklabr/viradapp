@@ -34,7 +34,7 @@
             class="item">
             <div class="item-content">
                 <div class="item-complex" ng-if="event.location"
-                     ui-sref="virada.palco-detail({palco : space.id })">
+                     ui-sref="virada.palco-detail({palco : event.id })">
                      {{ event.name }}
                 </div>
                 <a ng-if="!event.location" href="#/virada/programacao/atracao/{{event.id}}">
