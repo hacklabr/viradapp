@@ -63,6 +63,7 @@ angular.module("viradapp.programacao", [])
     return function(events, spaces, filters){
         var lefilter = function (event){
             var hasSpace = false;
+            var belongsTo = true;
             var space = spaces.findWhere({
                 id: event.spaceId.toString()
             });
@@ -70,18 +71,20 @@ angular.module("viradapp.programacao", [])
                 if(filters.places.data.length > 0){
                     // If the places array is not empty,
                     // test if the event belongs to one of the places
-                    if(!Lazy(filters.places.data).contains(space.id)){
-                        return false;
+                    if(!Lazy(filters.places.data).contains(space.id.toString())){
+                        belongsTo = false;
                     }
                 }
 
                 var lm = new RegExp((filters.query), 'ig');
                 hasSpace = lm.test(space.name.substring(filters.query));
+            } else if(filters.places.data.length > 0){
+                belongsTo = false;
             }
             var date = moment(event.startsOn + " " + event.startsAt,
                           "YYYY-MM-DD hh:mm").format('x');
 
-            return (date <= filters.ending
+            return belongsTo && (date <= filters.ending
                     && date >= filters.starting)
                     && (event.name.indexOf(filters.query) >= 0
                         || hasSpace);
@@ -134,8 +137,6 @@ angular.module("viradapp.programacao", [])
 
         data.each(toSpaces);
         Lazy(currSpaces).sortBy('index').each(flattenList);
-        // return currSpaces;
-        // console.log(flattened);
         return flattened;
     };
 })
