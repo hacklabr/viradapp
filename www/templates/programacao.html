@@ -29,32 +29,32 @@
                 </ion-option-button>
     </ion-item> -->
     <div collection-repeat="event in ledata"
-            ng-class="{'item-divider': event.location}"
-            ng-click=""
-            class="item">
-	    <div class="item-content">
-		<div class="item-complex" ng-if="event.location"
-		     ui-sref="virada.palco-detail({palco : event.id })">
-		     {{ event.name }}
-		 </div>
-		<a ng-if="!event.location" href="#/virada/programacao/atracao/{{event.id}}">
-		    <div class="event-time">
-		        <i class="icon icon_clock"></i>
-		        <time>
-		            {{ event.startsAt }}
-		        </time>
-		    </div>
-		    <h2>{{ event.name }}</h2>
-		</a>
-		<!-- Exibe a estrela se tá conectado -->
-		<a ng-if="!event.location && connected" href=# ng-click="minha_virada(event)">
-		    <i class="icon icon-accessory"
-		    ng-class="{'icon_star': event.in_minha_virada, 'icon_star_alt': !event.in_minha_virada}"></i>
-		</a>
-		<!-- Exibe chevron se não tá conectado -->
-		<i ng-if="!event.location && !connected" class="icon ion-chevron-right icon-accessory"></i>
-	    </div>
-	</div>
+        ng-class="{'item-divider': event.location}"
+        ng-click=""
+        class="item">
+        <div class="item-content">
+            <div class="item-complex" ng-if="event.location"
+                 ui-sref="virada.palco-detail({palco : event.id })">
+                 {{ event.name }}
+             </div>
+            <a ng-if="!event.location" href="#/virada/programacao/atracao/{{event.id}}">
+                <div class="event-time">
+                    <i class="icon icon_clock"></i>
+                    <time>
+                        {{ event.startsAt }}
+                    </time>
+                </div>
+                <h2>{{ event.name }}</h2>
+            </a>
+            <!-- Exibe a estrela se tá conectado -->
+            <a ng-if="!event.location && connected" href=# ng-click="minha_virada(event)">
+                <i class="icon icon-accessory"
+                ng-class="{'icon_star': event.in_minha_virada, 'icon_star_alt': !event.in_minha_virada}"></i>
+            </a>
+            <!-- Exibe chevron se não tá conectado -->
+            <i ng-if="!event.location && !connected" class="icon ion-chevron-right icon-accessory"></i>
+        </div>
+    </div>
 </ion-list>
 <ion-infinite-scroll
     icon="ion-loading-c"
