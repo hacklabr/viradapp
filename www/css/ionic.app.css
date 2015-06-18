@@ -7796,6 +7796,13 @@ a.button {
   padding: 0 5px;
   width: 60px; }
 
+.event-star {
+  width: 32px;
+  padding-left: 16px;
+  padding-right: 32px;
+  height: 32px;
+  right: 0 !important; }
+
 .list-programacao .item h2 {
   font-size: 12px;
   font-weight: bold;
