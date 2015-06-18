@@ -18,5 +18,12 @@
       "path": "/api",
       "proxyUrl": "http://viradacultural.prefeitura.sp.gov.br/2015/wp-content/themes/viradacultural-2015"
     }
+  ],
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
+    }
   ]
 }
