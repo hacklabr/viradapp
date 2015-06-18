@@ -16,15 +16,17 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "com.ionic.keyboard",
+    "cordova-plugin-device",
+    "cordova-plugin-console",
     "cordova-plugin-whitelist",
+    "cordova-plugin-splashscreen",
+    "com.ionic.keyboard",
+    "cordova-plugin-inappbrowser",
     "cordova-plugin-network-information",
     {
       "locator": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-file.git",
       "id": "cordova-plugin-file"
     },
-    "org.apache.cordova.device",
-    "org.apache.cordova.statusbar",
     {
       "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
       "id": "nl.x-services.plugins.socialsharing"
@@ -36,8 +38,7 @@
             "API_KEY_FOR_ANDROID": "AIzaSyDM80LcvX9D6yVKj92ejRGjfgHGS5yfyrQ",
             "API_KEY_FOR_IOS": "AIzaSyDM80LcvX9D6yVKj92ejRGjfgHGS5yfyrQ"
         }
-    },
-    "org.apache.cordova.inappbrowser"
+    }
   ],
   "cordovaPlatforms": [
     {

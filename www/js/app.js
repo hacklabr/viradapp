@@ -1,16 +1,4 @@
 var viradapp = angular.module("viradapp", ['ionic', 'viradapp.wrappers', 'viradapp.controllers', 'viradapp.services', 'viradapp.config', 'viradapp.minha_virada', 'viradapp.programacao', 'ngStorage', 'ngCordova']);
-viradapp.run(function($ionicPlatform, GlobalConfiguration) {
-    $ionicPlatform.ready(function() {
-        if (window.cordova && window.cordova.plugins &&
-            window.cordova.plugins.Keyboard) {
-            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-        }
-        if(window.StatusBar) {
-          // org.apache.cordova.statusbar required
-          StatusBar.styleDefault();
-        }
-    });
-})
 
 viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $compileProvider) {
     //$ionicConfigProvider.scrolling.jsScrolling(false);
