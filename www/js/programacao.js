@@ -51,6 +51,14 @@ angular.module("viradapp.programacao", [])
 
 })
 .filter('lefilter', function(){
+    var projects = {
+        '865': 'Virada Coral',
+        '857': 'Viradinha',
+        '794': 'II Mostra de Teatros e Espaços Independentes',
+        '855': '19º Cultura Inglesa Festival'
+    };
+
+
     /**
      * This filter receives 3 objects:
      * 1 - Events Lazy sequence
@@ -61,6 +69,14 @@ angular.module("viradapp.programacao", [])
      *
      */
     return function(events, spaces, filters){
+      
+        events.source.forEach(function(event){
+            if(!event.incProject && event.project && event.project.id && projects[event.project.id]){
+                event.name += ' [' + projects[event.project.id] + ']';
+                event.incProject = true;
+            }
+        });
+
         var lefilter = function (event){
             var hasSpace = false;
             var lm = new RegExp((filters.query), 'ig');
@@ -68,6 +84,7 @@ angular.module("viradapp.programacao", [])
             var space = spaces.findWhere({
                 id: event.spaceId.toString()
             });
+
             if(typeof space !== 'undefined'){
                 if(filters.places.data.length > 0){
                     // If the places array is not empty,
