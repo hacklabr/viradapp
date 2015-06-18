@@ -2,13 +2,14 @@
   "name": "viradapp",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.0.0-rc.5",
+    "ionic": "driftyco/ionic-bower#1.0.0",
     "plugin": "~3.1.0"
   },
   "dependencies": {
     "lazy.js": "~0.4.0",
     "moment": "~2.10.3",
-    "ngCordova": "~0.1.15-alpha",
-    "ngstorage": "~0.3.4"
+    "ngstorage": "~0.3.4",
+    "ng-cordova": "https://github.com/driftyco/ng-cordova",
+    "ngCordova": "https://github.com/driftyco/ng-cordova.git#e788814"
   }
 }
