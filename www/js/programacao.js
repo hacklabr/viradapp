@@ -69,7 +69,7 @@ angular.module("viradapp.programacao", [])
      *
      */
     return function(events, spaces, filters){
-      
+
         events.source.forEach(function(event){
             if(!event.incProject && event.project && event.project.id && projects[event.project.id]){
                 event.name += ' [' + projects[event.project.id] + ']';

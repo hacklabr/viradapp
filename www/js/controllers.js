@@ -69,7 +69,7 @@ angular.module('viradapp.controllers', [])
         duration : Date.oneDay(),
         start: Date.start(),
         end: Date.end(),
-        loads: ionic.Platform.isIOS() ? 1500 : 150,
+        loads: 150,
         A: new ListState(),
         L: new ListState(),
         H: new ListState()
@@ -265,6 +265,8 @@ angular.module('viradapp.controllers', [])
     }
 
     $rootScope.loadMore  = function(){
+        $rootScope.scrolling = true;
+
         switch ($scope.filters.sorted) {
             case "A":
                 if(typeof config.A.filtered == 'undefined') return false;
@@ -387,6 +389,24 @@ angular.module('viradapp.controllers', [])
     });
 })
 .controller('ProgramacaoCtrl', function($rootScope, $scope, Virada, MinhaVirada, $localStorage) {
+    var eventsContainer = document.getElementById('programacao-container');
+
+
+    $rootScope.$watch(function(){ return $rootScope.ledata.length; }, function(newValue, oldValue){
+        if(newValue !== oldValue){
+            $scope.renderList();
+        }
+    });
+
+    $scope.renderList = function(){
+        eventsContainer.innerHTML = '';
+        $rootScope.ledata.forEach(function(event){
+            var el = Resig.renderElement('template-evento', {event: event}, true);
+
+            eventsContainer.appendChild(el);
+
+        });
+    };
 
     $scope.$on('$ionicView.beforeEnter', function(){
         $rootScope.programacao = true;
