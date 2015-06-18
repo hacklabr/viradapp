@@ -24,10 +24,6 @@
     "cordova-plugin-inappbrowser",
     "cordova-plugin-network-information",
     {
-      "locator": "https://git-wip-us.apache.org/repos/asf/cordova-plugin-file.git",
-      "id": "cordova-plugin-file"
-    },
-    {
       "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
       "id": "nl.x-services.plugins.socialsharing"
     },
