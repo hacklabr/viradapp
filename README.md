@@ -86,4 +86,9 @@ $ android
 $ ionic emulate android
 ```
 
+# Limpando binários para ios
+
+```
+$ bash clean_execs.sh
+```
 
