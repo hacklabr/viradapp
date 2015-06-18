@@ -392,11 +392,11 @@ angular.module('viradapp.controllers', [])
     var eventsContainer = document.getElementById('programacao-container');
 
 
-    $rootScope.$watch(function(){ return $rootScope.ledata.length; }, function(newValue, oldValue){
+    $rootScope.$watch('ledata', function(newValue, oldValue){
         if(newValue !== oldValue){
             $scope.renderList();
         }
-    });
+    },true);
 
     $scope.renderList = function(){
         eventsContainer.innerHTML = '';
@@ -407,6 +407,8 @@ angular.module('viradapp.controllers', [])
 
         });
     };
+
+
 
     $scope.$on('$ionicView.beforeEnter', function(){
         $rootScope.programacao = true;
