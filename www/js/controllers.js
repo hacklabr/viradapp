@@ -20,7 +20,7 @@ angular.module('viradapp.controllers', [])
     }
 })
 
-.controller('AtracaoCtrl', function($rootScope, $scope, $stateParams, Virada, MinhaVirada, Date){
+.controller('AtracaoCtrl', function($rootScope, $scope, $stateParams, Virada, MinhaVirada, Date, $ionicModal, $state){
     $scope.$on('$ionicView.beforeEnter', function(){
         $rootScope.curr = 'atracao';
     });
@@ -29,6 +29,10 @@ angular.module('viradapp.controllers', [])
         $rootScope.curr = false;
     });
 
+    $scope.view = {
+        hasMore : false
+    }
+
     $scope.LL = Date.LL;
     if($stateParams.atracao){
         Virada.get($stateParams.atracao)
@@ -36,9 +40,34 @@ angular.module('viradapp.controllers', [])
             $rootScope.atracao = data;
             $scope.atracao = data;
             $scope.space = data.space;
+            if(data.allFriends){
+                $scope.view.delta = data.allFriends.length - data.friends.length;
+                $scope.view.hasMore = true;
+            }
         });
     } else {
+        $state.go("virada.programacao()")
     }
+
+    $ionicModal.fromTemplateUrl('friends-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.modal = modal;
+    });
+
+    $scope.openModal = function() {
+        $scope.modal.show();
+    };
+
+    $scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+
+    $scope.$on('$destroy', function() {
+        $scope.modal.remove();
+    });
+
 })
 .controller('ButtonsCtrl', function($scope, $ionicSideMenuDelegate, $rootScope, Virada, MinhaVirada, $ionicGesture){
     ionic.Platform.ready(function(){
@@ -131,7 +160,6 @@ angular.module('viradapp.controllers', [])
                 }).toArray().onComplete(function(a){
                     $rootScope.lespaces = a;
                     spaces = Lazy(a);
-
 
                     Virada.events().then(function(data){
                         events = data;
@@ -397,9 +425,28 @@ angular.module('viradapp.controllers', [])
         $rootScope.programacao = false;
     });
 
-    $rootScope.$on('user_data_loaded', function(ev, data) {
+    $rootScope.$on('user_data_loaded', function(ev, user) {
         Virada.events().then(function(events){
-            MinhaVirada.fillEvents(events);
+            if (user.events && user.events.length > 0) {
+                MinhaVirada.getFriendsOnEvents().then(function(friendsOnEvents){
+                    if(!friendsOnEvents){
+                        $rootScope.connected = false;
+                        return false;
+                    }
+                    Lazy(user.events).tap(function(id){
+                        var event = events.findWhere({id : id});
+                        if(typeof event !== 'undefined'){
+                            event.in_minha_virada = true;
+                            if(typeof friendsOnEvents[id] !== 'undefined'){
+                                var f = Lazy(friendsOnEvents[id]);
+                                event.allFriends = f.toArray();
+                                event.friends = f.take(5).toArray();
+                            }
+
+                        }
+                    }).each(Lazy.noop);
+                })
+            };
         });
     });
 
@@ -410,15 +457,14 @@ angular.module('viradapp.controllers', [])
         $scope.$on('$ionicView.beforeEnter', function(){
             angular.element(document.querySelector("#left-menu")).addClass('hidden');
             angular.element(document.querySelector("#right-menu")).addClass('hidden');
+
             if(typeof map === 'undefined')
                 init();
         });
 
-        $scope.$on('$ionicView.leave', function(){
+        $scope.$on('$ionicView.beforeLeave', function(){
             angular.element(document.querySelector("#left-menu")).removeClass('hidden');
             angular.element(document.querySelector("#right-menu")).removeClass('hidden');
-            // Save instance and destroy
-            // map.remove();
         });
 
 
@@ -468,7 +514,6 @@ angular.module('viradapp.controllers', [])
                             marker.addEventListener(
                                 plugin.google.maps.event.MARKER_CLICK,
                                 function(){
-                                    // marker.setAnimation(plugin.google.maps.Animation.BOUNCE);
                                     marker.hideInfoWindow();
                                     map.setClickable(false);
                                     $scope.showConfirm(space);
@@ -495,6 +540,9 @@ angular.module('viradapp.controllers', [])
                             }
                         }
                     }).each(Lazy.noop);
+                    if($scope.showFriends){
+
+                    }
                 });
             }
         }
@@ -503,10 +551,14 @@ angular.module('viradapp.controllers', [])
             if(space.shortDescription == null){
                 space.shortDescription = "Sem descrição"
             }
+            if(MinhaVirada.hasUser()){
+                MinhaVirada.getFriendsOnEvent();
+            }
             var confirmPopup = $ionicPopup.confirm({
                 title: space.name,
                 template:
                     '<p>' + space.shortDescription.substring(0, 100)  + '</p>'
+                    + '<p>' + space.events.length + ' eventos nesse local!</p>'
                     + '<p>Ver a programação completa?</p>'
             });
             confirmPopup.then(function(res) {
@@ -520,13 +572,19 @@ angular.module('viradapp.controllers', [])
         };
 
         $scope.showFriends = function (uid){
-          MinhaVirada.getFriends().then(function(){
-            // Show friends on the map
+          MinhaVirada.getFriends().then(function(data){
+              if(data){
+                  console.log(data);
+              }
           });
         }
     });
 })
 .controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading, Date){
+    $scope.view = {
+        hasMessage : false
+    };
+
     $scope.logout = function(){
         MinhaVirada.logout();
     }
@@ -549,6 +607,7 @@ angular.module('viradapp.controllers', [])
         duration: 20000,
         template: '<ion-spinner icon="ripple"></ion-spinner>'
     });
+
     $rootScope.$on('initialized', function(ev, uid){
         $ionicLoading.hide();
         $scope.initialized = true;
@@ -570,7 +629,6 @@ angular.module('viradapp.controllers', [])
     //     if it fails, try to login again to get another token
     // if false, emit initialized and show the button
     if($localStorage.hasOwnProperty("accessToken") === false) {
-        console.log("have access token?");
         $rootScope.$emit('initialized');
     } else {
         // Test if token is valid
@@ -593,17 +651,24 @@ angular.module('viradapp.controllers', [])
     });
 
     $rootScope.$on('fb_not_connected', function(ev, uid) {
-        $scope.message = "Não foi possível conectar";
-        console.log("Não conectado");
+        showMessage("Não foi possível conectar");
     });
 
     $rootScope.$on('data_not_loaded', function(ev) {
-        $scope.message = "Não foi possível carregar seus dados";
-        console.log("Não foi possivel carregar os dados");
+        showMessage("Não foi possivel carregar os dados");
     });
 
+    var showMessage = function(message){
+        $scope.message = message;
+        $scope.view.hasMessage = true;
+        $timeout(function(){
+            $scope.view.hasMessage = false;
+            $scope.message = "";
+        }, 3000)
+    }
+
+
     $rootScope.$on('user_data_saved', function(ev){
-        $scope.message = "dados salvos!";
         updateUserInfo($localStorage.user);
     });
 
@@ -613,7 +678,7 @@ angular.module('viradapp.controllers', [])
         }
         if(user.events.length !== $scope.events.length){
             // Events array has changed
-            $scope.events = [];
+            // $scope.events = [];
             fillEvents(user);
         }
     }
@@ -621,24 +686,29 @@ angular.module('viradapp.controllers', [])
         Virada.events().then(function(events){
             if (user.events && user.events.length > 0) {
                 $scope.hasEvents = true;
-                Lazy(user.events).sortBy(function(id){
-                    var event = events.findWhere({id : id});
-                    if(typeof event !== 'undefined'){
-                        return Date.timestamp(event.startsOn + event.startsAt);
-                    } else {
-                        return false;
-                    }
-                }).tap(function(id){
-                    /* MinhaVirada.getFriendsOnEvent(id).then(function(data){
-                        if(data[id].length > 0)
-                            console.log(data[id]);
-                            });*/
-                    var event = events.findWhere({id : id});
-                    if(typeof event !== 'undefined'){
-                        event.in_minha_virada = true;
-                        $scope.events.push(event);
-                    }
-                }).each(Lazy.noop);
+                MinhaVirada.getFriendsOnEvents().then(function(friendsOnEvents){
+                    newevents = [];
+                    Lazy(user.events).tap(function(id){
+                        var event = events.findWhere({id : id});
+                        if(typeof event !== 'undefined'){
+                            event.in_minha_virada = true;
+                            if(typeof friendsOnEvents[id] !== 'undefined'){
+                                var f = Lazy(friendsOnEvents[id]);
+                                event.allFriends = f.toArray();
+                                event.friends = f.take(5).toArray();
+                            }
+                            newevents.push(event);
+                        }
+                    }).each(Lazy.noop);
+                    $scope.events = Lazy(newevents).sortBy(function(event){
+                        if(typeof event !== 'undefined'){
+                            return event.timestamp;
+                        } else {
+                            return false;
+                        }
+                    }).toArray();
+
+                })
             };
         });
     }
@@ -658,6 +728,7 @@ angular.module('viradapp.controllers', [])
         MinhaVirada.loadUserData($localStorage.uid).then(function(userData){
             if(userData){
                 $localStorage.user = userData;
+                $rootScope.connected = $localStorage.hasOwnProperty("accessToken") === true;
             }
         });
     }
@@ -689,7 +760,6 @@ angular.module('viradapp.controllers', [])
                     }
                 });
             } else {
-                console.log("Aqui");
                 event.in_minha_virada = MinhaVirada.toogle(eventId);
             }
         }

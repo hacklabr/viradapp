@@ -15,16 +15,25 @@
                 <p>{{atracao.description}}</p>
             </div>
             <!-- .post-content -->
-            <script id="atracao-friends-footer" type="text/ng-template">
             <footer>
-                <div class="friends-group">
-                    <a href="#" class="friend" title="Nome do amigo"><!--img com link pra minha virada respectiva --></a>
-                    <a href="#" class="friend" title="Nome do amigo"><!--img com link pra minha virada respectiva --></a>
-                    <a href="#" class="friend" title="Nome do amigo"><!--img com link pra minha virada respectiva --></a>
-                    <a href="#" class="friend" ng-click="openModal()"><div title="Nome dos amigos">+000</div></a><!-- link pra modal com lista de todos amigos quando exceder 3 amigos-->
+                <div class="card" ng-if="!connected">
+                    <div class="item item-text-wrap">
+                        Conecte-se em
+                        <a ui-sref="virada.minha-virada()">Minha Virada</a>
+                        para ver seus amigos!
+                    </div>
+                </div>
+                <div ng-show="connected && atracao.friends" class="friends-group">
+                    <a href="#" ng-repeat="friend in atracao.friends"
+                        class="friend" title="{{ friend.name }}">
+                        <!--img com link pra minha virada respectiva -->
+                        <img src="{{ friend.picture }}">
+                    </a>
+                    <a href="#" ng-if="view.hasMore" class="friend" ng-click="openModal()">
+                        <div title="Nome dos amigos">+{{ atracao.allFriends.length }}</div>
+                    </a><!-- link pra modal com lista de todos amigos quando exceder 3 amigos-->
                 </div>
             </footer>
-            </script>
             </div>
             <div class="servico">
                 <p>
@@ -50,19 +59,19 @@
 <script id="friends-modal.html" type="text/ng-template">
     <ion-modal-view>
         <ion-header-bar class="bar-assertive">
-            <h1 class="title">XXX amigos também marcaram essa atração</h1>
+            <h1 class="title">{{ atracao.allFriends.length }} amigos também marcaram essa atração</h1>
             <div class="button button-clear" ng-click="modal.hide()">
                 <span class="icon icon_close"></span>
             </div>
         </ion-header-bar>
         <ion-content>
-            <div class="list">
-                <!-- link pra minha virada do amigo -->
-                 <a class="item item-avatar" href="#">
-                    <img src="">
-                    <h2>Nome do amigo</h2>
-                </a>
-            </div>
+            <ion-list class="list">
+                 <ion-item item-height="75px" item-width="100%" collection-repeat="friend in atracao.allFriends" class="item item-avatar">
+                    <img src="{{ friend.picture }}" />
+                    <h2>{{ friend.name }}</h2>
+                    <p></p>
+                </ion-item>
+            </ion-list>
         </ion-content>
   </ion-modal-view>
 </script>
