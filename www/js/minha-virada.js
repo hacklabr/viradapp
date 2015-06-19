@@ -368,6 +368,36 @@ angular.module("viradapp.minha_virada", [])
     };
 
     var updateLocation = function (location) {
+        if(!user.uid || !user.accessToken){
+            return false;
+        }
+        userJSON = {
+            uid : user.uid,
+            lat : location.latLng.lat,
+            long : location.latLng.lng,
+            position_timestamp: moment(location.time).format('YYYY-MM-DD hh:mm'),
+            oauth_token : user.accessToken
+        }
+
+        console.log("--- Saving data ---");
+        console.log(JSON.stringify(userJSON));
+        console.log("--- End ---");
+        var url = GlobalConfiguration.SOCIAL_API_URL + '/friendspositions/'
+        var options = {
+            headers : {
+                'Content-Type': 'application/json; charset=UTF-8;'
+            }
+        };
+        $http
+        .post(url, userJSON, options)
+        .success(function(data, status, headers, config){
+            // $rootScope.$emit('user_data_saved')
+            return data;
+        })
+        .error(function(data, status, headers, config){
+            return false;
+        });
+
         // Send data to the API
         // $http.post();
         return false;
