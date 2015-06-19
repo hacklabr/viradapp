@@ -1,5 +1,5 @@
 <ion-view view-title="Programação">
-    <ion-content>
+    <ion-content id="programacao-content" overflow-scroll="true">
         <div ng-hide="hasData">
             <article class="single">
                 <p class="text-center">Em breve você verá a programação!</p>
@@ -60,7 +60,7 @@
 <script type="text/html" id="template-evento">
     <div class="item" >
         <div class="item-content">
-            <a ng-if="!event.location" href="#/virada/programacao/atracao/<%= entity.id %>" >
+            <a href="#/virada/programacao/atracao/<%= entity.id %>" >
                 <div class="event-time">
                     <i class="icon icon_clock"></i>
                     <time class="ng-binding">
@@ -69,15 +69,19 @@
                 </div>
                 <h2><%= entity.name %></h2>
             </a>
+            <% if (connected) { %>
+                <a href=# class="js-minha-virada" onclick="minha_virada(this.parentElement.parentElement.event);">
+                    <% if (entity.in_minha_virada){ %>
+                    <i class="icon icon-accessory event-star icon_star"></i>
+                    <% } else { %>
+                    <i class="icon icon-accessory event-star icon_star_alt"></i>
+                    <% } %>
+                </a>
+            <% } else { %>
+                <i class="icon ion-chevron-right icon-accessory"></i>
+            <% } %>
         </div>
     </div>
 </script>
-
-        <ion-infinite-scroll
-            icon="ion-loading-c"
-            distance="30%"
-            on-infinite="loadMore()"
-            ng-if="canLoad()">
-        </ion-infinite-scroll>
     </ion-content>
 </ion-view>

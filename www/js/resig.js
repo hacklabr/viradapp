@@ -39,8 +39,8 @@
     };
 
     Resig.render = function (template, data, useCache) {
-        if (useCache && data.id && Resig.htmlCache[template] && Resig.htmlCache[template][data.id]) {
-            return Resig.htmlCache[template][data.id];
+        if (useCache && data.cacheId && Resig.htmlCache[template] && Resig.htmlCache[template][data.cacheId]) {
+            return Resig.htmlCache[template][data.cacheId];
         }
 
         if (useCache) {
@@ -49,43 +49,73 @@
 
         var html = this.tmpl(template, data);
 
-        if (useCache && data.id) {
-            Resig.htmlCache[template][data.id] = html;
+        if (useCache && data.cacheId) {
+            Resig.htmlCache[template][data.cacheId] = html;
         }
 
         return html;
     };
 
     Resig.renderElement = function (template, data, useCache) {
-        if (useCache && data.id && Resig.elementCache[template] && Resig.elementCache[template][data.id]) {
-            return Resig.elementCache[template][data.id];
+        if (useCache && data.cacheId && Resig.elementCache[template] && Resig.elementCache[template][data.cacheId]) {
+            return Resig.elementCache[template][data.cacheId];
         }
 
         if (useCache) {
             Resig.elementCache[template] = Resig.elementCache[template] || {};
         }
 
-        var div = document.createElement('div');
+        var tmp = document.createElement('div');
 
-        div.innerHTML = Resig.render(template, data);
+        tmp.innerHTML = Resig.render(template, data);
 
-        if (useCache && data.id) {
-            Resig.elementCache[template][data.id] = div.firstElementChild;
+        if (useCache && data.cacheId) {
+            Resig.elementCache[template][data.cacheId] = tmp.firstElementChild;
         }
 
-        return div.firstElementChild;
+        tmp.firstElementChild.resigData = data;
+
+        return tmp.firstElementChild;
+    };
+
+    Resig.reRenderElement = function(template, data){
+        if (data.cacheId && Resig.elementCache[template] && Resig.elementCache[template][data.cacheId]) {
+            var element = Resig.elementCache[template][data.cacheId];
+
+            var tmp = document.createElement('div');
+
+            tmp.innerHTML = Resig.render(template, data);
+
+
+            element.innerHTML = tmp.firstElementChild.innerHTML;
+        }
     };
 
     Resig.deleteElementCache = function (template, data) {
-        if (data.id && Resig.elementCache[template] && Resig.elementCache[template][data.id]) {
-            delete Resig.elementCache[template][data.id];
+        Resig.deleteElementCache = function (template, data) {
+        if (data.cacheId && Resig.elementCache[template] && Resig.elementCache[template][data.cacheId]) {
+            delete Resig.elementCache[template][data.cacheId];
         }
+    };
     };
 
     Resig.deleteHtmlCache = function (template, data) {
-        if (data.id && Resig.htmlCache[template] && Resig.htmlCache[template][data.id]) {
-            delete Resig.htmlCache[template][data.id];
+        if (data.cacheId && Resig.htmlCache[template] && Resig.htmlCache[template][data.cacheId]) {
+            delete Resig.htmlCache[template][data.cacheId];
         }
+    };
+
+    Resig.clearCache = function(){
+        Resig.clearElementCache();
+        Resig.clearHtmlCache();
+    };
+
+    Resig.clearElementCache = function(){
+        Resig.elementCache = [];
+    };
+
+    Resig.clearHtmlCache = function(){
+        Resig.htmlCache = [];
     };
 
 })();

@@ -69,7 +69,7 @@ angular.module('viradapp.controllers', [])
         duration : Date.oneDay(),
         start: Date.start(),
         end: Date.end(),
-        loads: 150,
+        loads: 100,
         A: new ListState(),
         L: new ListState(),
         H: new ListState()
@@ -391,33 +391,99 @@ angular.module('viradapp.controllers', [])
 .controller('ProgramacaoCtrl', function($rootScope, $scope, Virada, MinhaVirada, $localStorage) {
     var eventsContainer = document.getElementById('programacao-container');
 
-    $rootScope.$watch('view', function(newValue, oldValue){
-        console.log(newValue, oldValue);
-        if(newValue.sorted != oldValue.sorted){
+    document.getElementById('programacao-content').onscroll = function(){
+        if(!$rootScope.scrolling && this.offsetHeight + this.scrollTop >= this.scrollHeight - 1000){
+            $rootScope.loadMore();
             $scope.renderList();
+        }
+    };
+
+    // renderiza a lista quando muda a ordenação
+    $rootScope.$watch('view', function(newValue, oldValue){
+        if(newValue.sorted != oldValue.sorted){
+            if($rootScope.ledata.length){
+                $scope.renderList();
+            }else{
+                var interval = setInterval(function(){
+                    $rootScope.loadMore();
+                    if($rootScope.ledata.length){
+                        clearInterval(interval);
+                        $scope.renderList();
+                    }
+                },50);
+            }
         }
     }, true);
 
-    $rootScope.$watch(function(){return $scope.ledata.length }, function(newValue, oldValue){
+    // renderiza a lista quando o tamanho do ledata muda
+    $rootScope.$watch(function(){ return $scope.ledata.length; }, function(newValue, oldValue){
         if(newValue !== oldValue){
             $scope.renderList();
         }
     },true);
 
+    var interval = setInterval(function(){
+        $rootScope.loadMore();
+        if($rootScope.ledata.length){
+            clearInterval(interval);
+            $scope.renderList();
+        }
+    },50);
+
+    $rootScope.$watch('connected', function(){
+        Resig.clearCache();
+        $scope.renderList();
+    });
+
+    window.minha_virada = function(event){
+        $rootScope.minha_virada(event);
+//        console.log(document.getElementById('event-item-' + eventId));
+//        var el = Resig.reRenderElement('template-evento', document.getElementById('event-item-' + eventId).resigData);
+    };
+
     $scope.renderList = function(){
-        eventsContainer.innerHTML = '';
-        $rootScope.ledata.forEach(function(entity){
-            var template
+        var entities;
+
+        if(!$rootScope.scrolling){
+            // se estiver renderizando a lista e não estiver scrollando, apaga a lista inteira e utiliza toda a coleção no loop
+            eventsContainer.innerHTML = '';
+            entities = $rootScope.ledata;
+        }else{
+            // se estiver scrollando, NÃO apaga a lista e utiliza somente os novos elementos da coleção para o loop
+            entities = $rootScope.ledata.slice($rootScope.ldataLastLength);
+        }
+
+        entities.forEach(function(entity){
+            var template;
+
             if(entity.location){
                 template = 'template-palco';
             }else{
                 template = 'template-evento';
             }
 
-            var el = Resig.renderElement(template, {entity: entity}, true);
+            var data = {
+                cacheId: entity.id,
+                entity: entity,
+                connected: $scope.connected
+            };
+            var el = Resig.renderElement(template, data, true);
+
+            el.event = entity;
+
             eventsContainer.appendChild(el);
 
+            if (!entity.watching){
+                $rootScope.$watch(function(){ return entity.in_minha_virada; }, function(){
+                    Resig.reRenderElement(template, data);
+                });
+            }
+
         });
+
+        $rootScope.scrolling = false;
+
+        $rootScope.ldataLastLength = $rootScope.ledata.length;
     };
 
 
@@ -702,7 +768,14 @@ angular.module('viradapp.controllers', [])
 
     $rootScope.minha_virada = function(event){
         // Toogle event.in_minha_virada.
-        eventId = event.id
+        var eventId;
+
+        if(typeof event === 'number'){
+            eventId = event;
+        }else{
+            eventId = event.id;
+        }
+
         if($localStorage.hasOwnProperty("accessToken") === false ||
            $localStorage.hasOwnProperty("uid") === false) {
             MinhaVirada.connect();
@@ -723,7 +796,6 @@ angular.module('viradapp.controllers', [])
                     }
                 });
             } else {
-                console.log("Aqui");
                 event.in_minha_virada = MinhaVirada.toogle(eventId);
             }
         }
