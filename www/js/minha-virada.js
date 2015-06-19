@@ -377,7 +377,7 @@ angular.module("viradapp.minha_virada", [])
         // Get user friends from the API
         return $http
         .get(GlobalConfiguration.SOCIAL_API_URL
-             + '/friends/?uid='
+             + '/friendspositions/?uid='
              + user.uid
              + "&oauth_token=" + user.accessToken)
         .then(function(data){
