@@ -78,7 +78,7 @@ angular.module('viradapp.controllers', [])
     var events = Lazy([]);
 
     $scope.filters = new Filter(config.start, config.end);
-    $scope.view = {
+    $rootScope.view = {
         sorted : 'L'
     };
     $rootScope.ledata = [];
@@ -92,7 +92,7 @@ angular.module('viradapp.controllers', [])
     function init (){
         Virada.spaces().then(function(data){
             if(data.length() == 0) {
-                $scope.view.sorted = 'A';
+                $rootScope.view.sorted = 'A';
             }
             $rootScope.hasData = true;
             function setPosition (space){
@@ -139,7 +139,7 @@ angular.module('viradapp.controllers', [])
                             $rootScope.hasData = false;
                             return;
                         }
-                        sortBy($scope.view.sorted);
+                        sortBy($rootScope.view.sorted);
                     });
 
                     return Lazy(a);
@@ -213,7 +213,7 @@ angular.module('viradapp.controllers', [])
 
     $rootScope.clearFilters = function(){
         $scope.filters = new Filter(config.start, config.end);
-        $scope.view.sorted = $scope.filters.sorted;
+        $rootScope.view.sorted = $scope.filters.sorted;
 
         watchHandler();
     }
@@ -391,6 +391,12 @@ angular.module('viradapp.controllers', [])
 .controller('ProgramacaoCtrl', function($rootScope, $scope, Virada, MinhaVirada, $localStorage) {
     var eventsContainer = document.getElementById('programacao-container');
 
+    $rootScope.$watch('view', function(newValue, oldValue){
+        console.log(newValue, oldValue);
+        if(newValue.sorted != oldValue.sorted){
+            $scope.renderList();
+        }
+    }, true);
 
     $rootScope.$watch(function(){return $scope.ledata.length }, function(newValue, oldValue){
         if(newValue !== oldValue){
