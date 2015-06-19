@@ -79,8 +79,10 @@
 		        z-index: 100;
 		        bottom: 0;
 		        left: 0;
-		        padding: 9px;
+		        padding: 9px 9px 9px 10px;
 		        color: $brand-auxiliar;
+                height: 34px;
+                width: 34px;
 		        background-color: $brand-accent;
                 // &:before {
                 //     content: "\e031";
