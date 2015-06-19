@@ -519,7 +519,7 @@ angular.module('viradapp.controllers', [])
                 //Lazy($rootScope.lespaces);
 
             function onMapReady() {
-                if($scope.view.sendPosition || true){
+                if($scope.view.sendPosition){
                     map.getMyLocation(getMyLocation);
                 }
                 Lazy(spaces).async(2).tap(function(space){
