@@ -392,7 +392,7 @@ angular.module('viradapp.controllers', [])
     var eventsContainer = document.getElementById('programacao-container');
 
 
-    $rootScope.$watch('ledata', function(newValue, oldValue){
+    $rootScope.$watch(function(){return $scope.ledata.length }, function(newValue, oldValue){
         if(newValue !== oldValue){
             $scope.renderList();
         }
@@ -400,9 +400,15 @@ angular.module('viradapp.controllers', [])
 
     $scope.renderList = function(){
         eventsContainer.innerHTML = '';
-        $rootScope.ledata.forEach(function(event){
-            var el = Resig.renderElement('template-evento', {event: event}, true);
+        $rootScope.ledata.forEach(function(entity){
+            var template
+            if(entity.location){
+                template = 'template-palco';
+            }else{
+                template = 'template-evento';
+            }
 
+            var el = Resig.renderElement(template, {entity: entity}, true);
             eventsContainer.appendChild(el);
 
         });
