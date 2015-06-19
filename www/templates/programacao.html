@@ -16,41 +16,11 @@
             </div>
         </div>
 
-<!--        <ion-list class="list list-programacao">
-            <div collection-repeat="event in ledata"
-                 ng-class="{'item-divider': event.location}"
-                 ng-click=""
-                 class="item">
-                <div class="item-content">
-                    <div class="item-complex" ng-if="event.location"
-                         ui-sref="virada.palco-detail({palco : event.id })">
-                        {{ event.name}}
-                    </div>
-                    <a ng-if="!event.location" href="#/virada/programacao/atracao/{{event.id}}">
-                        <div class="event-time">
-                            <i class="icon icon_clock"></i>
-                            <time>
-                                {{ event.startsAt}}
-                            </time>
-                        </div>
-                        <h2>{{ event.name}}</h2>
-                    </a>
-                     Exibe a estrela se tá conectado
-                    <a ng-if="!event.location && connected" href=# ng-click="minha_virada(event)">
-                        <i class="icon icon-accessory event-star"
-                           ng-class="{'icon_star': event.in_minha_virada, 'icon_star_alt': !event.in_minha_virada}"></i>
-                    </a>
-                     Exibe chevron se não tá conectado
-                    <i ng-if="!event.location && !connected" class="icon ion-chevron-right icon-accessory"></i>
-                </div>
-            </div>
-        </ion-list>-->
-
 
 <script type="text/html" id="template-palco">
     <div class="item item-divider">
-        <div class="item-content">
-            <div class="item-complex" href="#/virada/programacao/palco/<%= entity.id %>">
+        <div class="item-content" onclick="redirectFromListTo('#/virada/programacao/palco/<%= entity.id %>')">
+            <div class="item-complex">
                 <%= entity.name %>
             </div>
         </div>
@@ -60,7 +30,7 @@
 <script type="text/html" id="template-evento">
     <div class="item" >
         <div class="item-content">
-            <a href="#/virada/programacao/atracao/<%= entity.id %>" >
+            <div onclick="redirectFromListTo('#/virada/programacao/atracao/<%= entity.id %>')" >
                 <div class="event-time">
                     <i class="icon icon_clock"></i>
                     <time class="ng-binding">
@@ -68,7 +38,7 @@
                     </time>
                 </div>
                 <h2><%= entity.name %></h2>
-            </a>
+            </div>
             <% if (connected) { %>
                 <a href=# class="js-minha-virada" onclick="minha_virada(this.parentElement.parentElement.event);">
                     <% if (entity.in_minha_virada){ %>

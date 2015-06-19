@@ -158,6 +158,7 @@ angular.module('viradapp.controllers', [])
     });
 
     function filtering(){
+
         var data = $filter('lefilter')(events, spaces, $scope.filters);
         config.A.filtered = data.sortBy(function(event){
             return event.name;
@@ -166,6 +167,8 @@ angular.module('viradapp.controllers', [])
             return event.timestamp;
         });
         config.L.filtered = Lazy($filter('toSpaces')(data, spaces));
+
+        console.log('f',config);
     }
 
     /**
@@ -437,9 +440,28 @@ angular.module('viradapp.controllers', [])
 
     window.minha_virada = function(event){
         $rootScope.minha_virada(event);
-//        console.log(document.getElementById('event-item-' + eventId));
-//        var el = Resig.reRenderElement('template-evento', document.getElementById('event-item-' + eventId).resigData);
     };
+
+
+    //
+    var programacaoContent = document.getElementById('programacao-content');
+    window.redirectFromListTo = function(url){
+        window.listScrollTop = programacaoContent.scrollTop;
+        document.location = url;
+    };
+
+    $rootScope.$on('$ionicView.beforeEnter', function(e,state){
+        if(state.stateId === 'virada.programacao' && window.listScrollTop){
+            programacaoContent.style.marginTop = -window.listScrollTop + 'px';
+        }
+    });
+
+    $rootScope.$on('$ionicView.enter', function(e,state){
+        if(state.stateId === 'virada.programacao' && window.listScrollTop){
+            programacaoContent.style.marginTop = 0;
+            programacaoContent.scrollTop = window.listScrollTop;
+        }
+    });
 
     $scope.renderList = function(){
         var entities;
