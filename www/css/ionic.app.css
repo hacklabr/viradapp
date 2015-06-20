@@ -8084,3 +8084,7 @@ a {
 
 .platform-ios.platform-cordova:not(.fullscreen) .espacinho {
   margin-top: 20px; }
+
+#map_canvas .map_options_button {
+  min-height: inherit !important;
+  min-width: inherit !important; }
