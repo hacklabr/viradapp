@@ -186,6 +186,7 @@ angular.module('viradapp.controllers', [])
     });
 
     function filtering(){
+        console.log('filtering');
 
         var data = $filter('lefilter')(events, spaces, $scope.filters);
         config.A.filtered = data.sortBy(function(event){
@@ -195,8 +196,6 @@ angular.module('viradapp.controllers', [])
             return event.timestamp;
         });
         config.L.filtered = Lazy($filter('toSpaces')(data, spaces));
-
-        console.log('f',config);
     }
 
     /**
@@ -247,6 +246,7 @@ angular.module('viradapp.controllers', [])
     };
 
     $rootScope.clearFilters = function(){
+        $rootScope.cannotLoadMore = false;
         $rootScope.renderDone = false;
 
         $scope.filters = new Filter(config.start, config.end);
@@ -275,6 +275,9 @@ angular.module('viradapp.controllers', [])
     };
 
     $rootScope.applyFilters = function(){
+        console.log('applyFilters');
+
+        $rootScope.cannotLoadMore = false;
         $rootScope.renderDone = false;
 
         $scope.filters = angular.copy($rootScope.tempFilters.filters);
@@ -294,7 +297,7 @@ angular.module('viradapp.controllers', [])
 
         setTimeout(function(){
             watchHandler();
-        });
+        },50);
     };
 
     $scope.selectedSpaces = 0;
@@ -302,9 +305,7 @@ angular.module('viradapp.controllers', [])
     $scope.keyLog = function(evt){
         if(evt.keyCode == 13){
             evt.target.blur();
-//            setTimeout(function(){
-                $rootScope.applyFilters();
-//            });
+            $rootScope.applyFilters();
         }
     };
 
@@ -350,7 +351,17 @@ angular.module('viradapp.controllers', [])
         $rootScope.renderList();
     }
 
+    $rootScope.cannotLoadMore = false;
+
+    $rootScope.firstLoad = true;
+
     $rootScope.loadMore  = function(){
+
+        if(!$rootScope.firstLoad && $rootScope.cannotLoadMore || !$rootScope.canLoad()){
+            $rootScope.cannotLoadMore = true;
+            return;
+        }
+        $rootScope.firstLoad = true;
         $rootScope.scrolling = true;
 
         switch ($scope.filters.sorted) {
@@ -361,10 +372,11 @@ angular.module('viradapp.controllers', [])
                         .drop(config.A.loaded)
                         .take(config.loads).toArray();
 
+
                 config.A.loaded = config.A.page*config.loads;
                 $rootScope.ledata.push.apply($rootScope.ledata, d);
                 config.A.data = $rootScope.ledata;
-                console.log("Loaded events: "  + config.A.loaded);
+                console.log("Loaded events (A): "  + config.A.loaded);
             break;
             case "L":
                 if(typeof config.L.filtered == 'undefined') return false;
@@ -373,10 +385,11 @@ angular.module('viradapp.controllers', [])
                     .drop(config.L.loaded)
                     .take(config.loads).toArray();
 
+
                 config.L.loaded = config.L.page*config.loads;
                 $rootScope.ledata.push.apply($rootScope.ledata, d);
                 config.L.data = $rootScope.ledata;
-                console.log("Loaded spaces: " + config.L.loaded);
+                console.log("Loaded spaces (L): " + config.L.loaded);
             break;
             case "H":
                 if(typeof config.H.filtered == 'undefined') return false;
@@ -388,7 +401,7 @@ angular.module('viradapp.controllers', [])
                 config.H.loaded = config.H.page*config.loads;
                 $rootScope.ledata.push.apply($rootScope.ledata, d);
                 config.H.data = $rootScope.ledata;
-                console.log("Loaded spaces: " + config.H.loaded);
+                console.log("Loaded events (H): " + config.H.loaded);
             break;
 
         }
@@ -470,12 +483,23 @@ angular.module('viradapp.controllers', [])
 })
 .controller('ProgramacaoCtrl', function($rootScope, $scope, Virada, MinhaVirada, $localStorage) {
     var eventsContainer = document.getElementById('programacao-container');
+    var inscroll = false;
 
     document.getElementById('programacao-content').onscroll = function(){
+        if(inscroll){
+            return;
+        }
+
+        inscroll = true;
+
         if(!$rootScope.scrolling && this.offsetHeight + this.scrollTop >= this.scrollHeight - 1000){
             $rootScope.loadMore();
             $rootScope.renderList();
         }
+
+        setTimeout(function(){
+            inscroll = false;
+        },300);
     };
 
     var interval = setInterval(function(){
@@ -516,10 +540,12 @@ angular.module('viradapp.controllers', [])
         }
     });
 
-
+    $rootScope.NUM = 0;
 
     $rootScope.renderList = function(){
         var entities;
+
+        $rootScope.NUM++;
 
         if(!$rootScope.scrolling){
             // se estiver renderizando a lista e não estiver scrollando, apaga a lista inteira e utiliza toda a coleção no loop
