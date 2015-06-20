@@ -424,6 +424,20 @@ angular.module("viradapp.minha_virada", [])
 
     };
 
+    var getService = function (name){
+        var url = GlobalConfiguration.SOCIAL_API_URL
+            + "/map/" + name + ".json";
+
+        return $http
+        .get(url).then(function(data){
+            return data.data;
+        }).catch(function(error){
+            return false;
+        })
+    }
+
+
+
     var getFriendsOnEvents = function(eventId){
         // Get user friends from the API
         return $http
@@ -487,6 +501,7 @@ angular.module("viradapp.minha_virada", [])
         getFriends: getFriends,
         getFriendsOnEvent: getFriendsOnEvent,
         getFriendsOnEvents: getFriendsOnEvents,
-        updateLocation: updateLocation
+        updateLocation: updateLocation,
+        getService: getService
     };
 });
