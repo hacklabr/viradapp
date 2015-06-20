@@ -679,7 +679,7 @@ angular.module('viradapp.controllers', [])
             "ambulancia"
         ];
         if(typeof plugin !== 'undefined'){
-            var center = new plugin.google.maps.LatLng(-23.5408, -46.6356);
+            var center = new plugin.google.maps.LatLng(-23.5408, -46.6400);
             var mapState = new MapState(plugin.google.maps.MapTypeId.ROADMAP, center);
         }
         function getMyLocation (location){
