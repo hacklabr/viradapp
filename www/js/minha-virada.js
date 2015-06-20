@@ -429,7 +429,7 @@ angular.module("viradapp.minha_virada", [])
             + "/map/" + name + ".json";
 
         return $http
-        .get(url).then(function(data){
+        .get(url, {cache: true}).then(function(data){
             return data.data;
         }).catch(function(error){
             return false;

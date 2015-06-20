@@ -38,14 +38,14 @@ angular.module('viradapp.services', [])
     }
 
     function getSpacesData(){
-        spaces_data = $http.get(conf.spaces_data.url)
+        spaces_data = $http.get(conf.spaces_data.url, {cache : true})
         .then(function(res){
             return Lazy(res.data);
         });
     }
 
     function getEvents(){
-        events = $http.get(conf.events.url)
+        events = $http.get(conf.events.url, {cache :  true})
         .then(function(res){
             return Lazy(res.data);
         });

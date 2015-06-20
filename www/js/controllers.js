@@ -738,6 +738,7 @@ angular.module('viradapp.controllers', [])
                     });
                 });
 
+                var servicesLoaded = 0;
                 $scope.$on('service_loaded', function(ev, data){
                     var name = data.name;
                     var features = data.data.features;
@@ -745,13 +746,14 @@ angular.module('viradapp.controllers', [])
                     Lazy(features).async(2).tap(function(feature){
                         var iconName = GlobalConfiguration.SOCIAL_API_URL
                         + "/map/icons/" + name + ".png";
+
                         feature.map = {
                             'title' : feature.properties.name,
                             icon: iconName,
-                            visible: false,
+                            visible: $scope.view.options.services === true,
                             position: new plugin.google.maps.LatLng(
-                                feature.geometry.coordinates[1].toFixed(5),
-                                feature.geometry.coordinates[0].toFixed(5)),
+                                feature.geometry.coordinates[1],
+                                feature.geometry.coordinates[0]),
                         }
 
                         map.addMarker(feature.map, function(marker){
@@ -765,13 +767,19 @@ angular.module('viradapp.controllers', [])
                     }).toArray()
                     .then(function(data){
                         services.push.apply(services, features);
-                        map.getVisibleRegion(function(latLngBounds) {
-                            showServices(latLngBounds);
-                        });
+                        servicesLoaded++;
+                        if(servicesLoaded == servicesNames.length)
+                            $scope.$emit('all_services_ready');
                     });
                 });
 
-                if(MinhaVirada.hasUser()){
+                $scope.$on('all_services_ready', function(ev){
+                    map.getVisibleRegion(function(latLngBounds) {
+                        showServices(latLngBounds);
+                    });
+                });
+
+                /* if(MinhaVirada.hasUser()){
                     MinhaVirada.getFriends().then(function(data){
                         if(data){
                             Lazy(data).async(2).tap(function(friend){
@@ -807,13 +815,13 @@ angular.module('viradapp.controllers', [])
                             });
                         }
                     });
-                }
+                    } */
             }
 
             function onCameraChange(){
                 map.getVisibleRegion(function(latLngBounds) {
                     showPalcos(latLngBounds);
-                    showFriends(latLngBounds);
+                    // showFriends(latLngBounds);
                     showServices(latLngBounds);
                 });
             }
@@ -876,13 +884,14 @@ angular.module('viradapp.controllers', [])
 
         $scope.showConfirm = function(space) {
             var end = "";
-            if(typeof space.endereco !== "undefined"){
-                end = space.endereco;
+            if(typeof space.data !== "undefined"){
+                end = space.data.endereco;
             }
+            console.log(space);
             var confirmPopup = $ionicPopup.confirm({
                 title: space.name,
                 template:
-                    '<p>' + end.substring(0, 100)  + '</p>'
+                    '<p>' + end  + '</p>'
                     + '<p>' + space.events.length + ' eventos nesse local!</p>'
                     + '<p>Ver a programação completa?</p>',
                 buttons: [
@@ -927,7 +936,7 @@ angular.module('viradapp.controllers', [])
                 map.getVisibleRegion(function(latLngBounds){
                     showPalcos(latLngBounds);
                     showFriends(latLngBounds);
-                    showServices(latLngBounds);
+                    // showServices(latLngBounds);
                 });
             }
 

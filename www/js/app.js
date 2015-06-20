@@ -1,7 +1,8 @@
 var viradapp = angular.module("viradapp", ['ionic', 'viradapp.wrappers', 'viradapp.controllers', 'viradapp.services', 'viradapp.config', 'viradapp.minha_virada', 'viradapp.programacao', 'ngStorage', 'ngCordova']);
 
-viradapp.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $compileProvider) {
+viradapp.config(function($stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, $compileProvider) {
     //$ionicConfigProvider.scrolling.jsScrolling(false);
+    $httpProvider.defaults.cache = true;
 
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|tel|geo|ms-appx|x-wmapp0):/);
 
