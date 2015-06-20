@@ -123,7 +123,10 @@ angular.module('viradapp.controllers', [])
             if(moment() >= moment('2015-06-20 18:00') && moment() < moment('2015-06-21 18:00')){
                 var now = moment().subtract('minutes', 15);
                 $scope.timeSlider.model.min = parseInt(parseInt(now.diff(moment('2015-06-20 18:00')) / 1000) / 60 / 60 * 4);
+            }else{
+                $scope.timeSlider.model.min = 0;
             }
+            $scope.timeSlider.model.max = 96;
         },
 
         translate: function(val, includeDay){
