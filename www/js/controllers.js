@@ -103,6 +103,61 @@ angular.module('viradapp.controllers', [])
         L: new ListState(),
         H: new ListState()
     };
+
+    $rootScope.timeSlider = {
+        range: {
+            min: 0,
+            max: 96
+        },
+        model:{
+            min:0,
+            max:96
+        },
+        time:{
+            min: '18:00',
+            max: '17:59'
+        },
+
+        reset: function(){
+            var m = moment();
+            if(moment() >= moment('2015-06-20 18:00') && moment() < moment('2015-06-21 18:00')){
+                var now = moment().subtract('minutes', 15);
+                $scope.timeSlider.model.min = parseInt(parseInt(now.diff(moment('2015-06-20 18:00')) / 1000) / 60 / 60 * 4);
+            }
+        },
+
+        translate: function(val, includeDay){
+            var format = includeDay ? 'YYYY-MM-DD HH:mm' : 'HH:mm';
+            if(val > 0){
+                return moment('2015-06-20 18:00').add(val * 15, 'minutes').format(format);
+            }else{
+                return moment('2015-06-20 18:00').format(format);
+            }
+        },
+
+        minTimestamp: function(){
+            return moment($rootScope.timeSlider.translate($rootScope.timeSlider.model.min, true)).format('x');
+        },
+
+        maxTimestamp: function(){
+            return moment($rootScope.timeSlider.translate($rootScope.timeSlider.model.max, true)).format('x');
+        }
+
+    };
+
+    $rootScope.timeSlider.reset();
+
+
+    var startTimeSetted = false;
+
+
+    if(!startTimeSetted){
+        if(moment() >= moment('2015-06-20 18:00') && moment() < moment('2015-06-21 18:00')){
+            var now = moment().subtract('minutes', 15);
+            $rootScope.timeSlider.model.min = parseInt(parseInt(now.diff(moment('2015-06-20 18:00')) / 1000) / 60 / 60 * 4);
+        }
+    }
+
     var spaces = Lazy([]);
     var events = Lazy([]);
 
@@ -250,6 +305,11 @@ angular.module('viradapp.controllers', [])
         $rootScope.renderDone = false;
 
         $scope.filters = new Filter(config.start, config.end);
+        $rootScope.timeSlider.reset();
+
+        $scope.filters.starting = $rootScope.timeSlider.minTimestamp();
+        $scope.filters.ending = $rootScope.timeSlider.maxTimestamp();
+
         $rootScope.view.sorted = $scope.filters.sorted;
 
         $rootScope.tempFilters = {
@@ -275,12 +335,15 @@ angular.module('viradapp.controllers', [])
     };
 
     $rootScope.applyFilters = function(){
-        console.log('applyFilters');
+
 
         $rootScope.cannotLoadMore = false;
         $rootScope.renderDone = false;
 
         $scope.filters = angular.copy($rootScope.tempFilters.filters);
+        $scope.filters.starting = $rootScope.timeSlider.minTimestamp();
+        $scope.filters.ending = $rootScope.timeSlider.maxTimestamp();
+
         $rootScope.view.sorted = $rootScope.tempFilters.view;
 
         $scope.filters.places.data = [];
@@ -545,6 +608,8 @@ angular.module('viradapp.controllers', [])
     $rootScope.renderList = function(){
         var entities;
 
+
+
         $rootScope.NUM++;
 
         if(!$rootScope.scrolling){
@@ -558,11 +623,13 @@ angular.module('viradapp.controllers', [])
 
         entities.forEach(function(entity){
             var template;
+            var show = true;
 
             if(entity.location){
                 template = 'template-palco';
             }else{
                 template = 'template-evento';
+
             }
 
             var data = {
@@ -588,7 +655,10 @@ angular.module('viradapp.controllers', [])
 
         $rootScope.ldataLastLength = $rootScope.ledata.length;
 
-        $rootScope.renderDone = true;
+        setTimeout(function(){
+            $rootScope.renderDone = true;
+            $rootScope.$apply();
+        },50);
     };
 
 
