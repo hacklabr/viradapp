@@ -135,6 +135,7 @@ angular.module("viradapp.minha_virada", [])
     }
 
     var initializeUserData = function (response) {
+
         user.accessToken = response.access_token;
         return api({
             path: '/me',
@@ -261,9 +262,14 @@ angular.module("viradapp.minha_virada", [])
     };
 
     var click = function(eventId) {
+        if(user.uid){
+            config.connected = true;
+        }
+
         if(!config.connected){
             return;
         }
+        
         if (typeof user.events === 'undefined') {
             user.events = [];
         }
@@ -271,6 +277,7 @@ angular.module("viradapp.minha_virada", [])
     };
 
     var doClick = function(eventId) {
+
         if (eventId) {
             var has_event = hasEvent(eventId);
 
