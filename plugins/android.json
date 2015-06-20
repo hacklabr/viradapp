@@ -121,6 +121,9 @@
         "com.ionic.keyboard": {
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "br.com.lfdb.viradapp"
+        },
         "cordova-plugin-device": {
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         },
