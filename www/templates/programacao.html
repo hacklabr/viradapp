@@ -1,11 +1,15 @@
 <ion-view view-title="Programação">
     <ion-content id="programacao-content" overflow-scroll="true">
-        <div ng-hide="hasData">
+        <div ng-hide="renderDone">
             <article class="single">
-                <p class="text-center">Em breve você verá a programação!</p>
+                <p>&nbsp;</p>
+                <p class="text-center">
+                    <ion-spinner ng-show="!repeatDone" icon="dots" class=""></ion-spinner>
+                </p>
             </article>
         </div>
-        <div class="list list-programacao">
+
+        <div ng-show="renderDone" class="list list-programacao">
             <div class="list">
                 <div class="collection-repeat-container" >
                     <div id="programacao-container">

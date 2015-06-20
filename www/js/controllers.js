@@ -174,9 +174,7 @@ angular.module('viradapp.controllers', [])
     /**
      * Sorted by
      */
-    $rootScope.change = function(item){
-        sortBy(item.view.sorted);
-    }
+
 
     function sortBy(sorted){
         switch (sorted){
@@ -214,25 +212,81 @@ angular.module('viradapp.controllers', [])
         }
     };
 
+    $rootScope.tempFilters = {
+        filters: angular.copy($scope.filters),
+        view: $rootScope.view.sorted,
+        numSelectedSpaces: 0
+    };
+
     $rootScope.clearFilters = function(){
+        $rootScope.renderDone = false;
+
         $scope.filters = new Filter(config.start, config.end);
         $rootScope.view.sorted = $scope.filters.sorted;
 
-        watchHandler();
-    }
+        $rootScope.tempFilters = {
+            filters: angular.copy($scope.filters),
+            view: $rootScope.view.sorted
+        };
 
+        $scope.filters.places.data = [];
 
-    /**
-     * Watch filters
-     */
+        $scope.selectedSpaces = 0;
 
-    var TIMEOUT_DELAY = 200;
+        $scope.lespaces.forEach(function(space){
+            space.checked = false;
+        });
 
-    $scope.$watch('filters.query', function(newValue, oldValue){
-        if(newValue !== oldValue){
-            $timeout(watchHandler, TIMEOUT_DELAY);
+        sortBy($rootScope.view.sorted);
+
+        $ionicSideMenuDelegate.toggleRight();
+
+        setTimeout(function(){
+            watchHandler();
+        });
+    };
+
+    $rootScope.applyFilters = function(){
+        $rootScope.renderDone = false;
+
+        $scope.filters = angular.copy($rootScope.tempFilters.filters);
+        $rootScope.view.sorted = $rootScope.tempFilters.view;
+
+        $scope.filters.places.data = [];
+
+        $scope.lespaces.forEach(function(space){
+            if(space.checked){
+                $scope.filters.places.data.push(space.id);
+            }
+        });
+
+        sortBy($rootScope.view.sorted);
+
+        $ionicSideMenuDelegate.toggleRight();
+
+        setTimeout(function(){
+            watchHandler();
+        });
+    };
+
+    $scope.selectedSpaces = 0;
+
+    $scope.keyLog = function(evt){
+        if(evt.keyCode == 13){
+            evt.target.blur();
+//            setTimeout(function(){
+                $rootScope.applyFilters();
+//            });
         }
-    }, true);
+    };
+
+    $scope.countSpace = function(space){
+        if(space.checked){
+            $scope.selectedSpaces++;
+        }else{
+            $scope.selectedSpaces--;
+        }
+    };
 
     function watchHandler(){
         filtering();
@@ -265,6 +319,7 @@ angular.module('viradapp.controllers', [])
             break;
         }
 
+        $rootScope.renderList();
     }
 
     $rootScope.loadMore  = function(){
@@ -349,9 +404,18 @@ angular.module('viradapp.controllers', [])
             && !allShown;
     };
 
+
+//    $rootScope.$on('$ionicView.beforeEnter', function(e,state){
+//
+//    });
+//
+//    $rootScope.$on('$ionicView.enter', function(e,state){
+//
+//    });
+
     $ionicModal.fromTemplateUrl('places.html', {
         scope: $scope,
-        animation: 'slide-in-up'
+        animation: 'show'
     }).then(function(modal) {
         $scope.modal = modal;
     });
@@ -372,21 +436,6 @@ angular.module('viradapp.controllers', [])
         $scope.modal.remove();
     });
 
-    $scope.$on('modal.hidden', function() {
-        // Show button if places are chosen
-        watchHandler();
-    });
-
-    $scope.changed = function(id) {
-        var space = $scope.lespaces[id];
-        if(space.checked == true){
-            $scope.filters.places.data.push($scope.lespaces[id].id);
-        } else {
-            var i = $scope.filters.places.data.indexOf(space.id);
-            if(i >= 0) $scope.filters.places.data.splice(i, 1);
-        }
-    }
-
     $scope.$on('$stateChangeSuccess', function() {
         //$scope.loadMore();
     });
@@ -397,45 +446,21 @@ angular.module('viradapp.controllers', [])
     document.getElementById('programacao-content').onscroll = function(){
         if(!$rootScope.scrolling && this.offsetHeight + this.scrollTop >= this.scrollHeight - 1000){
             $rootScope.loadMore();
-            $scope.renderList();
+            $rootScope.renderList();
         }
     };
-
-    // renderiza a lista quando muda a ordenação
-    $rootScope.$watch('view', function(newValue, oldValue){
-        if(newValue.sorted != oldValue.sorted){
-            if($rootScope.ledata.length){
-                $scope.renderList();
-            }else{
-                var interval = setInterval(function(){
-                    $rootScope.loadMore();
-                    if($rootScope.ledata.length){
-                        clearInterval(interval);
-                        $scope.renderList();
-                    }
-                },50);
-            }
-        }
-    }, true);
-
-    // renderiza a lista quando o tamanho do ledata muda
-    $rootScope.$watch(function(){ return $scope.ledata.length; }, function(newValue, oldValue){
-        if(newValue !== oldValue){
-            $scope.renderList();
-        }
-    },true);
 
     var interval = setInterval(function(){
         $rootScope.loadMore();
         if($rootScope.ledata.length){
             clearInterval(interval);
-            $scope.renderList();
+            $rootScope.renderList();
         }
     },50);
 
     $rootScope.$watch('connected', function(){
         Resig.clearCache();
-        $scope.renderList();
+        $rootScope.renderList();
     });
 
     window.minha_virada = function(event){
@@ -463,7 +488,9 @@ angular.module('viradapp.controllers', [])
         }
     });
 
-    $scope.renderList = function(){
+
+
+    $rootScope.renderList = function(){
         var entities;
 
         if(!$rootScope.scrolling){
@@ -506,6 +533,8 @@ angular.module('viradapp.controllers', [])
         $rootScope.scrolling = false;
 
         $rootScope.ldataLastLength = $rootScope.ledata.length;
+
+        $rootScope.renderDone = true;
     };
 
 
