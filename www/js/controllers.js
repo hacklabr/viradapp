@@ -637,8 +637,8 @@ angular.module('viradapp.controllers', [])
                 sendPosition : false,
                 options : {
                     friends: false ,
-                    palcos: true ,
-                    services: false
+                    palcos: false ,
+                    services: true
                 }
             };
             $localStorage.mapOptions = $scope.view;
@@ -779,25 +779,30 @@ angular.module('viradapp.controllers', [])
                     });
                 });
 
-                /* if(MinhaVirada.hasUser()){
+                if(MinhaVirada.hasUser()){
                     MinhaVirada.getFriends().then(function(data){
                         if(data){
                             Lazy(data).async(2).tap(function(friend){
                                 if(friend.lat && friend.long){
+                                    if (friend.map_picture)
+                                        var picture = friend.map_picture
+                                    else
+                                    var picture = friend.picture
                                     friend.map = {
                                         position: new plugin.google.maps.LatLng(
-                                            friend.lat,
-                                            friend.long),
+                                            parseFloat(friend.lat),
+                                            parseFloat(friend.long)),
                                         'title': friend.name,
+                                        'icon': {
+                                            'url': picture,
+                                            'size': {
+                                                width: 46,
+                                                height: 46
+                                            }
+                                        }
                                     };
                                     map.addMarker(friend.map, function(marker){
-                                        marker.setIcon({
-                                            'url': friend.picture,
-                                            'size': {
-                                                width: 50,
-                                                height: 50
-                                            }
-                                        });
+                                        // marker.setIcon();
                                         friend.marker = marker;
                                         marker.addEventListener(
                                             plugin.google.maps.event.MARKER_CLICK,
@@ -815,13 +820,13 @@ angular.module('viradapp.controllers', [])
                             });
                         }
                     });
-                    } */
+                }
             }
 
             function onCameraChange(){
                 map.getVisibleRegion(function(latLngBounds) {
                     showPalcos(latLngBounds);
-                    // showFriends(latLngBounds);
+                    showFriends(latLngBounds);
                     showServices(latLngBounds);
                 });
             }
@@ -936,7 +941,7 @@ angular.module('viradapp.controllers', [])
                 map.getVisibleRegion(function(latLngBounds){
                     showPalcos(latLngBounds);
                     showFriends(latLngBounds);
-                    // showServices(latLngBounds);
+                    showServices(latLngBounds);
                 });
             }
 
