@@ -501,9 +501,8 @@ angular.module('viradapp.controllers', [])
             "ambulancia_uti",
             "ambulancia"
         ];
-
         if(typeof plugin !== 'undefined'){
-            var center = new plugin.google.maps.LatLng(-23.562392, -46.655052);
+            var center = new plugin.google.maps.LatLng(-23.5408, -46.6356);
             var mapState = new MapState(plugin.google.maps.MapTypeId.ROADMAP, center);
         }
         function getMyLocation (location){
@@ -524,6 +523,7 @@ angular.module('viradapp.controllers', [])
                 // Wait until the map is ready status.
                 map.addEventListener(plugin.google.maps.event.MAP_READY,
                                      function(){$timeout(onMapReady, 500);});
+
                 map.addEventListener(plugin.google.maps.event.CAMERA_CHANGE,
                                                           onCameraChange);
             }
@@ -556,29 +556,41 @@ angular.module('viradapp.controllers', [])
                 Lazy(servicesNames).each(function(name){
                     MinhaVirada.getService(name).then(function(data){
                         if(data){
-                            var features = data.features;
-                            services.push(features);
-                            Lazy(features).async(2).tap(function(feature){
-                                var iconName = GlobalConfiguration.SOCIAL_API_URL
-                                + "/map/icons/" + name + ".png";
-                                var item = {
-                                    'title' : feature.properties.name,
-                                    icon: iconName,
-                                    position: new plugin.google.maps.LatLng(
-                                        feature.geometry.coordinates[1],
-                                        feature.geometry.coordinates[0]),
-                                }
-
-                                map.addMarker(item, function(marker){
-                                    feature.marker = marker;
-                                    marker.addEventListener(
-                                        plugin.google.maps.event.MARKER_CLICK,
-                                        function(marker){
-                                            marker.showInfoWindow();
-                                        });
-                                });
-                            }).each(Lazy.noop);
+                            $scope.$emit("service_loaded", { data: data, name: name });
                         }
+                    });
+                });
+
+                $scope.$on('service_loaded', function(ev, data){
+                    var name = data.name;
+                    var features = data.data.features;
+
+                    Lazy(features).async(2).tap(function(feature){
+                        var iconName = GlobalConfiguration.SOCIAL_API_URL
+                        + "/map/icons/" + name + ".png";
+                        feature.map = {
+                            'title' : feature.properties.name,
+                            icon: iconName,
+                            visible: false,
+                            position: new plugin.google.maps.LatLng(
+                                feature.geometry.coordinates[1].toFixed(5),
+                                feature.geometry.coordinates[0].toFixed(5)),
+                        }
+
+                        map.addMarker(feature.map, function(marker){
+                            feature.marker = marker;
+                            marker.addEventListener(
+                                plugin.google.maps.event.MARKER_CLICK,
+                                function(marker){
+                                    marker.showInfoWindow();
+                                });
+                        });
+                    }).toArray()
+                    .then(function(data){
+                        services.push.apply(services, features);
+                        map.getVisibleRegion(function(latLngBounds) {
+                            showServices(latLngBounds);
+                        });
                     });
                 });
 
@@ -610,7 +622,12 @@ angular.module('viradapp.controllers', [])
                                     });
                                     friends.push(friend);
                                 }
-                            }).each(Lazy.noop);
+                            }).toArray()
+                            .then(function(data){
+                                map.getVisibleRegion(function(latLngBounds) {
+                                    showFriends(latLngBounds);
+                                });
+                            });
                         }
                     });
                 }
@@ -630,14 +647,16 @@ angular.module('viradapp.controllers', [])
             for(var i = 0; i < spaces.length; i++){
                 space = spaces[i];
 
-                if(typeof space.data !== 'undefined'){
+                if(typeof space.data !== 'undefined' && typeof space.marker !== 'undefined'){
                     var isContained = latLngBounds.contains(space.map.position);
                     if(isContained && $scope.view.options.palcos){
                         if(!space.marker.isVisible()){
                             space.marker.setVisible(true);
                         }
                     } else {
-                        space.marker.setVisible(false);
+                        if(typeof space.marker !== 'undefined'){
+                            space.marker.setVisible(false);
+                        }
                     }
                 }
             }
@@ -646,13 +665,16 @@ angular.module('viradapp.controllers', [])
         function showServices (latLngBounds){
             for(var i = 0; i < services.length; i++){
                 var service = services[i];
-                var isContained = latLngBounds.contains(service.marker.position);
+
+                var isContained = latLngBounds.contains(service.map.position);
                 if(isContained && $scope.view.options.services){
                     if(!service.marker.isVisible()){
                         service.marker.setVisible(true);
                     }
                 } else {
-                    service.marker.setVisible(false);
+                    if(typeof service.marker !== 'undefined'){
+                        service.marker.setVisible(false);
+                    }
                 }
             }
         }
@@ -661,13 +683,16 @@ angular.module('viradapp.controllers', [])
         function showFriends (latLngBounds){
             for(var i = 0; i < friends.length; i++){
                 var friend = friends[i];
+
                 var isContained = latLngBounds.contains(friend.map.position);
                 if(isContained && $scope.view.options.friends){
                     if(!friend.marker.isVisible()){
                         friend.marker.setVisible(true);
                     }
                 } else {
-                    friend.marker.setVisible(false);
+                    if(typeof friend.marker !== 'undefined'){
+                        friend.marker.setVisible(false);
+                    }
                 }
             }
         }
@@ -696,6 +721,7 @@ angular.module('viradapp.controllers', [])
                 if(res) {
                     $state.go('virada.palco-detail',
                               {palco : space.id});
+                    map.setClickable(true);
                 } else {
                     map.setClickable(true);
                 }
@@ -724,6 +750,7 @@ angular.module('viradapp.controllers', [])
                 map.getVisibleRegion(function(latLngBounds){
                     showPalcos(latLngBounds);
                     showFriends(latLngBounds);
+                    showServices(latLngBounds);
                 });
             }
 
