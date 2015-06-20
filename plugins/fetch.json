@@ -7,14 +7,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-console": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-console"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-whitelist": {
         "source": {
             "type": "registry",
@@ -72,8 +64,8 @@
         },
         "is_top_level": true,
         "variables": {
-            "API_KEY_FOR_ANDROID": "AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y",
-            "API_KEY_FOR_IOS": "AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y"
+            "API_KEY_FOR_ANDROID": "AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss",
+            "API_KEY_FOR_IOS": "AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss"
         }
     },
     "plugin.http.request": {

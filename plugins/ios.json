@@ -157,7 +157,7 @@
                 "parents": {
                     "Google Maps API Key": [
                         {
-                            "xml": "<string>AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y</string>",
+                            "xml": "<string>AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss</string>",
                             "count": 1
                         }
                     ],
@@ -209,7 +209,7 @@
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         },
         "plugin.google.maps": {
-            "API_KEY_FOR_IOS": "AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y",
+            "API_KEY_FOR_IOS": "AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss",
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         }
     },

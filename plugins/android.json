@@ -13,7 +13,7 @@
                             "count": 2
                         },
                         {
-                            "xml": "<meta-data android:name=\"com.google.android.maps.v2.API_KEY\" android:value=\"AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y\" />",
+                            "xml": "<meta-data android:name=\"com.google.android.maps.v2.API_KEY\" android:value=\"AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss\" />",
                             "count": 1
                         }
                     ],
@@ -121,9 +121,6 @@
         "com.ionic.keyboard": {
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         },
-        "cordova-plugin-console": {
-            "PACKAGE_NAME": "br.com.lfdb.viradapp"
-        },
         "cordova-plugin-device": {
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         },
@@ -143,7 +140,7 @@
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         },
         "plugin.google.maps": {
-            "API_KEY_FOR_ANDROID": "AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y",
+            "API_KEY_FOR_ANDROID": "AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss",
             "PACKAGE_NAME": "br.com.lfdb.viradapp"
         }
     },

@@ -31,8 +31,8 @@
       "locator": "https://github.com/Nipher/phonegap-googlemaps-plugin",
       "id": "plugin.google.maps",
       "variables": {
-        "API_KEY_FOR_ANDROID": "AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y",
-        "API_KEY_FOR_IOS": "AIzaSyBadGUESs4nJ-E9TXOJSKPBgkpYShcDw3Y"
+        "API_KEY_FOR_ANDROID": "AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss",
+        "API_KEY_FOR_IOS": "AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss"
       }
     }
   ],
