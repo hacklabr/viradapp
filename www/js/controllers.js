@@ -626,7 +626,7 @@ angular.module('viradapp.controllers', [])
                 $timeout(init, 500);
         });
 
-        $scope.$on('$ionicView.beforeLeave', function(){
+        $scope.$on('$ionicView.leave', function(){
             angular.element(document.querySelector("#left-menu")).removeClass('hidden');
             angular.element(document.querySelector("#right-menu")).removeClass('hidden');
         });
@@ -907,6 +907,12 @@ angular.module('viradapp.controllers', [])
 
             $scope.modal.hide();
         };
+
+        $scope.$on('modal.hidden', function() {
+            if(typeof map !== 'undefined'){
+                map.setClickable(true);
+            }
+        });
 
     });
 })
