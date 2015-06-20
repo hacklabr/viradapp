@@ -1,8 +1,8 @@
 <ion-view cache-view="false" view-title="Mapa">
-    <ion-content id="map-wrapper"  class="has-header">
+    <ion-content id="map-wrapper" scroll="false" class="has-header" >
         <div ng-style="{height: frameHeight + 'px'}" style="width:100%;" id="map_canvas">
             <div class="row">
-                <div class="col col-80">
+                <div class="col col-20">
                     <div ng-click="openModal()" class="button map_options_button">
                         <i class="icon ion-ios-gear-outline"></i>
                     </div>
@@ -19,8 +19,7 @@
                 <span class="icon ion-android-done"></span>
             </div>
         </ion-header-bar>
-        <ion-content>
-
+        <ion-content overflow-scroll="true">
             <div class="list card">
                 <div class="item item-divider">
                         Visualizar
@@ -39,10 +38,57 @@
                     Configurações
                 </div>
 
-                <ion-toggle class="item toggle-assertive" ng-model="view.sendPosition">
+                <ion-toggle class="item toggle-assertive" ng-click="showSendPositionConfirm($event)" ng-model="view.sendPosition">
                     Enviar minha posição
                 </ion-toggle>
             </div>
         </ion-content>
     </ion-modal-view>
+</script>
+
+<script id="map-confirm.html" type="text/ng-template">
+    <style>.popover {top: 85px !important; left: 5% !important; right: 5%; height:450px; width: 90%;}</style>
+
+    <ion-popover-view id="map-confirm">
+    <ion-header-bar>
+        <h1 class="title">Confirmar envio de posição</h1>
+    </ion-header-bar>
+    <ion-content>
+    <div>
+        <div class="card">
+            <div class="item item-text-wrap">
+                <p>Você pode ver seus amigos do Facebook no mapa para encontrá-los na Virada. Para isso, você também precisa compartilhar sua localização com eles.<p>
+
+# if not in minha virada
+
+Você também irá associar sua conta do Facebook à plataforma da Virada Cultural, tornando públicas algumas informações sobre seu acesso, como <strong>em quais eventos você pretende comparecer</strong>.</p>
+
+# end not in minha virada
+       <p>Consulte também os <a href=#  onclick="window.open('http://viradacultural.prefeitura.sp.gov.br/2015/termos-de-uso/', '_system', 'location=yes'); return false;">Termos de uso</a> e a <a href=#  onclick="window.open('http://viradacultural.prefeitura.sp.gov.br/2015/politica-de-privacidade/', '_system', 'location=yes'); return false;">Política de privacidade</a></p>
+            </div>
+        </div>
+
+        <div ng-show="!connected && initialized">
+            <p ng-if="!terms_accepted">Deseja continuar?</p>
+            <p ng-if="terms_accepted">Faça login com Facebook para continuar.</p>
+        </div>
+    </div>
+    <label class="card" ng-show="!connected && initialized">
+        <button class="button button-block button-positive"
+                ng-if="!terms_accepted"
+                ng-click="accept_terms()">
+            Sim
+        </button>
+    </label>
+    <label class="card" ng-show="!connected && initialized">
+        <button class="button button-block ion-social-facebook button-positive icon-left"
+                ng-if="terms_accepted"
+                ng-click="login()">
+            Facebook login
+        </button>
+    </label>
+    <label>Não, obrigado.</label>
+    <div>
+    </ion-content>
+    </ion-popover-view>
 </script>
