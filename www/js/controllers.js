@@ -20,7 +20,7 @@ angular.module('viradapp.controllers', [])
     }
 })
 
-.controller('AtracaoCtrl', function($rootScope, $scope, $stateParams, Virada, MinhaVirada, Date){
+.controller('AtracaoCtrl', function($rootScope, $scope, $stateParams, Virada, MinhaVirada, Date, $ionicModal, $state){
     $scope.$on('$ionicView.beforeEnter', function(){
         $rootScope.curr = 'atracao';
     });
@@ -29,6 +29,10 @@ angular.module('viradapp.controllers', [])
         $rootScope.curr = false;
     });
 
+    $scope.view = {
+        hasMore : false
+    }
+
     $scope.LL = Date.LL;
     if($stateParams.atracao){
         Virada.get($stateParams.atracao)
@@ -36,9 +40,34 @@ angular.module('viradapp.controllers', [])
             $rootScope.atracao = data;
             $scope.atracao = data;
             $scope.space = data.space;
+            if(data.allFriends){
+                $scope.view.delta = data.allFriends.length - data.friends.length;
+                $scope.view.hasMore = true;
+            }
         });
     } else {
+        $state.go("virada.programacao()")
     }
+
+    $ionicModal.fromTemplateUrl('friends-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.modal = modal;
+    });
+
+    $scope.openModal = function() {
+        $scope.modal.show();
+    };
+
+    $scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+
+    $scope.$on('$destroy', function() {
+        $scope.modal.remove();
+    });
+
 })
 .controller('ButtonsCtrl', function($scope, $ionicSideMenuDelegate, $rootScope, Virada, MinhaVirada, $ionicGesture){
     ionic.Platform.ready(function(){
@@ -108,9 +137,9 @@ angular.module('viradapp.controllers', [])
                     }
                 }
                 space.map = {
-                    icon : "grey",
                     "position" : position,
-                    "title" : space.name
+                    "title" : space.name,
+                    visible: false
                 };
             }
             Virada.getPalcos().then(function(spaces_data){
@@ -131,7 +160,6 @@ angular.module('viradapp.controllers', [])
                 }).toArray().onComplete(function(a){
                     $rootScope.lespaces = a;
                     spaces = Lazy(a);
-
 
                     Virada.events().then(function(data){
                         events = data;
@@ -548,33 +576,64 @@ angular.module('viradapp.controllers', [])
         $rootScope.programacao = false;
     });
 
-    $rootScope.$on('user_data_loaded', function(ev, data) {
+    $rootScope.$on('user_data_loaded', function(ev, user) {
         Virada.events().then(function(events){
-            MinhaVirada.fillEvents(events);
+            if (user.events && user.events.length > 0) {
+                MinhaVirada.getFriendsOnEvents().then(function(friendsOnEvents){
+                    if(!friendsOnEvents){
+                        $rootScope.connected = false;
+                        return false;
+                    }
+                    Lazy(user.events).tap(function(id){
+                        var event = events.findWhere({id : id});
+                        if(typeof event !== 'undefined'){
+                            event.in_minha_virada = true;
+                            if(typeof friendsOnEvents[id] !== 'undefined'){
+                                var f = Lazy(friendsOnEvents[id]);
+                                event.allFriends = f.toArray();
+                                event.friends = f.take(5).toArray();
+                            }
+
+                        }
+                    }).each(Lazy.noop);
+                })
+            };
         });
     });
 
 })
-.controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada, MapState, $state, $ionicPopup) {
+.controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada, MapState, $state, $ionicPopup, $localStorage, $ionicModal, $timeout, GlobalConfiguration) {
     ionic.Platform.ready(function () {
+        if($localStorage.hasOwnProperty('mapOptions') === true){
+            $scope.view = $localStorage.mapOptions;
+        } else {
+            $scope.view = {
+                sendPosition : false,
+                options : {
+                    friends: false ,
+                    palcos: true ,
+                    services: false
+                }
+            };
+            $localStorage.mapOptions = $scope.view;
+        }
         var map;
         $scope.$on('$ionicView.beforeEnter', function(){
             angular.element(document.querySelector("#left-menu")).addClass('hidden');
             angular.element(document.querySelector("#right-menu")).addClass('hidden');
-            if(typeof map === 'undefined')
-                init();
+
+            if(typeof map === 'undefined' && typeof plugin !== 'undefined')
+                $timeout(init, 500);
         });
 
-        $scope.$on('$ionicView.leave', function(){
+        $scope.$on('$ionicView.beforeLeave', function(){
             angular.element(document.querySelector("#left-menu")).removeClass('hidden');
             angular.element(document.querySelector("#right-menu")).removeClass('hidden');
-            // Save instance and destroy
-            // map.remove();
         });
 
 
         $rootScope.$on('sidemenu_toggle', function(ev, isOpen){
-            if(typeof map !== 'undefined' ){
+            if(typeof map !== 'undefined' && typeof plugin !== 'undefined' ){
                 if(isOpen){
                     map.setClickable(false);
                 } else {
@@ -584,10 +643,20 @@ angular.module('viradapp.controllers', [])
         });
 
         var spaces = [];
+        var services = [];
+        var servicesNames = [
+            "wifi",
+            "alimentacao",
+            "postos",
+            "banheiros",
+            "ambulancia_uti",
+            "ambulancia"
+        ];
 
-        var center = new plugin.google.maps.LatLng(-23.562392, -46.655052);
-        var mapState = new MapState(plugin.google.maps.MapTypeId.HYBRID, center);
-
+        if(typeof plugin !== 'undefined'){
+            var center = new plugin.google.maps.LatLng(-23.562392, -46.655052);
+            var mapState = new MapState(plugin.google.maps.MapTypeId.ROADMAP, center);
+        }
         function getMyLocation (location){
             return MinhaVirada.updateLocation(location);
         }
@@ -604,61 +673,175 @@ angular.module('viradapp.controllers', [])
                 map.setClickable(true);
 
                 // Wait until the map is ready status.
-                map.addEventListener(plugin.google.maps.event.MAP_READY, onMapReady);
-                map.addEventListener(plugin.google.maps.event.CAMERA_CHANGE, onCameraChange);
+                map.addEventListener(plugin.google.maps.event.MAP_READY,
+                                     function(){$timeout(onMapReady, 500);});
+                map.addEventListener(plugin.google.maps.event.CAMERA_CHANGE,
+                                                          onCameraChange);
             }
-            spaces = Lazy($rootScope.lespaces);
+            spaces = $rootScope.lespaces;
 
             function onMapReady() {
-                map.getMyLocation(getMyLocation);
-                spaces.async(2).tap(function(space){
+                if($scope.view.sendPosition){
+                    map.getMyLocation(getMyLocation);
+                }
+                Lazy(spaces).async(2).tap(function(space){
                     if(typeof space.data !== 'undefined'){
                         map.addMarker(space.map, function(marker){
                             space.marker = marker;
-                            mapState.markers.concat([marker]);
                             marker.addEventListener(
                                 plugin.google.maps.event.MARKER_CLICK,
                                 function(){
-                                    // marker.setAnimation(plugin.google.maps.Animation.BOUNCE);
                                     marker.hideInfoWindow();
                                     map.setClickable(false);
                                     $scope.showConfirm(space);
-                                    // get_place_events(place.id);
                                 });
                         });
                     }
-                }).each(Lazy.noop);
-            }
+                }).toArray()
+                .then(function(){
+                    map.getVisibleRegion(function(latLngBounds) {
+                        showPalcos(latLngBounds);
+                    });
+                });
 
+                Lazy(servicesNames).each(function(name){
+                    MinhaVirada.getService(name).then(function(data){
+                        if(data){
+                            var features = data.features;
+                            services.push(features);
+                            Lazy(features).async(2).tap(function(feature){
+                                var iconName = GlobalConfiguration.SOCIAL_API_URL
+                                + "/map/icons/" + name + ".png";
+                                var item = {
+                                    'title' : feature.properties.name,
+                                    icon: iconName,
+                                    position: new plugin.google.maps.LatLng(
+                                        feature.geometry.coordinates[1],
+                                        feature.geometry.coordinates[0]),
+                                }
+
+                                map.addMarker(item, function(marker){
+                                    feature.marker = marker;
+                                    marker.addEventListener(
+                                        plugin.google.maps.event.MARKER_CLICK,
+                                        function(marker){
+                                            marker.showInfoWindow();
+                                        });
+                                });
+                            }).each(Lazy.noop);
+                        }
+                    });
+                });
+
+                if(MinhaVirada.hasUser()){
+                    MinhaVirada.getFriends().then(function(data){
+                        if(data){
+                            Lazy(data).async(2).tap(function(friend){
+                                if(friend.lat && friend.long){
+                                    friend.map = {
+                                        position: new plugin.google.maps.LatLng(
+                                            friend.lat,
+                                            friend.long),
+                                        'title': friend.name,
+                                    };
+                                    map.addMarker(friend.map, function(marker){
+                                        marker.setIcon({
+                                            'url': friend.picture,
+                                            'size': {
+                                                width: 50,
+                                                height: 50
+                                            }
+                                        });
+                                        friend.marker = marker;
+                                        marker.addEventListener(
+                                            plugin.google.maps.event.MARKER_CLICK,
+                                            function(marker){
+                                                marker.showInfoWindow();
+                                            });
+                                    });
+                                    friends.push(friend);
+                                }
+                            }).each(Lazy.noop);
+                        }
+                    });
+                }
+            }
 
             function onCameraChange(){
                 map.getVisibleRegion(function(latLngBounds) {
-                    spaces.async(2).tap(function(space){
-                        if(space.data !== 'undefined'){
-                            var isContained = latLngBounds.contains(space.map.position);
-                            if(isContained){
-                                if(!space.marker.isVisible()){
-                                    space.marker.setVisible(true);
-                                    // space.marker.setAnimation(plugin.google.maps.Animation.DROP);
-                                }
-                            } else {
-                                space.marker.setVisible(false);
-                            }
-                        }
-                    }).each(Lazy.noop);
+                    showPalcos(latLngBounds);
+                    showFriends(latLngBounds);
+                    showServices(latLngBounds);
                 });
+            }
+
+        }
+
+        function showPalcos (latLngBounds){
+            for(var i = 0; i < spaces.length; i++){
+                space = spaces[i];
+
+                if(typeof space.data !== 'undefined'){
+                    var isContained = latLngBounds.contains(space.map.position);
+                    if(isContained && $scope.view.options.palcos){
+                        if(!space.marker.isVisible()){
+                            space.marker.setVisible(true);
+                        }
+                    } else {
+                        space.marker.setVisible(false);
+                    }
+                }
+            }
+        }
+
+        function showServices (latLngBounds){
+            for(var i = 0; i < services.length; i++){
+                var service = services[i];
+                var isContained = latLngBounds.contains(service.marker.position);
+                if(isContained && $scope.view.options.services){
+                    if(!service.marker.isVisible()){
+                        service.marker.setVisible(true);
+                    }
+                } else {
+                    service.marker.setVisible(false);
+                }
+            }
+        }
+
+
+        function showFriends (latLngBounds){
+            for(var i = 0; i < friends.length; i++){
+                var friend = friends[i];
+                var isContained = latLngBounds.contains(friend.map.position);
+                if(isContained && $scope.view.options.friends){
+                    if(!friend.marker.isVisible()){
+                        friend.marker.setVisible(true);
+                    }
+                } else {
+                    friend.marker.setVisible(false);
+                }
             }
         }
 
         $scope.showConfirm = function(space) {
-            if(space.shortDescription == null){
-                space.shortDescription = "Sem descrição"
+            var end = "";
+            if(typeof space.endereco !== "undefined"){
+                end = space.endereco;
             }
             var confirmPopup = $ionicPopup.confirm({
                 title: space.name,
                 template:
-                    '<p>' + space.shortDescription.substring(0, 100)  + '</p>'
-                    + '<p>Ver a programação completa?</p>'
+                    '<p>' + end.substring(0, 100)  + '</p>'
+                    + '<p>' + space.events.length + ' eventos nesse local!</p>'
+                    + '<p>Ver a programação completa?</p>',
+                buttons: [
+                    { text: 'Voltar' },
+                    {
+                        text: '<b>Ver palco</b>',
+                        type: 'button-assertive',
+                        onTap: function (){return true;}
+                    }
+                ]
             });
             confirmPopup.then(function(res) {
                 if(res) {
@@ -670,14 +853,41 @@ angular.module('viradapp.controllers', [])
             });
         };
 
-        $scope.showFriends = function (uid){
-          MinhaVirada.getFriends().then(function(){
-            // Show friends on the map
-          });
-        }
+        var friends = [];
+
+        $ionicModal.fromTemplateUrl('map-config-modal.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+
+        $scope.openModal = function() {
+            if(typeof map !== 'undefined'){
+                map.setClickable(false);
+            }
+            $scope.modal.show();
+        };
+
+        $scope.closeModal = function() {
+            if(typeof map !== 'undefined'){
+                map.setClickable(true);
+                map.getVisibleRegion(function(latLngBounds){
+                    showPalcos(latLngBounds);
+                    showFriends(latLngBounds);
+                });
+            }
+
+            $scope.modal.hide();
+        };
+
     });
 })
 .controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading, Date){
+    $scope.view = {
+        hasMessage : false
+    };
+
     $scope.logout = function(){
         MinhaVirada.logout();
     }
@@ -700,6 +910,7 @@ angular.module('viradapp.controllers', [])
         duration: 20000,
         template: '<ion-spinner icon="ripple"></ion-spinner>'
     });
+
     $rootScope.$on('initialized', function(ev, uid){
         $ionicLoading.hide();
         $scope.initialized = true;
@@ -721,7 +932,6 @@ angular.module('viradapp.controllers', [])
     //     if it fails, try to login again to get another token
     // if false, emit initialized and show the button
     if($localStorage.hasOwnProperty("accessToken") === false) {
-        console.log("have access token?");
         $rootScope.$emit('initialized');
     } else {
         // Test if token is valid
@@ -744,17 +954,24 @@ angular.module('viradapp.controllers', [])
     });
 
     $rootScope.$on('fb_not_connected', function(ev, uid) {
-        $scope.message = "Não foi possível conectar";
-        console.log("Não conectado");
+        showMessage("Não foi possível conectar");
     });
 
     $rootScope.$on('data_not_loaded', function(ev) {
-        $scope.message = "Não foi possível carregar seus dados";
-        console.log("Não foi possivel carregar os dados");
+        showMessage("Não foi possivel carregar os dados");
     });
 
+    var showMessage = function(message){
+        $scope.message = message;
+        $scope.view.hasMessage = true;
+        $timeout(function(){
+            $scope.view.hasMessage = false;
+            $scope.message = "";
+        }, 3000)
+    }
+
+
     $rootScope.$on('user_data_saved', function(ev){
-        $scope.message = "dados salvos!";
         updateUserInfo($localStorage.user);
     });
 
@@ -764,7 +981,7 @@ angular.module('viradapp.controllers', [])
         }
         if(user.events.length !== $scope.events.length){
             // Events array has changed
-            $scope.events = [];
+            // $scope.events = [];
             fillEvents(user);
         }
     }
@@ -772,24 +989,29 @@ angular.module('viradapp.controllers', [])
         Virada.events().then(function(events){
             if (user.events && user.events.length > 0) {
                 $scope.hasEvents = true;
-                Lazy(user.events).sortBy(function(id){
-                    var event = events.findWhere({id : id});
-                    if(typeof event !== 'undefined'){
-                        return Date.timestamp(event.startsOn + event.startsAt);
-                    } else {
-                        return false;
-                    }
-                }).tap(function(id){
-                    /* MinhaVirada.getFriendsOnEvent(id).then(function(data){
-                        if(data[id].length > 0)
-                            console.log(data[id]);
-                            });*/
-                    var event = events.findWhere({id : id});
-                    if(typeof event !== 'undefined'){
-                        event.in_minha_virada = true;
-                        $scope.events.push(event);
-                    }
-                }).each(Lazy.noop);
+                MinhaVirada.getFriendsOnEvents().then(function(friendsOnEvents){
+                    newevents = [];
+                    Lazy(user.events).tap(function(id){
+                        var event = events.findWhere({id : id});
+                        if(typeof event !== 'undefined'){
+                            event.in_minha_virada = true;
+                            if(typeof friendsOnEvents[id] !== 'undefined'){
+                                var f = Lazy(friendsOnEvents[id]);
+                                event.allFriends = f.toArray();
+                                event.friends = f.take(5).toArray();
+                            }
+                            newevents.push(event);
+                        }
+                    }).each(Lazy.noop);
+                    $scope.events = Lazy(newevents).sortBy(function(event){
+                        if(typeof event !== 'undefined'){
+                            return event.timestamp;
+                        } else {
+                            return false;
+                        }
+                    }).toArray();
+
+                })
             };
         });
     }
@@ -809,6 +1031,7 @@ angular.module('viradapp.controllers', [])
         MinhaVirada.loadUserData($localStorage.uid).then(function(userData){
             if(userData){
                 $localStorage.user = userData;
+                $rootScope.connected = $localStorage.hasOwnProperty("accessToken") === true;
             }
         });
     }

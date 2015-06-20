@@ -58,7 +58,7 @@ angular.module("viradapp.minha_virada", [])
                 "email",
                 "user_website",
                 "user_location",
-                "user_relationships"
+                "user_friends"
             ])
             .then(function(response){
                 return _connected(response);
@@ -110,7 +110,7 @@ angular.module("viradapp.minha_virada", [])
                             $rootScope.$emit('initialized');
                             $rootScope.$emit('fb_not_connected');
                         }
-                    });
+                    }, {scope: 'email,user_website,user_location,user_friends'});
                 }
             });
 
@@ -200,7 +200,9 @@ angular.module("viradapp.minha_virada", [])
                 user.picture = d.picture;
                 user.events = d.events;
             }
-            $rootScope.$emit('user_data_loaded');
+            if($localStorage.hasOwnProperty("accessToken") === true)
+                user.accessToken = $localStorage.accessToken;
+            $rootScope.$emit('user_data_loaded', user);
             return user;
         })
         .catch(function(data){
@@ -366,6 +368,36 @@ angular.module("viradapp.minha_virada", [])
     };
 
     var updateLocation = function (location) {
+        if(!user.uid || !user.accessToken){
+            return false;
+        }
+        userJSON = {
+            uid : user.uid,
+            lat : location.latLng.lat,
+            long : location.latLng.lng,
+            position_timestamp: moment(location.time).format('YYYY-MM-DD hh:mm'),
+            oauth_token : user.accessToken
+        }
+
+        console.log("--- Saving data ---");
+        console.log(JSON.stringify(userJSON));
+        console.log("--- End ---");
+        var url = GlobalConfiguration.SOCIAL_API_URL + '/friendspositions/'
+        var options = {
+            headers : {
+                'Content-Type': 'application/json; charset=UTF-8;'
+            }
+        };
+        $http
+        .post(url, userJSON, options)
+        .success(function(data, status, headers, config){
+            // $rootScope.$emit('user_data_saved')
+            return data;
+        })
+        .error(function(data, status, headers, config){
+            return false;
+        });
+
         // Send data to the API
         // $http.post();
         return false;
@@ -373,6 +405,71 @@ angular.module("viradapp.minha_virada", [])
 
     var getFriends = function(){
         // Get user friends from the API
+        return $http
+        .get(GlobalConfiguration.SOCIAL_API_URL
+             + '/friendspositions/?uid='
+             + user.uid
+             + "&oauth_token=" + user.accessToken)
+        .then(function(data){
+            return data.data;
+        })
+        .catch(function(data){
+            return [
+                {}
+            ]
+            //return false;
+        });
+
+        return false;
+
+    };
+
+    var getService = function (name){
+        var url = GlobalConfiguration.SOCIAL_API_URL
+            + "/map/" + name + ".json";
+
+        return $http
+        .get(url).then(function(data){
+            return data.data;
+        }).catch(function(error){
+            return false;
+        })
+    }
+
+
+
+    var getFriendsOnEvents = function(eventId){
+        // Get user friends from the API
+        return $http
+        .get(GlobalConfiguration.SOCIAL_API_URL
+             + '/friendsevents/?uid='
+             + user.uid
+             + "&oauth_token=" + user.accessToken)
+        .then(function(data){
+            return data.data;
+        })
+        .catch(function(data){
+            return false;
+        });
+
+    };
+
+
+    var getFriendsOnEvent = function(eventId){
+        // Get user friends from the API
+        return $http
+        .get(GlobalConfiguration.SOCIAL_API_URL
+             + '/friendsevents/?uid='
+             + user.uid
+             + "&oauth_token=" + user.accessToken
+             + "&event_id=" + eventId)
+        .then(function(data){
+            return data.data;
+        })
+        .catch(function(data){
+            return false;
+        });
+
         return false;
     };
 
@@ -402,6 +499,9 @@ angular.module("viradapp.minha_virada", [])
         hasEvent: hasEvent,
         fillEvents: fillEvents,
         getFriends: getFriends,
-        updateLocation: updateLocation
+        getFriendsOnEvent: getFriendsOnEvent,
+        getFriendsOnEvents: getFriendsOnEvents,
+        updateLocation: updateLocation,
+        getService: getService
     };
-})
+});

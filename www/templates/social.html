@@ -2,10 +2,48 @@
     <ion-content id="map-wrapper"  class="has-header">
         <div ng-style="{height: frameHeight + 'px'}" style="width:100%;" id="map_canvas">
             <div class="row">
-                <div class="col col-50">
-                    <div class="button">Ver amigos!</div>
+                <div class="col col-80">
+                    <div ng-click="openModal()" class="button map_options_button">
+                        <i class="icon ion-ios-gear-outline"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </ion-content>
 </ion-view>
+<script id="map-config-modal.html" type="text/ng-template">
+    <ion-modal-view>
+        <ion-header-bar class="bar-assertive bar-icon-right">
+            <h1 class="title">Opções</h1>
+            <div class="button button-clear" ng-click="closeModal()">
+                <span class="icon ion-android-done"></span>
+            </div>
+        </ion-header-bar>
+        <ion-content>
+
+            <div class="list card">
+                <div class="item item-divider">
+                        Visualizar
+                </div>
+                <ion-checkbox ng-model="view.options.friends">
+                    Amigos
+                </ion-checkbox>
+                <ion-checkbox class="checkbox-assertive" ng-model="view.options.palcos">
+                    Palcos
+                </ion-checkbox>
+                <ion-checkbox class="checkbox-dark" ng-model="view.options.servicos">
+                    Serviços
+                </ion-checkbox>
+
+                <div class="item item-divider">
+                    Configurações
+                </div>
+
+                <ion-toggle class="item toggle-assertive" ng-model="view.sendPosition">
+                    Enviar minha posição
+                </ion-toggle>
+            </div>
+        </ion-content>
+    </ion-modal-view>
+</script>
+

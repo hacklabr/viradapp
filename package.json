@@ -41,6 +41,7 @@
       "platform": "android",
       "locator": "wp8"
     },
-    "ios"
+    "ios",
+    "android"
   ]
 }
