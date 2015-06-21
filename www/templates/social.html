@@ -24,7 +24,7 @@
                 <div class="item item-divider">
                         Visualizar
                 </div>
-                <ion-checkbox ng-model="view.options.friends">
+                <ion-checkbox ng-model="view.options.friends" ng-disabled="!view.sendPosition">
                     Amigos
                 </ion-checkbox>
                 <ion-checkbox class="checkbox-assertive" ng-model="view.options.palcos">
@@ -39,9 +39,10 @@
                 </div>
 
                 <ion-toggle class="item toggle-assertive" ng-click="showSendPositionConfirm($event)" ng-model="view.sendPosition">
-                    Enviar minha posição
+                    Compartilhar localização
                 </ion-toggle>
             </div>
+            // <p><a href=#  onclick="window.open('http://viradacultural.prefeitura.sp.gov.br/2015/termos-de-uso/', '_system', 'location=yes'); return false;">Termos de uso</a> e <a href=#  onclick="window.open('http://viradacultural.prefeitura.sp.gov.br/2015/politica-de-privacidade/', '_system', 'location=yes'); return false;">Política de privacidade</a></p>
         </ion-content>
     </ion-modal-view>
 </script>

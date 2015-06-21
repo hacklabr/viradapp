@@ -725,6 +725,53 @@ angular.module('viradapp.controllers', [])
         }
 
         var map;
+        var position_interval;
+        var friends_reload_interval;
+        var mili_sec_interval = 7*60*1000;
+
+        var spaces = [];
+        var services = [];
+        var servicesNames = [
+            "wifi",
+            "alimentacao",
+            "postos",
+            "banheiros",
+            "ambulancia_uti",
+            "ambulancia"
+        ];
+
+        $scope.$watch('view.sendPosition', function(newValue, oldValue) {
+            if (newValue) {
+                position_interval = $interval(function() {
+                    map.getMyLocation(getMyLocation);
+                }, mili_sec_interval);
+            } else {
+                $scope.view.options.friends = false;
+                $interval.cancel(position_interval);
+            }
+        });
+
+        $scope.$watch('view.options.services', function(newValue, oldValue) {
+            showServices();
+        });
+
+        $scope.$watch('view.options.friends', function(newValue, oldValue) {
+            showFriends();
+            if (newValue) {
+                friends_reload_interval = $interval(function() {
+                    loadFriends();
+                }, mili_sec_interval);
+            } else {
+                $interval.cancel(position_interval);
+                $interval.cancel(friends_reload_interval)
+            }
+        });
+
+        $scope.$watch('view.options.palcos', function(newValue, oldValue) {
+            showPalcos();
+        });
+
+
         $scope.$on('$ionicView.beforeEnter', function(){
             angular.element(document.querySelector("#left-menu")).addClass('hidden');
             angular.element(document.querySelector("#right-menu")).addClass('hidden');
@@ -748,22 +795,11 @@ angular.module('viradapp.controllers', [])
             }
         });
 
-        var spaces = [];
-        var services = [];
-        var servicesNames = [
-            "wifi",
-            "alimentacao",
-            "postos",
-            "banheiros",
-            "ambulancia_uti",
-            "ambulancia"
-        ];
         if(typeof plugin !== 'undefined'){
             var center = new plugin.google.maps.LatLng(-23.5408, -46.6400);
             var mapState = new MapState(plugin.google.maps.MapTypeId.ROADMAP, center);
         }
         function getMyLocation (location){
-            $log.log('---- getMyLocation...')
             // TODO mover camera para location do user
             if ($scope.view.sendPosition)
                 return MinhaVirada.updateLocation(location);
@@ -772,7 +808,6 @@ angular.module('viradapp.controllers', [])
         function loadFriends() {
             MinhaVirada.getFriends().then(function(data){
                 if(data){
-                    $log.log('Loading friends...')
                     Lazy(data).async(2).tap(function(friend){
                         if(friend.lat && friend.long){
                             if (friend.map_picture)
@@ -835,8 +870,9 @@ angular.module('viradapp.controllers', [])
             function onMapReady() {
                 if($scope.view.sendPosition){
                     map.getMyLocation(getMyLocation);
-                    $log.log('---- Antes do timeout...')
-                    var position_timeout = $timeout(map.getMyLocation(getMyLocation), 7*60*1000);
+                    position_interval = $interval(function() {
+                        map.getMyLocation(getMyLocation);
+                    }, mili_sec_interval);
                 }
                 Lazy(spaces).async(2).tap(function(space){
                     if(typeof space.data !== 'undefined'){
@@ -905,8 +941,9 @@ angular.module('viradapp.controllers', [])
 
                 if(MinhaVirada.hasUser()){
                     loadFriends()
-                    $log.log('---- Antes do Interval...')
-                    $interval(loadFriends(), 7*60*1000, false);
+                    friends_reload_interval = $interval(function() {
+                        loadFriends();
+                    }, mili_sec_interval);
                 }
             }
             // function onCameraChange(){
@@ -950,7 +987,7 @@ angular.module('viradapp.controllers', [])
                         service.marker.setVisible(false);
                     }
                 } else {
-                    $log.log('********************************** Service undefined');
+                    // $log.log('********************************** Service undefined');
                 }
             }
         }
@@ -964,8 +1001,6 @@ angular.module('viradapp.controllers', [])
                         if(!friend.marker.isVisible()){
                             var position_timestamp = moment(friend.position_timestamp,
                                                 "YYYY-MM-DD hh:mm");
-                            $log.log('Timestamp: ' + toString(position_timestamp));
-                            $log.log('Tem minutes ago: ' + toString(one_hour_ago));
                             if (position_timestamp > one_hour_ago)
                                 friend.marker.setVisible(true);
                         }
@@ -973,7 +1008,7 @@ angular.module('viradapp.controllers', [])
                         friend.marker.setVisible(false);
                     }
                 } else {
-                    $log.log('********************************** Friend marker undefined');
+                    // $log.log('********************************** Friend marker undefined');
                 }
             }
         }
