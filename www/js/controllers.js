@@ -724,6 +724,21 @@ angular.module('viradapp.controllers', [])
             $localStorage.mapOptions = $scope.view;
         }
 
+        // $scope.$watch('view.sendPosition', function(newValue, oldValue) {
+        // });
+
+        $scope.$watch('view.options.services', function(newValue, oldValue) {
+            showServices();
+        });
+
+        $scope.$watch('view.options.friends', function(newValue, oldValue) {
+            showFriends();
+        });
+
+        $scope.$watch('view.options.palcos', function(newValue, oldValue) {
+            showPalcos();
+        });
+
         var map;
         $scope.$on('$ionicView.beforeEnter', function(){
             angular.element(document.querySelector("#left-menu")).addClass('hidden');
@@ -738,7 +753,6 @@ angular.module('viradapp.controllers', [])
             angular.element(document.querySelector("#right-menu")).removeClass('hidden');
         });
 
-
         $rootScope.$on('sidemenu_toggle', function(ev, isOpen){
             if(typeof map !== 'undefined' && typeof plugin !== 'undefined' ){
                 if(isOpen){
@@ -747,10 +761,6 @@ angular.module('viradapp.controllers', [])
                     map.setClickable(true);
                 }
             }
-        });
-
-        $scope.$watch('view.sendPosition', function(newValue, oldValue) {
-            $log.log('sendPosition changed!!!!!!')
         });
 
         var spaces = [];
@@ -923,7 +933,7 @@ angular.module('viradapp.controllers', [])
             // var isContained = latLngBounds.contains(friend.map.position);
         }
 
-        function showPalcos (){
+        function showPalcos(){
             for(var i = 0; i < spaces.length; i++){
                 space = spaces[i];
                 if(typeof space !== 'undefined' &&
@@ -942,10 +952,10 @@ angular.module('viradapp.controllers', [])
             }
         }
 
-        function showServices (){
+        function showServices(){
             for(var i = 0; i < services.length; i++){
-                if(typeof service !== 'undefined' && typeof service.marker !== 'undefined'){
-                    var service = services[i];
+                var service = services[i];
+                if(typeof service.marker !== 'undefined'){
                     if($scope.view.options.services){
                         if(!service.marker.isVisible()){
                             service.marker.setVisible(true);
@@ -959,17 +969,17 @@ angular.module('viradapp.controllers', [])
             }
         }
 
-        function showFriends (){
+        function showFriends(){
             var one_hour_ago = moment().subtract(1, 'hour');
             for(var i = 0; i < friends.length; i++){
-                if(typeof friend !== 'undefined' && typeof friend.marker !== 'undefined'){
-                    var friend = friends[i];
+                var friend = friends[i];
+                if(typeof friend.marker !== 'undefined'){
                     if($scope.view.options.friends){
                         if(!friend.marker.isVisible()){
                             var position_timestamp = moment(friend.position_timestamp,
                                                 "YYYY-MM-DD hh:mm");
                             $log.log('Timestamp: ' + toString(position_timestamp));
-                            $log.log('Tem minutes ago: ' + toString(ten_minutes_ago));
+                            $log.log('Tem minutes ago: ' + toString(one_hour_ago));
                             if (position_timestamp > one_hour_ago)
                                 friend.marker.setVisible(true);
                         }
