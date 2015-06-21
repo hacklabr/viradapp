@@ -719,25 +719,10 @@ angular.module('viradapp.controllers', [])
                     palcos: false ,
                     services: true
                 },
-                terms_accepted: false
+                terms_agreed: false
             };
             $localStorage.mapOptions = $scope.view;
         }
-
-        // $scope.$watch('view.sendPosition', function(newValue, oldValue) {
-        // });
-
-        $scope.$watch('view.options.services', function(newValue, oldValue) {
-            showServices();
-        });
-
-        $scope.$watch('view.options.friends', function(newValue, oldValue) {
-            showFriends();
-        });
-
-        $scope.$watch('view.options.palcos', function(newValue, oldValue) {
-            showPalcos();
-        });
 
         var map;
         $scope.$on('$ionicView.beforeEnter', function(){
@@ -827,6 +812,7 @@ angular.module('viradapp.controllers', [])
         }
 
         var div = document.getElementById("map_canvas");
+
         function init(){
             var w = angular.element(document.querySelector("#map-wrapper"));
             $scope.frameHeight = w[0].clientHeight;
@@ -1066,43 +1052,60 @@ angular.module('viradapp.controllers', [])
             if(typeof map !== 'undefined'){
                 map.setClickable(false);
             }
-
             $scope.popover.show($event);
         };
+
         $scope.closePopover = function() {
             $scope.popover.hide();
         };
+
         //Cleanup the popover when we're done with it!
         $scope.$on('$destroy', function() {
             $scope.popover.remove();
         });
+
         // Execute action on hide popover
         $scope.$on('popover.hidden', function() {
             // Execute action
             if(typeof map !== 'undefined'){
                 map.setClickable(true);
             }
-
         });
+
         // Execute action on remove popover
         $scope.$on('popover.removed', function() {
-            // Execute action
         });
 
         $timeout(function(){
             $scope.showSendPositionConfirm(div);
         }, 1000);
 
-
-
         $scope.showSendPositionConfirm = function($event) {
-            if($scope.view.sendPosition || !$scope.view.terms_accepted){
+            if(!$scope.view.sendPosition && !$scope.view.terms_agreed) {
                 if(typeof $scope.modal !== 'undefined')
                     $scope.modal.hide();
-                $scope.openPopover(div);
+                    $scope.openPopover(div);
             }
         };
 
+        $scope.share_position = function(){
+            $scope.view.sendPosition = true;
+            $scope.view.terms_agreed = true;
+            $scope.closePopover();
+        }
+
+        $scope.dont_share_position_now = function(){
+            $scope.view.sendPosition = false;
+            $scope.view.terms_agreed = true;
+            $scope.closePopover();
+        }
+
+        $scope.login = function(){
+            $scope.view.sendPosition = true;
+            $scope.view.terms_agreed = true;
+            $scope.closePopover();
+            MinhaVirada.connect();
+        }
     });
 })
 .controller('MinhaViradaCtrl', function($rootScope, $scope, $http, $location, $timeout, Virada, MinhaVirada, GlobalConfiguration, $localStorage, $ionicLoading, Date){
