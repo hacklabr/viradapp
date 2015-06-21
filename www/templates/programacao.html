@@ -12,7 +12,7 @@
             <div class="list">
                 <div class="collection-repeat-container" >
                     <div id="programacao-container" ng-class="{'sorted-by-place': view.sorted === 'L'}">
-                        
+
                     </div>
                 </div>
             </div>
@@ -32,18 +32,20 @@
 <script type="text/html" id="template-evento">
     <div class="item" >
         <div class="item-content">
-            <div onclick="redirectFromListTo('#/virada/programacao/atracao/<%= entity.id %>')" >
-                <div class="event-time">
-                    <i class="icon icon_clock"></i>
-                    <time class="ng-binding">
-                        <%= entity.startsAt %>
-                    </time>
-                </div>
-                <h2>
-                    <%= entity.name %>
-                </h2>
+            <div>
+                <a onclick="redirectFromListTo('#/virada/programacao/atracao/<%= entity.id %>')">
+                    <div class="event-time">
+                        <i class="icon icon_clock"></i>
+                        <time class="ng-binding">
+                            <%= entity.startsAt %>
+                        </time>
+                    </div>
+                    <h2>
+                        <%= entity.name %>
+                    </h2>
+                </a>
                 <% if(entity.space){ %>
-                    <small class="event-place"><i class="icon icon_pin"></i> <%= entity.space.name %></small>
+                <small class="event-place"><a onclick="redirectFromListTo('#/virada/programacao/palco/<%= entity.space.id %>')"><i class="icon icon_pin"></i> <%= entity.space.name %></a></small>
                 <% } %>
 
             </div>
