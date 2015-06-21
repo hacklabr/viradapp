@@ -701,7 +701,13 @@ angular.module('viradapp.controllers', [])
     });
 
 })
-.controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada, MapState, $state, $ionicPopup, $localStorage, $ionicModal, $timeout, GlobalConfiguration) {
+
+
+.controller('SocialCtrl', function($scope, $rootScope, Virada, MinhaVirada,
+                                   MapState, $state, $ionicPopup, $ionicPopover,
+                                   $ionicModal, $timeout, $interval, $log,
+                                   $localStorage, GlobalConfiguration) {
+
     ionic.Platform.ready(function () {
         if($localStorage.hasOwnProperty('mapOptions') === true){
             $scope.view = $localStorage.mapOptions;
@@ -712,10 +718,12 @@ angular.module('viradapp.controllers', [])
                     friends: false ,
                     palcos: false ,
                     services: true
-                }
+                },
+                terms_accepted: false
             };
             $localStorage.mapOptions = $scope.view;
         }
+
         var map;
         $scope.$on('$ionicView.beforeEnter', function(){
             angular.element(document.querySelector("#left-menu")).addClass('hidden');
@@ -741,6 +749,10 @@ angular.module('viradapp.controllers', [])
             }
         });
 
+        $scope.$watch('view.sendPosition', function(newValue, oldValue) {
+            $log.log('sendPosition changed!!!!!!')
+        });
+
         var spaces = [];
         var services = [];
         var servicesNames = [
@@ -756,13 +768,58 @@ angular.module('viradapp.controllers', [])
             var mapState = new MapState(plugin.google.maps.MapTypeId.ROADMAP, center);
         }
         function getMyLocation (location){
-            return MinhaVirada.updateLocation(location);
+            $log.log('---- getMyLocation...')
+            // TODO mover camera para location do user
+            if ($scope.view.sendPosition)
+                return MinhaVirada.updateLocation(location);
         }
 
+        function loadFriends() {
+            MinhaVirada.getFriends().then(function(data){
+                if(data){
+                    $log.log('Loading friends...')
+                    Lazy(data).async(2).tap(function(friend){
+                        if(friend.lat && friend.long){
+                            if (friend.map_picture)
+                                var picture = friend.map_picture
+                            else
+                            var picture = friend.picture
+                            friend.map = {
+                                position: new plugin.google.maps.LatLng(
+                                    parseFloat(friend.lat),
+                                    parseFloat(friend.long)),
+                                'title': friend.name,
+                                'icon': {
+                                    'url': picture,
+                                    'size': {
+                                        width: 46,
+                                        height: 46
+                                    }
+                                }
+                            };
+                            map.addMarker(friend.map, function(marker){
+                                // marker.setIcon();
+                                friend.marker = marker;
+                                marker.addEventListener(
+                                    plugin.google.maps.event.MARKER_CLICK,
+                                    function(marker){
+                                        marker.showInfoWindow();
+                                    });
+                            });
+                            friends.push(friend);
+                        }
+                    }).toArray()
+                    .then(function(data){
+                        showFriends();
+                    });
+                }
+            });
+        }
+
+        var div = document.getElementById("map_canvas");
         function init(){
             var w = angular.element(document.querySelector("#map-wrapper"));
             $scope.frameHeight = w[0].clientHeight;
-            var div = document.getElementById("map_canvas");
 
             if(typeof plugin !== 'undefined'){
                 // Initialize the map view
@@ -774,14 +831,16 @@ angular.module('viradapp.controllers', [])
                 map.addEventListener(plugin.google.maps.event.MAP_READY,
                                      function(){$timeout(onMapReady, 500);});
 
-                map.addEventListener(plugin.google.maps.event.CAMERA_CHANGE,
-                                                          onCameraChange);
+                // map.addEventListener(plugin.google.maps.event.CAMERA_CHANGE,
+                //                                           onCameraChange);
             }
             spaces = $rootScope.lespaces;
 
             function onMapReady() {
                 if($scope.view.sendPosition){
                     map.getMyLocation(getMyLocation);
+                    $log.log('---- Antes do timeout...')
+                    var position_timeout = $timeout(map.getMyLocation(getMyLocation), 7*60*1000);
                 }
                 Lazy(spaces).async(2).tap(function(space){
                     if(typeof space.data !== 'undefined'){
@@ -798,9 +857,7 @@ angular.module('viradapp.controllers', [])
                     }
                 }).toArray()
                 .then(function(){
-                    map.getVisibleRegion(function(latLngBounds) {
-                        showPalcos(latLngBounds);
-                    });
+                    showPalcos();
                 });
 
                 Lazy(servicesNames).each(function(name){
@@ -847,72 +904,32 @@ angular.module('viradapp.controllers', [])
                 });
 
                 $scope.$on('all_services_ready', function(ev){
-                    map.getVisibleRegion(function(latLngBounds) {
-                        showServices(latLngBounds);
-                    });
+                    showServices();
                 });
 
                 if(MinhaVirada.hasUser()){
-                    MinhaVirada.getFriends().then(function(data){
-                        if(data){
-                            Lazy(data).async(2).tap(function(friend){
-                                if(friend.lat && friend.long){
-                                    if (friend.map_picture)
-                                        var picture = friend.map_picture
-                                    else
-                                    var picture = friend.picture
-                                    friend.map = {
-                                        position: new plugin.google.maps.LatLng(
-                                            parseFloat(friend.lat),
-                                            parseFloat(friend.long)),
-                                        'title': friend.name,
-                                        'icon': {
-                                            'url': picture,
-                                            'size': {
-                                                width: 46,
-                                                height: 46
-                                            }
-                                        }
-                                    };
-                                    map.addMarker(friend.map, function(marker){
-                                        // marker.setIcon();
-                                        friend.marker = marker;
-                                        marker.addEventListener(
-                                            plugin.google.maps.event.MARKER_CLICK,
-                                            function(marker){
-                                                marker.showInfoWindow();
-                                            });
-                                    });
-                                    friends.push(friend);
-                                }
-                            }).toArray()
-                            .then(function(data){
-                                map.getVisibleRegion(function(latLngBounds) {
-                                    showFriends(latLngBounds);
-                                });
-                            });
-                        }
-                    });
+                    loadFriends()
+                    $log.log('---- Antes do Interval...')
+                    $interval(loadFriends(), 7*60*1000, false);
                 }
             }
-
-            function onCameraChange(){
-                map.getVisibleRegion(function(latLngBounds) {
-                    showPalcos(latLngBounds);
-                    showFriends(latLngBounds);
-                    showServices(latLngBounds);
-                });
-            }
-
+            // function onCameraChange(){
+            //     map.getVisibleRegion(function(latLngBounds) {
+            //         showPalcos(latLngBounds);
+            //         showFriends(latLngBounds);
+            //         showServices(latLngBounds);
+            //     });
+            // }
+            // var isContained = latLngBounds.contains(friend.map.position);
         }
 
-        function showPalcos (latLngBounds){
+        function showPalcos (){
             for(var i = 0; i < spaces.length; i++){
                 space = spaces[i];
-
-                if(typeof space.data !== 'undefined' && typeof space.marker !== 'undefined'){
-                    var isContained = latLngBounds.contains(space.map.position);
-                    if(isContained && $scope.view.options.palcos){
+                if(typeof space !== 'undefined' &&
+                        typeof space.data !== 'undefined'&&
+                        typeof space.marker !== 'undefined'){
+                    if( $scope.view.options.palcos){
                         if(!space.marker.isVisible()){
                             space.marker.setVisible(true);
                         }
@@ -925,37 +942,42 @@ angular.module('viradapp.controllers', [])
             }
         }
 
-        function showServices (latLngBounds){
+        function showServices (){
             for(var i = 0; i < services.length; i++){
-                var service = services[i];
-
-                var isContained = latLngBounds.contains(service.map.position);
-                if(isContained && $scope.view.options.services){
-                    if(!service.marker.isVisible()){
-                        service.marker.setVisible(true);
-                    }
-                } else {
-                    if(typeof service.marker !== 'undefined'){
+                if(typeof service !== 'undefined' && typeof service.marker !== 'undefined'){
+                    var service = services[i];
+                    if($scope.view.options.services){
+                        if(!service.marker.isVisible()){
+                            service.marker.setVisible(true);
+                        }
+                    } else {
                         service.marker.setVisible(false);
                     }
+                } else {
+                    $log.log('********************************** Service undefined');
                 }
             }
         }
 
-
-        function showFriends (latLngBounds){
+        function showFriends (){
+            var one_hour_ago = moment().subtract(1, 'hour');
             for(var i = 0; i < friends.length; i++){
-                var friend = friends[i];
-
-                var isContained = latLngBounds.contains(friend.map.position);
-                if(isContained && $scope.view.options.friends){
-                    if(!friend.marker.isVisible()){
-                        friend.marker.setVisible(true);
-                    }
-                } else {
-                    if(typeof friend.marker !== 'undefined'){
+                if(typeof friend !== 'undefined' && typeof friend.marker !== 'undefined'){
+                    var friend = friends[i];
+                    if($scope.view.options.friends){
+                        if(!friend.marker.isVisible()){
+                            var position_timestamp = moment(friend.position_timestamp,
+                                                "YYYY-MM-DD hh:mm");
+                            $log.log('Timestamp: ' + toString(position_timestamp));
+                            $log.log('Tem minutes ago: ' + toString(ten_minutes_ago));
+                            if (position_timestamp > one_hour_ago)
+                                friend.marker.setVisible(true);
+                        }
+                    } else {
                         friend.marker.setVisible(false);
                     }
+                } else {
+                    $log.log('********************************** Friend marker undefined');
                 }
             }
         }
@@ -965,7 +987,6 @@ angular.module('viradapp.controllers', [])
             if(typeof space.data !== "undefined"){
                 end = space.data.endereco;
             }
-            console.log(space);
             var confirmPopup = $ionicPopup.confirm({
                 title: space.name,
                 template:
@@ -1011,11 +1032,9 @@ angular.module('viradapp.controllers', [])
         $scope.closeModal = function() {
             if(typeof map !== 'undefined'){
                 map.setClickable(true);
-                map.getVisibleRegion(function(latLngBounds){
-                    showPalcos(latLngBounds);
-                    showFriends(latLngBounds);
-                    showServices(latLngBounds);
-                });
+                showPalcos();
+                showServices();
+                showFriends();
             }
 
             $scope.modal.hide();
@@ -1026,6 +1045,53 @@ angular.module('viradapp.controllers', [])
                 map.setClickable(true);
             }
         });
+
+        $ionicPopover.fromTemplateUrl('map-confirm.html', {
+            scope: $scope
+        }).then(function(popover) {
+            $scope.popover = popover;
+        });
+
+        $scope.openPopover = function($event) {
+            if(typeof map !== 'undefined'){
+                map.setClickable(false);
+            }
+
+            $scope.popover.show($event);
+        };
+        $scope.closePopover = function() {
+            $scope.popover.hide();
+        };
+        //Cleanup the popover when we're done with it!
+        $scope.$on('$destroy', function() {
+            $scope.popover.remove();
+        });
+        // Execute action on hide popover
+        $scope.$on('popover.hidden', function() {
+            // Execute action
+            if(typeof map !== 'undefined'){
+                map.setClickable(true);
+            }
+
+        });
+        // Execute action on remove popover
+        $scope.$on('popover.removed', function() {
+            // Execute action
+        });
+
+        $timeout(function(){
+            $scope.showSendPositionConfirm(div);
+        }, 1000);
+
+
+
+        $scope.showSendPositionConfirm = function($event) {
+            if($scope.view.sendPosition || !$scope.view.terms_accepted){
+                if(typeof $scope.modal !== 'undefined')
+                    $scope.modal.hide();
+                $scope.openPopover(div);
+            }
+        };
 
     });
 })
