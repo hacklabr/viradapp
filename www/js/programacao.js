@@ -85,6 +85,8 @@ angular.module("viradapp.programacao", [])
                 id: event.spaceId.toString()
             });
 
+            event.space = space;
+
             if(typeof space !== 'undefined'){
                 if(filters.places.data.length > 0){
                     // If the places array is not empty,

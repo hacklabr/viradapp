@@ -8,13 +8,11 @@
                 </p>
             </article>
         </div>
-
         <div ng-show="renderDone" class="list list-programacao">
             <div class="list">
                 <div class="collection-repeat-container" >
-                    <div id="programacao-container">
-
-
+                    <div id="programacao-container" ng-class="{'sorted-by-place': view.sorted === 'L'}">
+                        
                     </div>
                 </div>
             </div>
@@ -41,7 +39,13 @@
                         <%= entity.startsAt %>
                     </time>
                 </div>
-                <h2><%= entity.name %></h2>
+                <h2>
+                    <%= entity.name %>
+                </h2>
+                <% if(entity.space){ %>
+                    <small class="event-place"><i class="icon icon_pin"></i> <%= entity.space.name %></small>
+                <% } %>
+
             </div>
             <% if (connected) { %>
                 <a href=# class="js-minha-virada" onclick="minha_virada(this.parentElement.parentElement.event);">
