@@ -40,13 +40,19 @@
 		input {
 			&:checked ~ .item-content {
 				/* style the item content when its checked */
-				background: $brand-auxiliar;
-				color: $brand-primary;
+				background: darken($brand-accent, 20%); 
+				color: #fff;
 			}
+
+			&:checked + .radio-content .item-content {
+				background: darken($brand-accent, 20%); 
+				color: #fff;
+			}
+
 			&:checked ~ .radio-icon {
 			    /* show the checkmark icon when its checked */
 			    visibility: visible;
-			    color: $brand-primary;
+			    color: #fff;
 			}
 		}
 		.ion-checkmark {

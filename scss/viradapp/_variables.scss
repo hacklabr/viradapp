@@ -10,14 +10,15 @@ $gray:                   lighten(#000, 80%) !default;   // #ccc
 $gray-light:             lighten(#000, 87%) !default;   // #dedede
 $gray-lighter:           lighten(#000, 95%) !default;   // #f2f2f2
 
+$azul: #7ebec5 !default;
 $preto: #101010 !default;
 $vermelho: #fb3f2a !default;
 $dark: $preto !default;
-$assertive: $vermelho !default;
+$assertive: $azul !default;
 $stable: $gray-lighter !default;
 
 $brand-primary: $preto !default;
-$brand-accent: #7ebec5 !default;
+$brand-accent: $azul !default;
 $brand-auxiliar: #fff !default;
 
 

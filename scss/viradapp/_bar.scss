@@ -33,3 +33,7 @@
 	}
 }
 .modal .bar .title { display: block; }
+
+.bar .button-bar > .button, .bar .buttons > .button {
+	line-height: 40px;
+}
