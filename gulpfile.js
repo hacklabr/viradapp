@@ -6,6 +6,7 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var sourcemaps = require('gulp-sourcemaps');
 var replace = require('replace');
 var replaceFiles = ['./www/js/config.js'];
 
@@ -17,14 +18,15 @@ gulp.task('default', ['sass']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
-    .pipe(sass({
-      errLogToConsole: true
-    }))
+    .pipe(sourcemaps.init())
+    .pipe(sass({errLogToConsole: true}))
+//    .on('error', sass.logError)
     .pipe(gulp.dest('./www/css/'))
     .pipe(minifyCss({
       keepSpecialComments: 0
     }))
     .pipe(rename({ extname: '.min.css' }))
+    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./www/css/'))
     .on('end', done);
 });
@@ -72,4 +74,3 @@ gulp.task('remove-proxy', function() {
         silent: false,
     });
 });
-

@@ -76,4 +76,3 @@ viradapp.config(function($stateProvider, $httpProvider, $urlRouterProvider, $ion
 
     $urlRouterProvider.otherwise('/virada/programacao');
 });
-

@@ -244,7 +244,7 @@ angular.module('viradapp.controllers', [])
     });
 
     function filtering(){
-        console.log('filtering');
+        // console.log('filtering');
 
         var data = $filter('lefilter')(events, spaces, $scope.filters);
         config.A.filtered = data.sortBy(function(event){
@@ -442,7 +442,7 @@ angular.module('viradapp.controllers', [])
                 config.A.loaded = config.A.page*config.loads;
                 $rootScope.ledata.push.apply($rootScope.ledata, d);
                 config.A.data = $rootScope.ledata;
-                console.log("Loaded events (A): "  + config.A.loaded);
+                // console.log("Loaded events (A): "  + config.A.loaded);
             break;
             case "L":
                 if(typeof config.L.filtered == 'undefined') return false;
@@ -455,7 +455,7 @@ angular.module('viradapp.controllers', [])
                 config.L.loaded = config.L.page*config.loads;
                 $rootScope.ledata.push.apply($rootScope.ledata, d);
                 config.L.data = $rootScope.ledata;
-                console.log("Loaded spaces (L): " + config.L.loaded);
+                // console.log("Loaded spaces (L): " + config.L.loaded);
             break;
             case "H":
                 if(typeof config.H.filtered == 'undefined') return false;
@@ -467,7 +467,7 @@ angular.module('viradapp.controllers', [])
                 config.H.loaded = config.H.page*config.loads;
                 $rootScope.ledata.push.apply($rootScope.ledata, d);
                 config.H.data = $rootScope.ledata;
-                console.log("Loaded events (H): " + config.H.loaded);
+                // console.log("Loaded events (H): " + config.H.loaded);
             break;
 
         }
@@ -1152,9 +1152,9 @@ angular.module('viradapp.controllers', [])
         MinhaVirada.logout();
     }
 
-    $rootScope.$on('logged_out', function(ev){
-        console.log($localStorage);
-    });
+    // $rootScope.$on('logged_out', function(ev){
+        // console.log($localStorage);
+    // });
 
 
     $scope.$on('$ionicView.beforeEnter', function(){

@@ -1,17 +1,18 @@
 {
   "name": "viradapp",
   "version": "1.0.0",
-  "description": "viradapp: An Ionic project",
+  "description": "Virada Cultural App",
   "dependencies": {
     "gulp": "^3.5.6",
+    "gulp-sass": "^2.0.4",
     "gulp-concat": "^2.2.0",
     "gulp-minify-css": "^0.3.0",
     "gulp-rename": "^1.2.0",
-    "gulp-sass": "^1.3.3",
     "replace": "^0.3.0"
   },
   "devDependencies": {
     "bower": "^1.3.3",
+    "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^2.2.14",
     "shelljs": "^0.3.0"
   },
@@ -20,7 +21,8 @@
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
-    "com.ionic.keyboard",
+    "cordova-plugin-statusbar",
+    "ionic-plugin-keyboard",
     "cordova-plugin-inappbrowser",
     "cordova-plugin-network-information",
     {
@@ -28,7 +30,7 @@
       "id": "nl.x-services.plugins.socialsharing"
     },
     {
-      "locator": "https://github.com/Nipher/phonegap-googlemaps-plugin",
+      "locator": "https://github.com/wf9a5m75/phonegap-googlemaps-plugin.git",
       "id": "plugin.google.maps",
       "variables": {
         "API_KEY_FOR_ANDROID": "AIzaSyDmmEzjlflgH7g8v5IhyUn7O2J4Rqib5Ss",
