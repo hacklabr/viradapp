@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="br.com.hacklab.viradapp" version="2.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Virada Cultural 2015 - Oficial</name>
+<widget id="br.com.hacklab.malocadragao" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Maloca Dragão - 2016</name>
   <description>
-        Aplicativo da Virada Cultural.
+        Aplicativo Maloca Dragão - 2016
     </description>
   <author email="contato@hacklab.com.br" href="http://hacklab.com.br">
       Hacklab
@@ -12,10 +12,14 @@
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
-  <preference name="android-minSdkVersion" value="16" />
+  <preference name="android-minSdkVersion" value="16"/>
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="3000"/>
+  <preference name="xwalkVersion" value="16+"/>
+  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect"/>
+  <preference name="xwalkMode" value="embedded"/>
+  <preference name="xwalkMultipleApk" value="true"/>
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>
@@ -70,8 +74,9 @@
     <splash src="resources/ios/splash/Default@2x~iphone.png" width="640" height="960"/>
     <splash src="resources/ios/splash/Default~iphone.png" width="320" height="480"/>
   </platform>
-  <preference name="xwalkVersion" value="16+" />
-  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
-  <preference name="xwalkMode" value="embedded" />
-  <preference name="xwalkMultipleApk" value="true" />
+  <platform name="wp8">
+    <icon src="resources/wp8/icon/ApplicationIcon.png" width="99" height="99"/>
+    <icon src="resources/wp8/icon/Background.png" width="159" height="159"/>
+  </platform>
+  <icon src="resources/android/icon/drawable-xhdpi-icon.png"/>
 </widget>
