@@ -8,7 +8,7 @@
 	.item {
 		background-color: transparent;
 		color: $brand-auxiliar;
-		border-color: darken($brand-accent, 10%);
+		border-color: lighten($brand-accent, 5%);
 		border-left: none;
 		border-right: none;
 		@extend %secondary-font;
@@ -19,7 +19,7 @@
 		}
 	}
 	.item-divider {
-		color: darken($brand-accent, 20%);
+		color: lighten($brand-accent, 30%);
 	}
 	.item-input {
 		padding-right: 10px;
@@ -40,12 +40,12 @@
 		input {
 			&:checked ~ .item-content {
 				/* style the item content when its checked */
-				background: darken($brand-accent, 20%); 
+				background: lighten($brand-accent, 10%); 
 				color: #fff;
 			}
 
 			&:checked + .radio-content .item-content {
-				background: darken($brand-accent, 20%); 
+				background: lighten($brand-accent, 10%); 
 				color: #fff;
 			}
 
