@@ -5,12 +5,12 @@
                 <div class="icon arrow_left"></div>
             </ion-nav-back-button>
             <ion-nav-buttons side="left">
-                <div class="button button-logo" menu-toggle="left">
+                <div class="button icon ion-navicon-round" menu-toggle="left">
                 </div>
             </ion-nav-buttons>
             <ion-nav-buttons side="right">
                 <div ng-if="programacao"
-                     class="button icon ion-navicon-round" menu-toggle="right">
+                    class="button icon ion-android-more-vertical" menu-toggle="right">
                 </div>
                 <div ng-repeat="b in shareButtons"
                     ng-if="!programacao && showMe(b)"
@@ -78,7 +78,7 @@
                         </span>
                     </div>
                 </ion-item>
-                <ion-item>
+                <!-- <ion-item>
                     <div>
                         <i class="icon icon_clock"></i>
                         Horário
@@ -92,7 +92,7 @@
                                 rz-slider-step="1"></rzslider>
                         </article>
                     </div>
-                </ion-item>
+                </ion-item> -->
                 <!--<div class="item item-time-range">
                     <i class="icon icon_clock"></i>
                     Horário
@@ -111,7 +111,7 @@
                 </ion-radio>
 
                 <ion-radio ng-model="tempFilters.view" ng-change="change(this)" ng-value="'H'">
-                    <i class="icon icon_clock"></i> Horário
+                    <i class="icon icon_clock"></i> Data e Horário
                 </ion-radio>
             </ion-list>
         </ion-content>
