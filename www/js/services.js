@@ -23,17 +23,17 @@ angular.module('viradapp.services', [])
 
         spaces = $httpCache.get(conf.spaces.url);
         if(!spaces){
-            console.log("not using cache");
+            // console.log("not using cache");
             $http.get(conf.spaces.url, {cache : true})
             .then(function(res){
                 // return Lazy(res.data);
-                console.log(res);
+                // console.log(res);
                 deferred.resolve(Lazy(res.data));
             });
         } else {
             deferred.resolve(spaces);
         }
-        console.log(deferred.promise);
+        // console.log(deferred.promise);
         spaces = deferred.promise;
     }
 

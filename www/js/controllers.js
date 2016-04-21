@@ -104,62 +104,62 @@ angular.module('viradapp.controllers', [])
         H: new ListState()
     };
 
-    $rootScope.timeSlider = {
-        range: {
-            min: 0,
-            max: 96
-        },
-        model:{
-            min:0,
-            max:96
-        },
-        time:{
-            min: '18:00',
-            max: '17:59'
-        },
-
-        reset: function(){
-            var m = moment();
-            if(moment() >= moment('2015-06-20 18:00') && moment() < moment('2015-06-21 18:00')){
-                var now = moment().subtract('minutes', 15);
-                $scope.timeSlider.model.min = parseInt(parseInt(now.diff(moment('2015-06-20 18:00')) / 1000) / 60 / 60 * 4);
-            }else{
-                $scope.timeSlider.model.min = 0;
-            }
-            $scope.timeSlider.model.max = 96;
-        },
-
-        translate: function(val, includeDay){
-            var format = includeDay ? 'YYYY-MM-DD HH:mm' : 'HH:mm';
-            if(val > 0){
-                return moment('2015-06-20 18:00').add(val * 15, 'minutes').format(format);
-            }else{
-                return moment('2015-06-20 18:00').format(format);
-            }
-        },
-
-        minTimestamp: function(){
-            return moment($rootScope.timeSlider.translate($rootScope.timeSlider.model.min, true)).format('x');
-        },
-
-        maxTimestamp: function(){
-            return moment($rootScope.timeSlider.translate($rootScope.timeSlider.model.max, true)).format('x');
-        }
-
-    };
-
-    $rootScope.timeSlider.reset();
-
-
-    var startTimeSetted = false;
+    // $rootScope.timeSlider = {
+    //     range: {
+    //         min: 0,
+    //         max: 96
+    //     },
+    //     model:{
+    //         min:0,
+    //         max:96
+    //     },
+    //     time:{
+    //         min: '18:00',
+    //         max: '17:59'
+    //     },
+    //
+    //     reset: function(){
+    //         var m = moment();
+    //         if(moment() >= moment('2015-06-20 18:00') && moment() < moment('2015-06-21 18:00')){
+    //             var now = moment().subtract('minutes', 15);
+    //             $scope.timeSlider.model.min = parseInt(parseInt(now.diff(moment('2015-06-20 18:00')) / 1000) / 60 / 60 * 4);
+    //         }else{
+    //             $scope.timeSlider.model.min = 0;
+    //         }
+    //         $scope.timeSlider.model.max = 96;
+    //     },
+    //
+    //     translate: function(val, includeDay){
+    //         var format = includeDay ? 'YYYY-MM-DD HH:mm' : 'HH:mm';
+    //         if(val > 0){
+    //             return moment('2015-06-20 18:00').add(val * 15, 'minutes').format(format);
+    //         }else{
+    //             return moment('2015-06-20 18:00').format(format);
+    //         }
+    //     },
+    //
+    //     minTimestamp: function(){
+    //         return moment($rootScope.timeSlider.translate($rootScope.timeSlider.model.min, true)).format('x');
+    //     },
+    //
+    //     maxTimestamp: function(){
+    //         return moment($rootScope.timeSlider.translate($rootScope.timeSlider.model.max, true)).format('x');
+    //     }
+    //
+    // };
+    //
+    // $rootScope.timeSlider.reset();
 
 
-    if(!startTimeSetted){
-        if(moment() >= moment('2015-06-20 18:00') && moment() < moment('2015-06-21 18:00')){
-            var now = moment().subtract('minutes', 15);
-            $rootScope.timeSlider.model.min = parseInt(parseInt(now.diff(moment('2015-06-20 18:00')) / 1000) / 60 / 60 * 4);
-        }
-    }
+    // var startTimeSetted = false;
+
+
+    // if(!startTimeSetted){
+    //     if(moment() >= moment('2015-06-20 18:00') && moment() < moment('2015-06-21 18:00')){
+    //         var now = moment().subtract('minutes', 15);
+    //         $rootScope.timeSlider.model.min = parseInt(parseInt(now.diff(moment('2015-06-20 18:00')) / 1000) / 60 / 60 * 4);
+    //     }
+    // }
 
     var spaces = Lazy([]);
     var events = Lazy([]);
@@ -308,10 +308,10 @@ angular.module('viradapp.controllers', [])
         $rootScope.renderDone = false;
 
         $scope.filters = new Filter(config.start, config.end);
-        $rootScope.timeSlider.reset();
+        // $rootScope.timeSlider.reset();
 
-        $scope.filters.starting = $rootScope.timeSlider.minTimestamp();
-        $scope.filters.ending = $rootScope.timeSlider.maxTimestamp();
+        // $scope.filters.starting = $rootScope.timeSlider.minTimestamp();
+        // $scope.filters.ending = $rootScope.timeSlider.maxTimestamp();
 
         $rootScope.view.sorted = $scope.filters.sorted;
 
@@ -344,8 +344,8 @@ angular.module('viradapp.controllers', [])
         $rootScope.renderDone = false;
 
         $scope.filters = angular.copy($rootScope.tempFilters.filters);
-        $scope.filters.starting = $rootScope.timeSlider.minTimestamp();
-        $scope.filters.ending = $rootScope.timeSlider.maxTimestamp();
+        // $scope.filters.starting = $rootScope.timeSlider.minTimestamp();
+        // $scope.filters.ending = $rootScope.timeSlider.maxTimestamp();
 
         $rootScope.view.sorted = $rootScope.tempFilters.view;
 
