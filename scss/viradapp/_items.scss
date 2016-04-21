@@ -120,8 +120,8 @@
 		.event-time {
 			// position: absolute;
 			line-height: 20px;
-			border-right: 1px solid $gray-light;
-			padding-right: 5px;
+			// border-right: 1px solid $gray-light;
+			padding-right: 30px;
 		}
 		time {
 			color: $brand-accent;
@@ -133,9 +133,14 @@
 			line-height: 20px;
 			&.icon-accessory {
 				position: absolute;
-				top: 16px;
+				top: 30px;
 				right: 16px;
 			}
+			// &.icon-accessory-show-space {
+			// 	position: absolute;
+			// 	top: 30px;
+			// 	right: 16px;
+			// }
 		}
 	}
 	.item-divider {
