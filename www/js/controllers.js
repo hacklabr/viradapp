@@ -796,7 +796,7 @@ angular.module('viradapp.controllers', [])
         });
 
         if(typeof plugin !== 'undefined'){
-            var center = new plugin.google.maps.LatLng(-23.5408, -46.6400);
+            var center = new plugin.google.maps.LatLng(-3.721361, -38.520314);
             var mapState = new MapState(plugin.google.maps.MapTypeId.ROADMAP, center);
         }
         function getMyLocation (location){

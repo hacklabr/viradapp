@@ -53,7 +53,7 @@ angular.module("viradapp.wrappers", [])
             },
             'camera': {
                 'latLng': center,
-                'zoom': 14,
+                'zoom': 17,
             }
         };
         this.markers = Lazy([]);
