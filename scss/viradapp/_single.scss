@@ -27,16 +27,16 @@
         height: auto;
         margin-bottom: 10px;
     }
-    p {
-        img.logo-hacklab {
-            vertical-align: top;
-            height: 15px;
-        }
-        img.logo-instituto-tim {
-            vertical-align: top;
-            height: 18px;
-        }
-    }
+    // p {
+    //     img.logo-hacklab {
+    //         vertical-align: top;
+    //         height: 15px;
+    //     }
+    //     img.logo-instituto-tim {
+    //         vertical-align: top;
+    //         height: 18px;
+    //     }
+    // }
     footer {
         .friends-group {
             border-top: 1px solid $gray-light;
@@ -45,5 +45,8 @@
             line-height: 28px;
             height: 30px+$padding-base-horizontal;
         }
+    }
+    .logos_sobre a {
+        text-align: center;
     }
 }
