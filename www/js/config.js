@@ -34,8 +34,8 @@ angular.module("viradapp.config", [])
         APP_NAME: "Maloca Dragão 2016",
         BASE_URL : "http://maloca.hacklab.com.br/2016/wp-content/themes/maloca/app",
         TEMPLATE_URL : "http://maloca.hacklab.com.br/2016/wp-content/themes/maloca", // seens deprecated
-        SOCIAL_API_URL : "http://maloca.hacklab.com.br/2016/api",
-        SHARE_URL : "http://maloca.hacklab.com.br/2016",
+        SOCIAL_API_URL : "http://api.maloca.hacklab.com.br/2016/api",
+        SHARE_URL : "http://maloca.hacklab.com.br/2016/",
         APP_ID: '1460336737533597'
     }
 });
