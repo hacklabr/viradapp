@@ -44,25 +44,21 @@
                         </time>
                     </div>
                 </a>
-                <% var icon_class = entity.space ? 'icon-accessory-show-space' : ''; %>
                 <% if(entity.space){ %>
-
                 <small class="event-place"><a onclick="redirectFromListTo('#/virada/programacao/palco/<%= entity.space.id %>')"><i class="icon icon_pin"></i> <%= entity.space.name %></a></small>
-                <% } else { %>
-
                 <% } %>
 
             </div>
             <% if (connected) { %>
                 <a href=# class="js-minha-virada" onclick="minha_virada(this.parentElement.parentElement.event);">
                     <% if (entity.in_minha_virada){ %>
-                    <i class="icon event-star icon_star icon-accessory <%= icon_class %>"></i>
+                    <i class="icon event-star icon_star icon-accessory"></i>
                     <% } else { %>
-                    <i class="icon event-star icon_star_alt icon-accessory <%= icon_class %>"></i>
+                    <i class="icon event-star icon_star_alt icon-accessory"></i>
                     <% } %>
                 </a>
             <% } else { %>
-                <i class="icon ion-chevron-right icon-accessory <%= icon_class %>"></i>
+                <i class="icon ion-chevron-right icon-accessory"></i>
             <% } %>
         </div>
     </div>
