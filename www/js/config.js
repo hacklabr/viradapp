@@ -35,7 +35,8 @@ angular.module("viradapp.config", [])
         BASE_URL : "http://maloca.hacklab.com.br/2016/wp-content/themes/maloca/app",
         TEMPLATE_URL : "http://maloca.hacklab.com.br/2016/wp-content/themes/maloca", // seens deprecated
         SOCIAL_API_URL : "http://api.maloca.hacklab.com.br/2016/api",
-        SHARE_URL : "http://maloca.hacklab.com.br/2016/",
+        SHARE_URL : "http://maloca.org.br/2016/",
+        // Facebook app id
         APP_ID: '1460336737533597'
     }
 });
