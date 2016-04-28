@@ -716,7 +716,7 @@ angular.module('viradapp.controllers', [])
                 sendPosition : false,
                 options : {
                     friends: false ,
-                    palcos: false ,
+                    palcos: true ,
                     services: true
                 },
                 terms_agreed: false
@@ -1027,7 +1027,7 @@ angular.module('viradapp.controllers', [])
                 buttons: [
                     { text: 'Voltar' },
                     {
-                        text: '<b>Ver palco</b>',
+                        text: '<b>Ver Espaço</b>',
                         type: 'button-assertive',
                         onTap: function (){return true;}
                     }
@@ -1347,7 +1347,7 @@ angular.module('viradapp.controllers', [])
         var link = GlobalConfiguration.SHARE_URL;
         switch (b){
             case 'palco':
-                message = "Venha conferir as atrações do Palco "
+                message = "Venha conferir as atrações do Espaço "
                     + $rootScope.palco.name;
                 link = link + "/programacao/local/##" + $rootScope.palco.id;
                 break;
