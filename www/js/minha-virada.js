@@ -269,7 +269,7 @@ angular.module("viradapp.minha_virada", [])
         if(!config.connected){
             return;
         }
-        
+
         if (typeof user.events === 'undefined') {
             user.events = [];
         }
@@ -386,9 +386,9 @@ angular.module("viradapp.minha_virada", [])
             oauth_token : user.accessToken
         }
 
-        console.log("--- Saving data ---");
-        console.log(JSON.stringify(userJSON));
-        console.log("--- End ---");
+        // console.log("--- Saving data ---");
+        // console.log(JSON.stringify(userJSON));
+        // console.log("--- End ---");
         var url = GlobalConfiguration.SOCIAL_API_URL + '/friendspositions/'
         var options = {
             headers : {
@@ -412,8 +412,7 @@ angular.module("viradapp.minha_virada", [])
 
     var getFriends = function(){
         // Get user friends from the API
-        return $http
-        .get(GlobalConfiguration.SOCIAL_API_URL
+        return $http.get(GlobalConfiguration.SOCIAL_API_URL
              + '/friendspositions/?uid='
              + user.uid
              + "&oauth_token=" + user.accessToken)
@@ -421,14 +420,9 @@ angular.module("viradapp.minha_virada", [])
             return data.data;
         })
         .catch(function(data){
-            return [
-                {}
-            ]
+            return [];
             //return false;
         });
-
-        return false;
-
     };
 
     var getService = function (name){
