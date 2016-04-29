@@ -1,6 +1,6 @@
 {
   "name": "viradapp",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Virada Cultural App",
   "dependencies": {
     "gulp": "^3.5.6",
@@ -30,11 +30,11 @@
       "id": "nl.x-services.plugins.socialsharing"
     },
     {
-      "locator": "https://github.com/wf9a5m75/phonegap-googlemaps-plugin.git",
+      "locator": "https://github.com/mapsplugin/cordova-plugin-googlemaps.git",
       "id": "plugin.google.maps",
       "variables": {
-        "API_KEY_FOR_ANDROID": " AIzaSyAXzGo-yER6gJXSIw-lEoLFxcBu6n-w-NE",
-        "API_KEY_FOR_IOS": " AIzaSyC4Dj8XBqC1o2iCElfhKq2ckU83R5-yQuU"
+        "API_KEY_FOR_ANDROID": "AIzaSyAXzGo-yER6gJXSIw-lEoLFxcBu6n-w-NE",
+        "API_KEY_FOR_IOS": "AIzaSyC4Dj8XBqC1o2iCElfhKq2ckU83R5-yQuU"
       }
     }
   ],
