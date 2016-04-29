@@ -53,7 +53,7 @@ angular.module("viradapp.wrappers", [])
             },
             'camera': {
                 'latLng': center,
-                'zoom': 17,
+                'zoom': 15,
             }
         };
         this.markers = Lazy([]);
@@ -71,6 +71,12 @@ angular.module("viradapp.wrappers", [])
     return {
         LL :  function(date){
             return moment(date).format('LL');
+        },
+        moment: function(date){
+            return moment(date);
+        },
+        day: function(date){
+            return moment(date, "YYYY-MM-DD").format("DD-MM");
         },
         start: function(){
             return moment("201604270000", "YYYYMMDDhhmm");
